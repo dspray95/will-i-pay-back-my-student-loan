@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #00F5A0;
+  --color-primary-light: #23ffb2;
+  --color-secondary: #A78BFA;
+  --color-secondary-light: #baa4fc;
+  --color-background: #1E2131;
+  --color-background-light: #25283b;
+  
+  /* Text colors */
+  --color-text-primary: #FFFFFF;      
+  --color-text-secondary: #B4B4B8;
+  --color-text-contrast: #32374f;
+  
+  --color-text-muted: #8E8E93;      
+  
+  /* Header colors */
+  --color-heading-primary: #00F5A0;  
+  --color-heading-secondary: #A78BFA; 
+}
+
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  background-color: var(--color-background);
+
+}
+
+h1 {
+  font-size: 2.25rem; /* 36px */
+  font-weight: 700;
+  color: var(--color-heading-primary);
+}
+
+h2 {
+  font-size: 1.875rem; /* 30px */
+  font-weight: 600;
+  color: var(--color-heading-secondary);
+}
+
+h3 {
+  font-size: 1.5rem; /* 24px */
+  font-weight: 500;
+  color: var(--color-heading-secondary);
+}
+
+h5 {
+  font-size: 1.25rem; /* 20px */
+  font-weight: 500;
+  color: var(--color-heading-primary);
+}
+
+button:hover {
+  background-color: var(--color-primary-light);
+}
+
+.rc-slider-handle:focus,
+.rc-slider-handle-click-focused {
+  background-color: #A78BFA;
+  border: 2px solid #A78BFA;
+}
