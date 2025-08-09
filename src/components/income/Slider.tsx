@@ -33,7 +33,6 @@ const generateIncomeSteps = () => {
       currentIncome += step.increment;
     }
   });
-  // Add final value
   if (!incomeSteps.includes(currentIncome)) {
     incomeSteps.push(currentIncome);
   }
@@ -69,38 +68,41 @@ export const IncomeSlider: React.FC<IncomeSliderProps> = ({
       onChange(year, incomeSteps[value]);
     }
   };
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {};
+
+  const handleChange = (_: React.ChangeEvent<HTMLInputElement>) => {};
 
   const selectedValue = incomeSteps[selectedIndex];
   const marks = generateSparseMarks(incomeSteps, 0.1);
 
   return (
-    <div className="flex items-center w-full justify-center py-2 gap-2">
-      <span className="">{year}</span>
-      <StyledSlider
-        min={0}
-        max={incomeSteps.length - 1}
-        step={1}
-        marks={marks}
-        value={selectedIndex}
-        onChange={handleSliderChange}
-        styles={{
-          track: { backgroundColor: colorSecondary, height: "5px" },
-          rail: { backgroundColor: colorTextMuted, height: "5px" },
-          handle: {
-            width: "12px",
-            height: "12px",
-            margin: "0px",
-            padding: "0px",
-            transform: "translateY(0)",
-            bottom: "0px",
-            top: "1.5px",
-            backgroundColor: colorSecondaryLight,
-            border: "0px",
-          },
-        }}
-      />
-      <div className="relative px-2 min-w-12 max-w-28 mr-3">
+    <div className="grid grid-cols-12 items-center max-w-full justify-center py-2 px-4">
+      <span className="col-span-1 text-sm">{year}</span>
+      <div className="col-span-9 px-4">
+        <StyledSlider
+          min={0}
+          max={incomeSteps.length - 1}
+          step={1}
+          marks={marks}
+          value={selectedIndex}
+          onChange={handleSliderChange}
+          styles={{
+            track: { backgroundColor: colorSecondary, height: "5px" },
+            rail: { backgroundColor: colorTextMuted, height: "5px" },
+            handle: {
+              width: "12px",
+              height: "12px",
+              margin: "0px",
+              padding: "0px",
+              transform: "translateY(0)",
+              bottom: "0px",
+              top: "1.5px",
+              backgroundColor: colorSecondaryLight,
+              border: "0px",
+            },
+          }}
+        />
+      </div>
+      <div className="relative col-span-2 pl-2 text-sm">
         <span className="absolute left-2 top-1/2 -translate-y-1/2">£</span>
         <input
           className="px-3 w-full"

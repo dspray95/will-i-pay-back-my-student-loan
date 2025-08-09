@@ -1,6 +1,6 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { getLoanPlan } from "../../utils/loanPlan";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
@@ -25,15 +25,20 @@ export type LoanFormValues = {
 };
 
 export const LoanForm: React.FC<{
+  setTotalUndergradLoan: (amount: number) => void;
+  setTotalMastersoan: (amount: number) => void;
+  setTotalMaintenanceLoan: (amount: number) => void;
   updateFormValues: (values: LoanFormValues) => void;
   setStage: (stage: "loanForm" | "income" | "finish") => void;
-}> = ({ updateFormValues, setStage }) => {
-  const [totalLoan, setTotalLoan] = React.useState(0);
-  const [totalGrant, setTotalGrant] = React.useState(0);
-  const [totalMastersLoan, setTotalMastersLoan] = React.useState(0);
-
-  const [showPostgradSection, setShowPostgradSection] = React.useState(false);
-
+}> = ({
+  setTotalUndergradLoan,
+  setTotalMastersLoan,
+  setTotalMaintenanceLoan,
+  updateFormValues,
+  setStage,
+}) => {
+  const [showPostgradSection, setShowPostgradSection] = useState(false);
+  const [totalMaintenanceGrant, setTotalMaintenanceGrant] = useState<number>(0);
   return (
     <Formik
       initialValues={{
@@ -91,10 +96,8 @@ export const LoanForm: React.FC<{
           fees: FeesLoansAndGrants,
           mastersFees: FeesLoansAndGrants | undefined
         ) => {
-          console.log("masters fees", mastersFees);
-
-          let totalTuitionLoan = fees.tuition * values.courseLength;
-          let totalMastersLoan = mastersFees
+          const totalTuitionLoan = fees.tuition * values.courseLength;
+          const totalMastersLoan = mastersFees
             ? mastersFees.postGraduateLoan * values.mastersLength
             : 0;
           console.log(totalMastersLoan);
@@ -109,15 +112,15 @@ export const LoanForm: React.FC<{
           setFieldValue("maintenanceGrant", totalMaintenanceGrant);
 
           setFieldValue("mastersTutionFeeLoan", totalMastersLoan);
-          setTotalGrant(totalMaintenanceGrant);
+          setTotalMaintenanceGrant(totalMaintenanceGrant);
           setTotalMastersLoan(totalMastersLoan);
-          setTotalLoan(
+          setTotalUndergradLoan(
             totalTuitionLoan + totalMaintenanceLoan + totalMastersLoan
           );
         };
 
         /* Set loan plan by start year and country*/
-        React.useEffect(() => {
+        useEffect(() => {
           if (values.courseStartYear && values.country) {
             const suggestedPlan = getLoanPlan(
               values.courseStartYear,
@@ -130,7 +133,8 @@ export const LoanForm: React.FC<{
         }, [values.courseStartYear, values.country, setFieldValue]);
 
         /* Set loan amount to maximum available by year */
-        React.useEffect(() => {
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        useEffect(() => {
           if (values.courseStartYear) {
             const fees = getFeesForYear(values.courseStartYear);
             let mastersFees;
@@ -150,7 +154,7 @@ export const LoanForm: React.FC<{
           setFieldValue,
         ]);
 
-        React.useEffect(() => {
+        useEffect(() => {
           if (values.postgrad === "yes") {
             setShowPostgradSection(true);
           } else {
@@ -422,7 +426,7 @@ export const LoanForm: React.FC<{
               </div>
               <div className="grid grid-cols-2 gap-1 pt-2">
                 <label>total loan (pre-interest): </label>
-                <h5>£{totalLoan}</h5>
+                <h5>£{totalUndergradLoan}</h5>
               </div>
               <div className="grid grid-cols-2 gap-1">
                 <label>total grant: </label>

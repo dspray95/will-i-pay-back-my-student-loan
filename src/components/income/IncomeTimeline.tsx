@@ -63,5 +63,5 @@ export const IncomeTimeline: React.FC<{
     repaymentPlan,
   ]);
 
-  return <div>{sliders}</div>;
+  return <div className="pb-4">{sliders}</div>;
 };

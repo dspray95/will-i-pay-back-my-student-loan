@@ -47,12 +47,10 @@ export const IncomePage: React.FC<{
   return (
     <div
       className={classNames(
-        "absolute top-0 left-1/2 -translate-x-1/2 w-1/3 pt-26",
-        "h-max- mx-2 flex items-center justify-center flex-col",
-        "transition-all duration-300 ease-in-out overflow-hidden",
+        "flex flex-col items-center justify-center transform transition-all ease-in-out overflow-hidden",
         {
-          "transform 2 -translate-x-1/2": isActive,
-          "transform translate-x-[150%]": !isActive,
+          " translate-x-0 pointer-events-auto duration-300": isActive,
+          "translate-x-full pointer-events-none duration-200 h-dvh": !isActive,
         }
       )}
     >
@@ -66,7 +64,7 @@ export const IncomePage: React.FC<{
 
         <h1>income</h1>
       </div>
-      <div className="w-full ml-3">
+      <div className="w-full md:max-w-4/5 mx-3">
         <IncomeTimeline
           incomeByYear={incomeByYear}
           handleIncomeChange={handleIncomeChange}

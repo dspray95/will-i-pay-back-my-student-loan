@@ -1,24 +1,41 @@
 import classNames from "classnames";
 import { LoanForm, type LoanFormValues } from "../components/loan/LoanForm";
 import { PageHeader } from "../components/loan/PageHeader";
+import type { Dispatch, SetStateAction } from "react";
 
 export const LoanPage: React.FC<{
+  setTotalUndergradLoan: Dispatch<SetStateAction<number>>;
+  setTotalMastersLoan: Dispatch<SetStateAction<number>>;
+  setTotalMaintenanceLoan: Dispatch<SetStateAction<number>>;
   setLoanFormValues: (values: LoanFormValues) => void;
   setStage: (stage: "loanForm" | "income" | "finish") => void;
   isActive: boolean;
-}> = ({ setLoanFormValues, setStage, isActive }) => (
+}> = ({
+  setTotalUndergradLoan,
+  setTotalMastersLoan,
+  setTotalMaintenanceLoan,
+  setLoanFormValues,
+  setStage,
+  isActive,
+}) => (
   <div
     className={classNames(
-      "mx-2 flex items-center justify-center flex-col",
-      "transition-all duration-300 ease-in-out overflow-hidden",
+      "mx-2 flex flex-col justify-center",
+      "transform transition-all  ease-in-out overflow-hidden",
       {
-        "transform translate-x-0": isActive,
-        "transform -translate-x-[125%]": !isActive,
+        "translate-x-0 duration-300": isActive,
+        "-translate-x-[125%] duration-200": !isActive,
       }
     )}
   >
     <PageHeader />
     <h3>undergraduate</h3>
-    <LoanForm updateFormValues={setLoanFormValues} setStage={setStage} />
+    <LoanForm
+      setTotalUndergradLoan={setTotalUndergradLoan}
+      setTotalMaintenanceLoan={setTotalMaintenanceLoan}
+      setTotalMastersoan={setTotalMastersLoan}
+      updateFormValues={setLoanFormValues}
+      setStage={setStage}
+    />
   </div>
 );
