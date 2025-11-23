@@ -17,12 +17,27 @@ export const IncomeTimeline: React.FC<{
   repaymentPlan,
 }) => {
   const sliders = useMemo<JSX.Element[]>(() => {
-    const loanForgivenessYear =
-      undergradStartYear +
-      getForgivenessPlanForYear(undergradStartYear, repaymentPlan);
+    const forgivenessPlan = getForgivenessPlanForYear(
+      undergradStartYear,
+      repaymentPlan
+    );
+
+    // Repayments start the april after graduation
+    const repaymentStartYear = undergradEndYear + 1;
+    const loanForgivenessYear = repaymentStartYear + forgivenessPlan;
+
     const currentYear = new Date().getFullYear();
     const sliders: JSX.Element[] = [];
-    for (let year = undergradEndYear; year <= loanForgivenessYear; year++) {
+    sliders.push(
+      <div className="flex flex-row items-center justify-center gap-2 w-full text-text-muted">
+        <div className="flex-grow border-b border-text-muted min-w-24 border-dashed" />
+        <div className="text-sm">
+          Repayment starts the april after graduation
+        </div>
+        <div className="flex-grow border-b border-text-muted  min-w-24 border-dashed" />
+      </div>
+    );
+    for (let year = repaymentStartYear; year <= loanForgivenessYear; year++) {
       sliders.push(
         <IncomeSlider
           key={year}

@@ -1,4 +1,4 @@
-import { getLatestDataForYear } from "./getLatestDataForYear";
+import { getLatestDataForYear } from "../utils/getLatestDataForYear";
 import {
   FEES_LOANS_AND_GRANTS_BY_YEAR,
   getFeesForYear,

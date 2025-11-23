@@ -1,4 +1,4 @@
-import { getLatestDataForYear } from "./getLatestDataForYear";
+import { getLatestDataForYear } from "../utils/getLatestDataForYear";
 
 export type FeesLoansAndGrants = {
   tuition: number;

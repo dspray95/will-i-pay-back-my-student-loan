@@ -1,5 +1,4 @@
 // Generic function to get the latest data for a given year from a Record of available years
-// The function can handle any kind of data structure (e.g., loan forgiveness or fees) as long as the structure is similar.
 export const getLatestDataForYear = <T>(
   year: number,
   data: Record<number, T>

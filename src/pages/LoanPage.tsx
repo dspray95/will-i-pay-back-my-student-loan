@@ -33,7 +33,7 @@ export const LoanPage: React.FC<{
     <LoanForm
       setTotalUndergradLoan={setTotalUndergradLoan}
       setTotalMaintenanceLoan={setTotalMaintenanceLoan}
-      setTotalMastersoan={setTotalMastersLoan}
+      setTotalMastersLoan={setTotalMastersLoan}
       updateFormValues={setLoanFormValues}
       setStage={setStage}
     />

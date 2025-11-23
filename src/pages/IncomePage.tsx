@@ -1,7 +1,7 @@
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import classNames from "classnames";
-import { useState } from "react";
+import { useState, type Dispatch, type SetStateAction } from "react";
 import { IncomeTimeline } from "../components/income/IncomeTimeline";
 import { getForgivenessPlanForYear, type LoanPlan } from "../data";
 import { Button } from "../components/button";
@@ -11,6 +11,8 @@ export const IncomePage: React.FC<{
   undergradEndYear: number;
   repaymentPlan: LoanPlan;
   isActive: boolean;
+  incomeByYear: Record<number, number>;
+  setIncomeByYear: Dispatch<SetStateAction<Record<number, number>>>;
   setStage: (stage: "loanForm" | "income" | "finish") => void;
 }> = ({
   undergradStartYear,
@@ -18,8 +20,9 @@ export const IncomePage: React.FC<{
   isActive,
   repaymentPlan,
   setStage,
+  incomeByYear,
+  setIncomeByYear,
 }) => {
-  const [incomeByYear, setIncomeByYear] = useState<Record<number, number>>({});
   const [userSetYears, setUserSetYears] = useState<Record<number, boolean>>([]);
   const loanForgivenessYear =
     undergradStartYear +
