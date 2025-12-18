@@ -5,6 +5,7 @@ import { useState, type Dispatch, type SetStateAction } from "react";
 import { IncomeTimeline } from "../components/income/IncomeTimeline";
 import { getForgivenessPlanForYear, type LoanPlan } from "../data";
 import { Button } from "../components/button";
+import type { LoanFormValues } from "../components/loan/LoanForm";
 
 export const IncomePage: React.FC<{
   undergradStartYear: number;
@@ -14,6 +15,11 @@ export const IncomePage: React.FC<{
   incomeByYear: Record<number, number>;
   setIncomeByYear: Dispatch<SetStateAction<Record<number, number>>>;
   setStage: (stage: "loanForm" | "income" | "finish") => void;
+  loanFormValues: LoanFormValues | undefined;
+  calculateRepaymentWithIncome: (
+    incomeByYear: Record<number, number>,
+    loanFormValues: LoanFormValues
+  ) => void;
 }> = ({
   undergradStartYear,
   undergradEndYear,
@@ -22,6 +28,8 @@ export const IncomePage: React.FC<{
   setStage,
   incomeByYear,
   setIncomeByYear,
+  loanFormValues,
+  calculateRepaymentWithIncome,
 }) => {
   const [userSetYears, setUserSetYears] = useState<Record<number, boolean>>([]);
   const loanForgivenessYear =
@@ -76,7 +84,14 @@ export const IncomePage: React.FC<{
           repaymentPlan={repaymentPlan}
         />
       </div>
-      <Button type="submit" onClick={() => setStage("finish")}>
+      <Button
+        type="submit"
+        onClick={() => {
+          if (loanFormValues)
+            calculateRepaymentWithIncome(incomeByYear, loanFormValues);
+          setStage("finish");
+        }}
+      >
         results <FontAwesomeIcon icon={faArrowRight} />
       </Button>
     </div>

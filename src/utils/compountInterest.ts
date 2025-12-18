@@ -2,7 +2,7 @@ import { getInterestRateDuringStudy, type LoanPlan } from "../data/plans";
 import {
   getInterestRateAtRepayment,
   getRepaymentThreshold,
-} from "../data/repayment-thresholds";
+} from "../data/repaymentThresholds";
 
 export const calculateLoanAtGraduation = (
   principal: number,

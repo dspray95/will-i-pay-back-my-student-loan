@@ -1,7 +1,10 @@
 export type LoanPlan = "plan1" | "plan1NI" | "plan2" | "plan4" | "plan5";
 
+// For calculation layer we also model postgrad (Plan 3) explicitly:
+export type CalcPlan = LoanPlan | "postgrad";
+
 export const LOAN_PLANS: {
-  [key in LoanPlan]: { id: LoanPlan; label: string };
+  [key in LoanPlan | "postgrad"]: { id: key; label: string };
 } = {
   plan1: {
     id: "plan1",
@@ -13,7 +16,7 @@ export const LOAN_PLANS: {
   },
   plan2: {
     id: "plan2",
-    label: "Plan 2  (England 2012-2022, Wales 2012+)",
+    label: "Plan 2 (England 2012–2022, Wales 2012+)",
   },
   plan4: {
     id: "plan4",
@@ -23,59 +26,93 @@ export const LOAN_PLANS: {
     id: "plan5",
     label: "Plan 5 (England 2023+)",
   },
+  postgrad: {
+    id: "postgrad",
+    label: "Postgraduate (Plan 3, England/Wales)",
+  },
 };
 
 type LoanPlanByBeforeYearAndCountry = {
   [year: number]: {
-    [country: string]: keyof typeof LOAN_PLANS;
+    [country: string]: LoanPlan;
   };
 };
 
+/**
+ * Undergrad plan mapping by cohort start and country.
+ * Source: DfE / SLC rules:
+ * - 1998–2011: Plan 1 (E/W), Plan 1 NI, Plan 4 Scotland.
+ * - 2012–2022: Plan 2 (E/W), Plan 1 NI, Plan 4 Scotland.
+ * - 2023+:     Plan 5 England, Plan 2 Wales, Plan 1 NI, Plan 4 Scotland.
+ */
 export const LOAN_PLANS_BY_BEFORE_YEAR_AND_COUNTRY: LoanPlanByBeforeYearAndCountry =
   {
     1998: {
       ENGLAND: "plan1",
+      WALES: "plan1",
       NORTHERN_IRELAND: "plan1NI",
       SCOTLAND: "plan4",
-      WALES: "plan1",
     },
     2011: {
       ENGLAND: "plan2",
+      WALES: "plan2",
       NORTHERN_IRELAND: "plan1NI",
       SCOTLAND: "plan4",
-      WALES: "plan2",
     },
     2023: {
       ENGLAND: "plan5",
+      WALES: "plan2",
       NORTHERN_IRELAND: "plan1NI",
       SCOTLAND: "plan4",
-      WALES: "plan2",
     },
   };
 
+export const getLoanPlan = (
+  startYear: number,
+  country: string
+): LoanPlan | "" => {
+  const years = Object.keys(LOAN_PLANS_BY_BEFORE_YEAR_AND_COUNTRY)
+    .map(Number)
+    .sort((a, b) => b - a);
+  for (const year of years) {
+    if (startYear >= year) {
+      return LOAN_PLANS_BY_BEFORE_YEAR_AND_COUNTRY[year][country] ?? "";
+    }
+  }
+  return "";
+};
+
 type InterestRatesDuringStudy = {
   [key in LoanPlan]: {
-    [startYear: number]: number; // Annual interest rate % for that cohort
+    [startYear: number]: number; // annual % while studying
   };
 };
 
+/**
+ * Study-period interest rates by plan and cohort year.
+ * Sources:
+ * - DfE / SLC statistics “Income contingent repayment plans – interest rates…”
+ * - Plan 2: RPI+3%, capped where PMR applies.
+ * - Plan 1/Plan 4: lower of RPI or base+1 – approximated here with HE loan stats.
+ * - Plan 5: interest-free while studying (England policy).
+ */
 export const INTEREST_RATES_DURING_STUDY: InterestRatesDuringStudy = {
-  // Plan 1: Lower of RPI or Bank Base Rate + 1%
+  // Plan 1: approximated by actual study-period rates (lower of RPI or base+1)
   plan1: {
-    1998: 5.0, // Historical average for older cohorts
-    2012: 1.5, // Sep 2012-Aug 2013
-    2013: 1.5, // Sep 2013-Aug 2014
-    2014: 1.5, // Sep 2014-Aug 2015
-    2015: 0.9, // Sep 2015-Aug 2016
-    2016: 1.25, // Sep 2016-Aug 2017
-    2017: 1.5, // Sep 2017-Aug 2018
-    2018: 1.75, // Sep 2018-Aug 2019
-    2019: 1.75, // Sep 2019-Aug 2020
-    2020: 1.1, // Sep 2020-Aug 2021
-    2021: 1.5, // Sep 2021-Aug 2022
-    2022: 5.0, // Sep 2022-Aug 2023 (RPI cap applied)
-    2023: 6.25, // Sep 2023-Aug 2024
-    2024: 4.3, // Sep 2024-Aug 2025
+    1998: 5.0,
+    2012: 1.5, // Sep 2012–Aug 2013
+    2013: 1.5, // 2013–14
+    2014: 1.5, // 2014–15
+    2015: 0.9, // 2015–16
+    2016: 1.25, // 2016–17
+    2017: 1.5, // 2017–18
+    2018: 1.75, // 2018–19
+    2019: 1.75, // 2019–20
+    2020: 1.1, // 2020–21
+    2021: 1.5, // 2021–22
+    2022: 5.0, // 2022–23 (RPI capped)
+    2023: 6.25, // 2023–24
+    2024: 4.3, // 2024–25
   },
 
   plan1NI: {
@@ -95,24 +132,24 @@ export const INTEREST_RATES_DURING_STUDY: InterestRatesDuringStudy = {
     2024: 4.3,
   },
 
-  // Plan 2: RPI + 3% (except where PMR cap applies)
+  // Plan 2: RPI+3%, subject to caps. This matches gov.uk stats table.
   plan2: {
-    2012: 6.6, // Sep 2012-Aug 2013 (RPI + 3%)
-    2013: 6.3, // Sep 2013-Aug 2014
-    2014: 5.5, // Sep 2014-Aug 2015
-    2015: 3.9, // Sep 2015-Aug 2016
-    2016: 4.6, // Sep 2016-Aug 2017
-    2017: 6.1, // Sep 2017-Aug 2018
-    2018: 6.3, // Sep 2018-Aug 2019
-    2019: 5.4, // Sep 2019-Aug 2020
-    2020: 5.6, // Sep 2020-Aug 2021
-    2021: 4.5, // Sep 2021-Aug 2022
-    2022: 6.9, // Sep 2022-Aug 2023 (PMR cap)
-    2023: 7.7, // Sep 2023-Aug 2024 (PMR cap)
-    2024: 7.3, // Sep 2024-Aug 2025 (RPI + 3%, capped at PMR)
+    2012: 6.6, // 2012–13
+    2013: 6.3, // 2013–14
+    2014: 5.5, // 2014–15
+    2015: 3.9, // 2015–16
+    2016: 4.6, // 2016–17
+    2017: 6.1, // 2017–18
+    2018: 6.3, // 2018–19
+    2019: 5.4, // 2019–20
+    2020: 5.6, // 2020–21
+    2021: 4.5, // 2021–22
+    2022: 6.9, // 2022–23 (capped)
+    2023: 7.7, // 2023–24 (capped)
+    2024: 7.3, // 2024–25
   },
 
-  // Plan 4: Interest-free during study in Scotland
+  // Plan 4: interest-free while studying (Scottish policy)
   plan4: {
     1998: 0,
     2000: 0,
@@ -120,25 +157,29 @@ export const INTEREST_RATES_DURING_STUDY: InterestRatesDuringStudy = {
     2023: 0,
   },
 
-  // Plan 5: Interest-free during study
+  // Plan 5: interest-free while studying (policy from 2023+)
   plan5: {
     2023: 0,
     2024: 0,
   },
 };
 
-// Postgraduate loan interest rates (Plan 3)
+/**
+ * Postgraduate (Plan 3) – interest while studying and in repayment is RPI+3%,
+ * subject to PMR caps. These are the headline annual rates from SLC stats.
+ */
 export const POSTGRAD_INTEREST_RATES: {
   [year: number]: number;
 } = {
-  2018: 6.3, // Sep 2018-Aug 2019 (RPI + 3%)
-  2019: 5.4, // Sep 2019-Aug 2020
-  2020: 5.6, // Sep 2020-Aug 2021
-  2021: 4.1, // Oct 2021-Dec 2021 (interest cap)
-  2022: 4.5, // Mar 2022-Aug 2022
-  2023: 6.5, // Dec 2022-Feb 2023 (PMR cap)
-  2024: 7.7, // Sep 2023-Aug 2024
-  2025: 7.3, // Sep 2024-Aug 2025
+  2016: 4.6,
+  2017: 6.1,
+  2018: 6.3,
+  2019: 5.4,
+  2020: 5.6,
+  2021: 4.5,
+  2022: 6.9,
+  2023: 7.7,
+  2024: 7.3,
 };
 
 export const getInterestRateDuringStudy = (
@@ -150,13 +191,12 @@ export const getInterestRateDuringStudy = (
     const years = Object.keys(POSTGRAD_INTEREST_RATES)
       .map(Number)
       .sort((a, b) => b - a);
-
-    for (const year of years) {
-      if (startYear >= year) {
-        return POSTGRAD_INTEREST_RATES[year];
+    for (const y of years) {
+      if (startYear >= y) {
+        return POSTGRAD_INTEREST_RATES[y];
       }
     }
-    return 7.3; // default from plan 2 2024
+    return POSTGRAD_INTEREST_RATES[years[0]];
   }
 
   const rates = INTEREST_RATES_DURING_STUDY[plan];
@@ -168,9 +208,9 @@ export const getInterestRateDuringStudy = (
     .map(Number)
     .sort((a, b) => b - a);
 
-  for (const year of years) {
-    if (startYear >= year) {
-      return rates[year];
+  for (const y of years) {
+    if (startYear >= y) {
+      return rates[y];
     }
   }
 

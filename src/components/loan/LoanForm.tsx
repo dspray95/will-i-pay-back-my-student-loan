@@ -399,12 +399,14 @@ export const LoanForm: React.FC<{
   setTotalMaintenanceLoan: (amount: number) => void;
   updateFormValues: (values: LoanFormValues) => void;
   setStage: (stage: "loanForm" | "income" | "finish") => void;
+  calculatePrincipalAtGraduation: (values: LoanFormValues) => void;
 }> = ({
   setTotalUndergradLoan,
   setTotalMastersLoan,
   setTotalMaintenanceLoan,
   updateFormValues,
   setStage,
+  calculatePrincipalAtGraduation,
 }) => {
   return (
     <Formik
@@ -450,6 +452,7 @@ export const LoanForm: React.FC<{
       }}
       onSubmit={(values, { setSubmitting }) => {
         updateFormValues(values);
+        calculatePrincipalAtGraduation(values);
         setStage("income");
         setTimeout(() => {
           setSubmitting(false);

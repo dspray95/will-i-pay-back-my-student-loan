@@ -1,5 +1,23 @@
-import type { LoanPlan } from "./plans";
+import type { CalcPlan, LoanPlan } from "./plans";
 
+const LONG_TERM_RPI = 2.5;
+
+const LONG_TERM_FORECAST: {
+  [key in CalcPlan]: { min: number; max: number };
+} = {
+  plan1: { min: LONG_TERM_RPI, max: LONG_TERM_RPI },
+  plan1NI: { min: LONG_TERM_RPI, max: LONG_TERM_RPI },
+  plan2: { min: LONG_TERM_RPI, max: LONG_TERM_RPI + 3.0 },
+  plan4: { min: LONG_TERM_RPI, max: LONG_TERM_RPI },
+  plan5: { min: LONG_TERM_RPI, max: LONG_TERM_RPI },
+  postgrad: { min: LONG_TERM_RPI + 3.0, max: LONG_TERM_RPI + 3.0 },
+};
+
+/**
+ * Upper income thresholds for maximum Plan 2 interest.
+ * These are the “upper interest thresholds” used for the sliding
+ * RPI → RPI+3% band. Approximated from SLC / DfE publications.
+ */
 export const UPPER_INTEREST_THRESHOLD_BY_YEAR: {
   [year: number]: {
     [key in LoanPlan]: number;
@@ -67,80 +85,119 @@ export const getUpperInterestThreshold = (
   year: number,
   plan: LoanPlan
 ): number => {
-  const thresholds = UPPER_INTEREST_THRESHOLD_BY_YEAR[year];
-  if (thresholds) {
-    return thresholds[plan];
+  const row = UPPER_INTEREST_THRESHOLD_BY_YEAR[year];
+  if (row) {
+    return row[plan];
   }
-
-  // Use 2025 values for any year beyond our data
   return UPPER_INTEREST_THRESHOLD_BY_YEAR[2025][plan];
 };
 
-// data/repaymentThresholds.ts
+/**
+ * Repayment thresholds by tax year (start year) and plan.
+ * Sources:
+ * - gov.uk / SLC “Previous annual repayment thresholds”
+ * - HMRC “Collection of student loans from 6 April 2025”
+ * Plan 2: frozen at 27,295 from 2021–2024, rises to 28,470 from 6 Apr 2025.
+ * Postgrad: £21,000 from 2019 onwards (England/Wales Plan 3).
+ */
 export const REPAYMENT_THRESHOLDS_BY_YEAR: {
-  [year: number]: {
-    [key in LoanPlan]: number;
+  [taxYearStart: number]: {
+    [key in CalcPlan]: number;
   };
 } = {
   2018: {
-    plan1: 17775,
-    plan1NI: 17775,
-    plan2: 25000,
-    plan4: 17775,
-    plan5: 0,
-  },
-  2019: {
+    // 6 Apr 2018 – 5 Apr 2019
     plan1: 18330,
     plan1NI: 18330,
-    plan2: 25725,
+    plan2: 25000,
     plan4: 18330,
     plan5: 0,
+    postgrad: 0,
   },
-  2020: {
+  2019: {
+    // 6 Apr 2019 – 5 Apr 2020
     plan1: 18935,
     plan1NI: 18935,
-    plan2: 26575,
+    plan2: 25725,
     plan4: 18935,
     plan5: 0,
+    postgrad: 21000,
+  },
+  2020: {
+    // 6 Apr 2020 – 5 Apr 2021
+    plan1: 19390,
+    plan1NI: 19390,
+    plan2: 26575,
+    plan4: 19390,
+    plan5: 0,
+    postgrad: 21000,
   },
   2021: {
+    // 6 Apr 2021 – 5 Apr 2022
     plan1: 19895,
     plan1NI: 19895,
     plan2: 27295,
     plan4: 25000,
     plan5: 0,
+    postgrad: 21000,
   },
   2022: {
+    // 6 Apr 2022 – 5 Apr 2023
     plan1: 20195,
     plan1NI: 20195,
     plan2: 27295,
     plan4: 25375,
     plan5: 0,
+    postgrad: 21000,
   },
   2023: {
+    // 6 Apr 2023 – 5 Apr 2024
     plan1: 22015,
     plan1NI: 22015,
     plan2: 27295,
     plan4: 27660,
     plan5: 0,
+    postgrad: 21000,
   },
   2024: {
+    // 6 Apr 2024 – 5 Apr 2025
     plan1: 24990,
     plan1NI: 24990,
     plan2: 27295,
     plan4: 31395,
     plan5: 25000,
+    postgrad: 21000,
   },
   2025: {
+    // 6 Apr 2025 – 5 Apr 2026
     plan1: 26065,
     plan1NI: 26065,
     plan2: 28470,
     plan4: 32745,
     plan5: 25000,
+    postgrad: 21000,
   },
 };
 
-// Post-graduation interest rates by plan
+export const getRepaymentThreshold = (
+  taxYearStart: number,
+  plan: CalcPlan
+): number => {
+  const row = REPAYMENT_THRESHOLDS_BY_YEAR[taxYearStart];
+  if (row) {
+    return row[plan];
+  }
+  const years = Object.keys(REPAYMENT_THRESHOLDS_BY_YEAR)
+    .map(Number)
+    .sort((a, b) => b - a);
+  const lastYear = years[0];
+  return REPAYMENT_THRESHOLDS_BY_YEAR[lastYear][plan];
+};
+
+/**
+ * Post‑graduation interest rates (bands) by year and undergrad plan.
+ * Values are min/max (RPI → RPI+3) or single fixed rate for that plan.
+ */
 export const POSTGRAD_INTEREST_RATES_REPAYMENT: {
   [year: number]: {
     [key in LoanPlan]: {
@@ -207,27 +264,45 @@ export const POSTGRAD_INTEREST_RATES_REPAYMENT: {
   },
 };
 
-export const getRepaymentThreshold = (year: number, plan: LoanPlan): number => {
-  const thresholds = REPAYMENT_THRESHOLDS_BY_YEAR[year];
-  if (thresholds) {
-    return thresholds[plan];
-  }
-
-  // Use latest values for any year beyond our data
-  return REPAYMENT_THRESHOLDS_BY_YEAR[2025][plan];
+/**
+ * Postgrad Plan 3 interest after graduation – single flat rate per year.
+ * This is effectively the same as POSTGRAD_INTEREST_RATES (RPI+3%).
+ */
+export const POSTGRAD_PLAN3_INTEREST_REPAYMENT: {
+  [year: number]: number;
+} = {
+  2018: 6.3,
+  2019: 5.4,
+  2020: 5.6,
+  2021: 4.5,
+  2022: 6.9,
+  2023: 7.7,
+  2024: 7.3,
 };
 
 export const getInterestRateAtRepayment = (
   year: number,
-  plan: LoanPlan,
+  plan: CalcPlan,
   annualIncome: number
 ): number => {
-  const rates = POSTGRAD_INTEREST_RATES_REPAYMENT[year];
-  const planRates = rates
-    ? rates[plan]
-    : POSTGRAD_INTEREST_RATES_REPAYMENT[2025][plan];
+  if (plan === "postgrad") {
+    const years = Object.keys(POSTGRAD_PLAN3_INTEREST_REPAYMENT)
+      .map(Number)
+      .sort((a, b) => b - a);
+    const exact = POSTGRAD_PLAN3_INTEREST_REPAYMENT[year];
+    if (exact !== undefined) return exact;
+    // Fallback: last known or long-term forecast
+    return (
+      POSTGRAD_PLAN3_INTEREST_REPAYMENT[years[0]] ??
+      LONG_TERM_FORECAST.postgrad.min
+    );
+  }
 
-  // Only Plan 2 has income-dependent interest
+  const ratesForYear = POSTGRAD_INTEREST_RATES_REPAYMENT[year];
+  const planRates = ratesForYear
+    ? ratesForYear[plan]
+    : LONG_TERM_FORECAST[plan];
+
   if (plan === "plan2") {
     const lowerThreshold = getRepaymentThreshold(year, plan);
     const upperThreshold = getUpperInterestThreshold(year, plan);
@@ -239,12 +314,13 @@ export const getInterestRateAtRepayment = (
       return planRates.max;
     }
 
-    const incomeAboveThreshold = annualIncome - lowerThreshold;
+    const incomeAboveLower = annualIncome - lowerThreshold;
     const incomeRange = upperThreshold - lowerThreshold;
     const rateRange = planRates.max - planRates.min;
-    return planRates.min + (incomeAboveThreshold / incomeRange) * rateRange;
+
+    return planRates.min + (incomeAboveLower / incomeRange) * rateRange;
   }
 
-  // All other plans use fixed rate regardless of income
+  // Other undergrad plans: single rate regardless of income
   return planRates.min;
 };

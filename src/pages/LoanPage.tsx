@@ -9,6 +9,7 @@ export const LoanPage: React.FC<{
   setTotalMaintenanceLoan: Dispatch<SetStateAction<number>>;
   setLoanFormValues: (values: LoanFormValues) => void;
   setStage: (stage: "loanForm" | "income" | "finish") => void;
+  calculatePrincipalAtGraduation: (values: LoanFormValues) => void;
   isActive: boolean;
 }> = ({
   setTotalUndergradLoan,
@@ -16,6 +17,7 @@ export const LoanPage: React.FC<{
   setTotalMaintenanceLoan,
   setLoanFormValues,
   setStage,
+  calculatePrincipalAtGraduation,
   isActive,
 }) => (
   <div
@@ -36,6 +38,7 @@ export const LoanPage: React.FC<{
       setTotalMastersLoan={setTotalMastersLoan}
       updateFormValues={setLoanFormValues}
       setStage={setStage}
+      calculatePrincipalAtGraduation={calculatePrincipalAtGraduation}
     />
   </div>
 );
