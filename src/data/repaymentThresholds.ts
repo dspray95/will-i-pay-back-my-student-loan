@@ -15,9 +15,7 @@ const LONG_TERM_FORECAST: {
 
 /**
  * Upper income thresholds for maximum Plan 2 interest.
- * These are the "upper interest thresholds" used for the sliding
- * RPI → RPI+3% band. Approximated from SLC / DfE publications.
- * For postgrad: threshold is fixed at £21,000 (no sliding scale).
+ * Sources: Gov.uk official announcements
  */
 export const UPPER_INTEREST_THRESHOLD_BY_YEAR: {
   [year: number]: {
@@ -30,7 +28,7 @@ export const UPPER_INTEREST_THRESHOLD_BY_YEAR: {
     plan2: 41000,
     plan4: 41000,
     plan5: 0,
-    postgrad: 21000, // Fixed threshold (not a sliding scale for postgrad)
+    postgrad: 21000,
   },
   2019: {
     plan1: 41000,
@@ -83,8 +81,16 @@ export const UPPER_INTEREST_THRESHOLD_BY_YEAR: {
   2025: {
     plan1: 55608,
     plan1NI: 55608,
-    plan2: 55608,
+    plan2: 52885,
     plan4: 55608,
+    plan5: 0,
+    postgrad: 21000,
+  },
+  2026: {
+    plan1: 57487,
+    plan1NI: 57487,
+    plan2: 52885,
+    plan4: 57487,
     plan5: 0,
     postgrad: 21000,
   },
@@ -98,16 +104,12 @@ export const getUpperInterestThreshold = (
   if (row) {
     return row[plan];
   }
-  return UPPER_INTEREST_THRESHOLD_BY_YEAR[2025][plan];
+  return UPPER_INTEREST_THRESHOLD_BY_YEAR[2026][plan];
 };
 
 /**
  * Repayment thresholds by tax year (start year) and plan.
- * Sources:
- * - gov.uk / SLC "Previous annual repayment thresholds"
- * - HMRC "Collection of student loans from 6 April 2025"
- * Plan 2: frozen at 27,295 from 2021–2024, rises to 28,470 from 6 Apr 2025.
- * Postgrad: £21,000 from 2019 onwards (England/Wales Plan 3).
+ * Sources: Gov.uk official announcements
  */
 export const REPAYMENT_THRESHOLDS_BY_YEAR: {
   [taxYearStart: number]: {
@@ -115,16 +117,14 @@ export const REPAYMENT_THRESHOLDS_BY_YEAR: {
   };
 } = {
   2018: {
-    // 6 Apr 2018 – 5 Apr 2019
     plan1: 18330,
     plan1NI: 18330,
     plan2: 25000,
     plan4: 18330,
     plan5: 0,
-    postgrad: 0, // Postgrad loans started 2016, but repayment threshold introduced 2019
+    postgrad: 0,
   },
   2019: {
-    // 6 Apr 2019 – 5 Apr 2020
     plan1: 18935,
     plan1NI: 18935,
     plan2: 25725,
@@ -133,7 +133,6 @@ export const REPAYMENT_THRESHOLDS_BY_YEAR: {
     postgrad: 21000,
   },
   2020: {
-    // 6 Apr 2020 – 5 Apr 2021
     plan1: 19390,
     plan1NI: 19390,
     plan2: 26575,
@@ -142,7 +141,6 @@ export const REPAYMENT_THRESHOLDS_BY_YEAR: {
     postgrad: 21000,
   },
   2021: {
-    // 6 Apr 2021 – 5 Apr 2022
     plan1: 19895,
     plan1NI: 19895,
     plan2: 27295,
@@ -151,7 +149,6 @@ export const REPAYMENT_THRESHOLDS_BY_YEAR: {
     postgrad: 21000,
   },
   2022: {
-    // 6 Apr 2022 – 5 Apr 2023
     plan1: 20195,
     plan1NI: 20195,
     plan2: 27295,
@@ -160,7 +157,6 @@ export const REPAYMENT_THRESHOLDS_BY_YEAR: {
     postgrad: 21000,
   },
   2023: {
-    // 6 Apr 2023 – 5 Apr 2024
     plan1: 22015,
     plan1NI: 22015,
     plan2: 27295,
@@ -169,7 +165,6 @@ export const REPAYMENT_THRESHOLDS_BY_YEAR: {
     postgrad: 21000,
   },
   2024: {
-    // 6 Apr 2024 – 5 Apr 2025
     plan1: 24990,
     plan1NI: 24990,
     plan2: 27295,
@@ -178,11 +173,18 @@ export const REPAYMENT_THRESHOLDS_BY_YEAR: {
     postgrad: 21000,
   },
   2025: {
-    // 6 Apr 2025 – 5 Apr 2026
     plan1: 26065,
     plan1NI: 26065,
     plan2: 28470,
     plan4: 32745,
+    plan5: 25000,
+    postgrad: 21000,
+  },
+  2026: {
+    plan1: 26900,
+    plan1NI: 26900,
+    plan2: 29385,
+    plan4: 33802,
     plan5: 25000,
     postgrad: 21000,
   },
@@ -204,9 +206,8 @@ export const getRepaymentThreshold = (
 };
 
 /**
- * Post‑graduation interest rates (bands) by year and plan.
- * Values are min/max (RPI → RPI+3) or single fixed rate for that plan.
- * Postgrad has a flat RPI+3% rate regardless of income.
+ * Post-graduation interest rates by year and plan.
+ * Sources: Gov.uk official statistics (verified Dec 2025)
  */
 export const POSTGRAD_INTEREST_RATES_REPAYMENT: {
   [year: number]: {
@@ -222,7 +223,7 @@ export const POSTGRAD_INTEREST_RATES_REPAYMENT: {
     plan2: { min: 3.3, max: 6.3 },
     plan4: { min: 3.3, max: 3.3 },
     plan5: { min: 0, max: 0 },
-    postgrad: { min: 6.3, max: 6.3 }, // RPI+3% flat
+    postgrad: { min: 6.3, max: 6.3 },
   },
   2019: {
     plan1: { min: 2.4, max: 2.4 },
@@ -275,17 +276,21 @@ export const POSTGRAD_INTEREST_RATES_REPAYMENT: {
   2025: {
     plan1: { min: 4.3, max: 4.3 },
     plan1NI: { min: 4.3, max: 4.3 },
-    plan2: { min: 3.2, max: 6.2 },
+    plan2: { min: 4.3, max: 7.3 },
     plan4: { min: 4.3, max: 4.3 },
     plan5: { min: 4.3, max: 4.3 },
-    postgrad: { min: 6.2, max: 6.2 }, // ✅ Added from search
+    postgrad: { min: 7.3, max: 7.3 },
+  },
+  2026: {
+    plan1: { min: 3.2, max: 3.2 },
+    plan1NI: { min: 3.2, max: 3.2 },
+    plan2: { min: 3.2, max: 6.2 },
+    plan4: { min: 3.2, max: 3.2 },
+    plan5: { min: 3.2, max: 3.2 },
+    postgrad: { min: 6.2, max: 6.2 },
   },
 };
 
-/**
- * Get the interest rate during repayment for a given year, plan, and income.
- * Handles sliding scale for Plan 2, flat rates for all others including postgrad.
- */
 export const getInterestRateAtRepayment = (
   year: number,
   plan: LoanPlan,
@@ -296,7 +301,6 @@ export const getInterestRateAtRepayment = (
     ? ratesForYear[plan]
     : LONG_TERM_FORECAST[plan];
 
-  // Plan 2 has income-based sliding scale
   if (plan === "plan2") {
     const lowerThreshold = getRepaymentThreshold(year, plan);
     const upperThreshold = getUpperInterestThreshold(year, plan);
@@ -315,6 +319,5 @@ export const getInterestRateAtRepayment = (
     return planRates.min + (incomeAboveLower / incomeRange) * rateRange;
   }
 
-  // All other plans (including postgrad): flat rate regardless of income
   return planRates.min;
 };

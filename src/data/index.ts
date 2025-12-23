@@ -7,7 +7,7 @@ import {
 } from "./fees";
 import {
   LOAN_PLANS,
-  LOAN_PLANS_BY_BEFORE_YEAR_AND_COUNTRY,
+  LOAN_PLANS_BY_START_YEAR_AND_COUNTRY,
   type LoanPlan,
 } from "./plans";
 import {
@@ -25,7 +25,7 @@ export { getLatestDataForYear, getFeesForYear, getForgivenessPlanForYear };
 export {
   FEES_LOANS_AND_GRANTS_BY_YEAR,
   LOAN_PLANS,
-  LOAN_PLANS_BY_BEFORE_YEAR_AND_COUNTRY,
+  LOAN_PLANS_BY_START_YEAR_AND_COUNTRY,
   LOAN_FORGIVENESS_ENG_WAL_POSTGRAD,
   LOAN_FORGIVENESS_NI_POSTGRAD,
   LOAN_FORGIVENESS_SCOT_POSTGRAD,
