@@ -67,8 +67,7 @@ function App() {
       totalMastersLoan,
       loanFormValues.mastersStartYear,
       loanFormValues.mastersLength,
-      loanFormValues.loanPlan, // TODO use actual postgrad load plan
-      true
+      "postgrad"
     );
 
     console.log("Undergrad balance at graduation:", undergradLoanAtGraduation);
@@ -110,8 +109,8 @@ function App() {
         ? calculateLoanAtRepayment(
             postgraduateLoanAtGraduation,
             loanFormValues.mastersStartYear + loanFormValues.mastersLength,
-            graduationYear + 30, // TODO: Most master's are 30-year write-off
-            loanFormValues.loanPlan,
+            loanFormValues.mastersStartYear + loanFormValues.mastersLength + 30,
+            "postgrad",
             incomeByYear
           )
         : {

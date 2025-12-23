@@ -1,10 +1,13 @@
-export type LoanPlan = "plan1" | "plan1NI" | "plan2" | "plan4" | "plan5";
-
-// For calculation layer we also model postgrad (Plan 3) explicitly:
-export type CalcPlan = LoanPlan | "postgrad";
+export type LoanPlan =
+  | "plan1"
+  | "plan1NI"
+  | "plan2"
+  | "plan4"
+  | "plan5"
+  | "postgrad";
 
 export const LOAN_PLANS: {
-  [key in LoanPlan | "postgrad"]: { id: key; label: string };
+  [key in LoanPlan]: { id: key; label: string };
 } = {
   plan1: {
     id: "plan1",
@@ -91,10 +94,11 @@ type InterestRatesDuringStudy = {
 /**
  * Study-period interest rates by plan and cohort year.
  * Sources:
- * - DfE / SLC statistics “Income contingent repayment plans – interest rates…”
+ * - DfE / SLC statistics "Income contingent repayment plans – interest rates…"
  * - Plan 2: RPI+3%, capped where PMR applies.
  * - Plan 1/Plan 4: lower of RPI or base+1 – approximated here with HE loan stats.
  * - Plan 5: interest-free while studying (England policy).
+ * - Postgrad: RPI+3% flat rate (same during study and repayment).
  */
 export const INTEREST_RATES_DURING_STUDY: InterestRatesDuringStudy = {
   // Plan 1: approximated by actual study-period rates (lower of RPI or base+1)
@@ -113,6 +117,7 @@ export const INTEREST_RATES_DURING_STUDY: InterestRatesDuringStudy = {
     2022: 5.0, // 2022–23 (RPI capped)
     2023: 6.25, // 2023–24
     2024: 4.3, // 2024–25
+    2025: 4.3, // 2025–26
   },
 
   plan1NI: {
@@ -130,6 +135,7 @@ export const INTEREST_RATES_DURING_STUDY: InterestRatesDuringStudy = {
     2022: 5.0,
     2023: 6.25,
     2024: 4.3,
+    2025: 4.3,
   },
 
   // Plan 2: RPI+3%, subject to caps. This matches gov.uk stats table.
@@ -147,6 +153,7 @@ export const INTEREST_RATES_DURING_STUDY: InterestRatesDuringStudy = {
     2022: 6.9, // 2022–23 (capped)
     2023: 7.7, // 2023–24 (capped)
     2024: 7.3, // 2024–25
+    2025: 7.3, // 2025–26
   },
 
   // Plan 4: interest-free while studying (Scottish policy)
@@ -155,50 +162,40 @@ export const INTEREST_RATES_DURING_STUDY: InterestRatesDuringStudy = {
     2000: 0,
     2010: 0,
     2023: 0,
+    2024: 0,
+    2025: 0,
   },
 
   // Plan 5: interest-free while studying (policy from 2023+)
   plan5: {
     2023: 0,
     2024: 0,
+    2025: 0,
+  },
+
+  // Postgrad (Plan 3): RPI+3% flat rate while studying
+  postgrad: {
+    2016: 4.6,
+    2017: 6.1,
+    2018: 6.3,
+    2019: 5.4,
+    2020: 5.6,
+    2021: 4.5,
+    2022: 6.9,
+    2023: 7.7,
+    2024: 7.3,
+    2025: 6.2, // ✅ Added from search
   },
 };
 
 /**
- * Postgraduate (Plan 3) – interest while studying and in repayment is RPI+3%,
- * subject to PMR caps. These are the headline annual rates from SLC stats.
+ * Get the interest rate during study for a given plan and year.
+ * Now handles postgrad as part of the main type system.
  */
-export const POSTGRAD_INTEREST_RATES: {
-  [year: number]: number;
-} = {
-  2016: 4.6,
-  2017: 6.1,
-  2018: 6.3,
-  2019: 5.4,
-  2020: 5.6,
-  2021: 4.5,
-  2022: 6.9,
-  2023: 7.7,
-  2024: 7.3,
-};
-
 export const getInterestRateDuringStudy = (
   startYear: number,
-  plan: LoanPlan,
-  isPostgrad?: boolean
+  plan: LoanPlan
 ): number => {
-  if (isPostgrad) {
-    const years = Object.keys(POSTGRAD_INTEREST_RATES)
-      .map(Number)
-      .sort((a, b) => b - a);
-    for (const y of years) {
-      if (startYear >= y) {
-        return POSTGRAD_INTEREST_RATES[y];
-      }
-    }
-    return POSTGRAD_INTEREST_RATES[years[0]];
-  }
-
   const rates = INTEREST_RATES_DURING_STUDY[plan];
   if (!rates) {
     throw new Error(`No interest rate data for plan: ${plan}`);
@@ -214,5 +211,7 @@ export const getInterestRateDuringStudy = (
     }
   }
 
-  return 0;
+  // Fallback to earliest known rate
+  const earliestYear = years[years.length - 1];
+  return rates[earliestYear] ?? 0;
 };

@@ -38,6 +38,9 @@ export const LOAN_FORGIVENESS_TIME_YEARS: LoanForgivenessYearsByPlan = {
   plan5: {
     2023: 40, // Written off 40 years after the first repayment due date
   },
+  postgrad: {
+    1998: 30,
+  },
 };
 
 // Postgraduate loans in England and Wales are written off 30 years after the first repayment due date

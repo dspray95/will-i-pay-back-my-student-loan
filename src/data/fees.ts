@@ -66,19 +66,19 @@ export const FEES_LOANS_AND_GRANTS_BY_YEAR: FeesLoansAndGrantsByYear = {
   },
   2023: {
     tuition: 9535,
-    maintenanceLoan: 5000,
+    maintenanceLoan: 10227,
     maintenanceGrant: 0,
     postGraduateLoan: 12167,
   },
   2024: {
     tuition: 9535,
-    maintenanceLoan: 5000,
+    maintenanceLoan: 10227,
     maintenanceGrant: 0,
     postGraduateLoan: 12471,
   },
   2025: {
     tuition: 9535,
-    maintenanceLoan: 5000,
+    maintenanceLoan: 10544,
     maintenanceGrant: 0,
     postGraduateLoan: 12858,
   },
