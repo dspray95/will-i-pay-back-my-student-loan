@@ -30,16 +30,12 @@ interface LoanFormContentProps {
   setTotalUndergradLoan: (amount: number) => void;
   setTotalMastersLoan: (amount: number) => void;
   setTotalMaintenanceLoan: (amount: number) => void;
-  updateFormValues: (values: LoanFormValues) => void;
-  setStage: (stage: "loanForm" | "income" | "finish") => void;
 }
 
 const LoanFormContent: React.FC<LoanFormContentProps> = ({
   setTotalUndergradLoan,
   setTotalMastersLoan,
   setTotalMaintenanceLoan,
-  updateFormValues,
-  setStage,
 }) => {
   const { values, setFieldValue, isSubmitting } =
     useFormikContext<LoanFormValues>();
@@ -108,14 +104,14 @@ const LoanFormContent: React.FC<LoanFormContentProps> = ({
     setShowPostgradSection(values.postgrad === "yes");
   }, [values.postgrad]);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    updateFormValues(values);
-    setStage("income");
-  };
+  // const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   updateFormValues(values);
+  //   setStage("income");
+  // };
 
   return (
-    <Form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+    <Form className="flex flex-col gap-4">
       {/** Undergrad */}
       <div className="flex flex-col">
         <label>what year did you start your undergrad?</label>
@@ -451,6 +447,7 @@ export const LoanForm: React.FC<{
         return errors;
       }}
       onSubmit={(values, { setSubmitting }) => {
+        console.log("submitting...");
         updateFormValues(values);
         calculatePrincipalAtGraduation(values);
         setStage("income");
@@ -463,8 +460,6 @@ export const LoanForm: React.FC<{
         setTotalUndergradLoan={setTotalUndergradLoan}
         setTotalMastersLoan={setTotalMastersLoan}
         setTotalMaintenanceLoan={setTotalMaintenanceLoan}
-        updateFormValues={updateFormValues}
-        setStage={setStage}
       />
     </Formik>
   );

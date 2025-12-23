@@ -54,9 +54,7 @@ export const Carousel = ({ currentStepIndex, children }: CarouselProps) => {
             }}
             className="w-full"
           >
-            <div className="bg-background shadow-xl rounded-xl p-8 border border-gray-100/10">
-              {children}
-            </div>
+            <div className="p-8">{children}</div>
           </motion.div>
         </AnimatePresence>
       </div>

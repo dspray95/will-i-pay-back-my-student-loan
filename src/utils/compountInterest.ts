@@ -3,6 +3,7 @@ import {
   getInterestRateAtRepayment,
   getRepaymentThreshold,
 } from "../data/repaymentThresholds";
+import type { RepaymentPlan } from "../types";
 
 export const calculateLoanAtGraduation = (
   principal: number,
@@ -47,18 +48,7 @@ export const calculateLoanAtRepayment = (
   repaymentEndYear: number,
   plan: LoanPlan,
   incomeByYear: Record<number, number>
-): {
-  finalBalance: number;
-  totalRepaid: number;
-  yearByYearBreakdown: Array<{
-    year: number;
-    startingBalance: number;
-    interestAccrued: number;
-    repayment: number;
-    endingBalance: number;
-    income: number;
-  }>;
-} => {
+): RepaymentPlan => {
   let balance = loanBalanceAtGraduation;
   let totalRepaid = 0;
   const breakdown: Array<{

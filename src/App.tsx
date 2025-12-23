@@ -8,8 +8,10 @@ import {
   calculateLoanAtGraduation,
   calculateLoanAtRepayment,
 } from "./utils/compountInterest";
-import { ResultsPage } from "./pages/ResultsPage";
+import { ResultsPage } from "./pages/ResultsPage/ResultsPage";
 import { Carousel } from "./components/Carousel";
+import { processResults } from "./pages/ResultsPage/processResults";
+import type { RepaymentPlan } from "./types";
 
 // Define the order of your stages here
 const STAGES = ["loanForm", "income", "finish"] as const;
@@ -24,12 +26,20 @@ function App() {
   const [totalUndergradLoan, setTotalUndergradLoan] = useState(0);
   const [totalMaintenanceLoan, setTotalMaintenanceLoan] = useState(0);
   const [totalMastersLoan, setTotalMastersLoan] = useState(0);
-  const [incomeByYear, setIncomeByYear] = useState<Record<number, number>>({});
 
   const [undergraduateLoanAtGraduation, setUndergraduateLoanAtGraduation] =
     useState(0);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [mastersLoanAtGraduation, setMastersLoansAtGraduation] = useState(0);
+
+  const [postgraduateLoanAtGraduation, setPostgraduateLoansAtGraduation] =
+    useState(0);
+  const [incomeByYear, setIncomeByYear] = useState<Record<number, number>>({});
+
+  const [undergraduateRepaymentPlan, setUndergraduateRepaymenntPlan] = useState<
+    RepaymentPlan | undefined
+  >();
+  const [postgraduateRepaymentPlan, setPostgraduateRepaymentPlan] = useState<
+    RepaymentPlan | undefined
+  >();
 
   let undergradEndYear = 2018;
   let undergradStartYear = 2015;
@@ -45,6 +55,7 @@ function App() {
       "total loan no interest: ",
       totalUndergradLoan + totalMaintenanceLoan
     );
+
     const undergradLoanAtGraduation = calculateLoanAtGraduation(
       totalUndergradLoan + totalMaintenanceLoan,
       loanFormValues.courseStartYear,
@@ -64,7 +75,7 @@ function App() {
     console.log("Masters balance at graduation:", mastersLoanAtGraduation);
 
     setUndergraduateLoanAtGraduation(undergradLoanAtGraduation);
-    setMastersLoansAtGraduation(mastersLoanAtGraduation);
+    setPostgraduateLoansAtGraduation(mastersLoanAtGraduation);
   };
 
   const calculateRepaymentWithIncome = (
@@ -86,7 +97,7 @@ function App() {
 
     const repaymentEndYear = graduationYear + repaymentEnd;
 
-    const undergradRepayment = calculateLoanAtRepayment(
+    const undergraduateRepayment = calculateLoanAtRepayment(
       undergraduateLoanAtGraduation,
       graduationYear,
       repaymentEndYear,
@@ -94,10 +105,10 @@ function App() {
       incomeByYear
     );
 
-    const mastersRepayment =
+    const postgraduateRepayment =
       totalMastersLoan > 0
         ? calculateLoanAtRepayment(
-            totalMastersLoan,
+            postgraduateLoanAtGraduation,
             loanFormValues.mastersStartYear + loanFormValues.mastersLength,
             graduationYear + 30, // TODO: Most master's are 30-year write-off
             loanFormValues.loanPlan,
@@ -109,8 +120,11 @@ function App() {
             yearByYearBreakdown: [],
           };
 
-    console.log("Undergrad repayment breakdown:", undergradRepayment);
-    console.log("Masters repayment breakdown:", mastersRepayment);
+    console.log("undergrad repayment", undergraduateRepayment);
+    console.log("postgrad repayment", postgraduateRepayment);
+
+    setUndergraduateRepaymenntPlan(undergraduateRepayment);
+    setPostgraduateRepaymentPlan(postgraduateRepayment);
   };
 
   return (
@@ -141,7 +155,24 @@ function App() {
         />
       )}
 
-      {stage === "finish" && <ResultsPage setStage={setStage} />}
+      {stage === "finish" && (
+        <ResultsPage
+          setStage={setStage}
+          calculationResults={processResults(
+            undergraduateRepaymentPlan,
+            postgraduateRepaymentPlan,
+            undergraduateLoanAtGraduation,
+            postgraduateLoanAtGraduation
+          )}
+          undergraduateRepaymentBreakdown={
+            undergraduateRepaymentPlan!.yearByYearBreakdown
+          }
+          postgraduateRepaymentBreakdown={
+            postgraduateRepaymentPlan!.yearByYearBreakdown
+          }
+          undergraduateCourseLength={loanFormValues!.courseLength}
+        />
+      )}
     </Carousel>
   );
 }
