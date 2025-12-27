@@ -33,8 +33,9 @@ export const IncomePage: React.FC<{
 }) => {
   const [userSetYears, setUserSetYears] = useState<Record<number, boolean>>([]);
   const loanForgivenessYear =
-    undergradStartYear +
-    getForgivenessPlanForYear(undergradStartYear, repaymentPlan);
+    undergradEndYear +
+    getForgivenessPlanForYear(undergradStartYear, repaymentPlan) +
+    1; // + 1 because the repayments start the aprim AFTER graduation
 
   const handleIncomeChange = (year: number, value: number) => {
     setUserSetYears((prev) => ({ ...prev, [year]: true }));

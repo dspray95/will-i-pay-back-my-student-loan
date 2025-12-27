@@ -1,7 +1,7 @@
 import { useMemo, type JSX } from "react";
 import { IncomeSlider } from "./Slider";
 import { getForgivenessPlanForYear, type LoanPlan } from "../../../data";
-import { Button } from "../../../shared/components/button";
+import { Button } from "../../../shared/components/Button";
 
 export const IncomeTimeline: React.FC<{
   incomeByYear: Record<number, number>;
@@ -32,7 +32,7 @@ export const IncomeTimeline: React.FC<{
       <div className="flex flex-row items-center justify-center gap-2 w-full text-text-muted">
         <div className="flex-grow border-b border-text-muted min-w-24 border-dashed" />
         <div className="text-sm">
-          Repayment starts the april after graduation
+          repayments start the april after graduation
         </div>
         <div className="flex-grow border-b border-text-muted  min-w-24 border-dashed" />
       </div>

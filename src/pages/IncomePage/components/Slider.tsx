@@ -69,9 +69,50 @@ export const IncomeSlider: React.FC<IncomeSliderProps> = ({
     }
   };
 
-  const handleChange = (_: React.ChangeEvent<HTMLInputElement>) => {};
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawValue = e.target.value.replace(/[^\d]/g, "");
 
-  const selectedValue = incomeSteps[selectedIndex];
+    if (rawValue === "") {
+      onChange(year, 0);
+      setSelectedIndex(0);
+      return;
+    }
+
+    const numericValue = parseInt(rawValue, 10);
+
+    onChange(year, numericValue);
+
+    // Find the step range and interpolate
+    let lowerIndex = 0;
+    let upperIndex = incomeSteps.length - 1;
+
+    // Find the two steps that bracket this value
+    for (let i = 0; i < incomeSteps.length - 1; i++) {
+      if (
+        numericValue >= incomeSteps[i] &&
+        numericValue <= incomeSteps[i + 1]
+      ) {
+        lowerIndex = i;
+        upperIndex = i + 1;
+        break;
+      }
+    }
+
+    // If value is beyond max, clamp to max
+    if (numericValue >= incomeSteps[incomeSteps.length - 1]) {
+      setSelectedIndex(incomeSteps.length - 1);
+      return;
+    }
+
+    // Interpolate between the two indices
+    const lowerValue = incomeSteps[lowerIndex];
+    const upperValue = incomeSteps[upperIndex];
+    const ratio = (numericValue - lowerValue) / (upperValue - lowerValue);
+    const interpolatedIndex = lowerIndex + ratio;
+
+    setSelectedIndex(interpolatedIndex);
+  };
+
   const marks = generateSparseMarks(incomeSteps, 0.1);
 
   return (
@@ -106,7 +147,7 @@ export const IncomeSlider: React.FC<IncomeSliderProps> = ({
         <span className="absolute left-2 top-1/2 -translate-y-1/2">£</span>
         <input
           className="px-3 w-full"
-          value={selectedValue.toLocaleString()}
+          value={value.toLocaleString()}
           onChange={handleChange}
         ></input>
       </div>
