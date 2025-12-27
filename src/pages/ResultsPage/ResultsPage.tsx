@@ -1,12 +1,12 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button } from "../../components/button";
+import { Button } from "../../shared/components/button";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import type { CalculationResults } from "./types";
 import { getCopyText } from "./text";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { RepaymentPlot } from "./components/RepaymentPlot";
 import { useRef } from "react";
-import type { RepaymentBreakdown } from "../../types";
+import type { RepaymentBreakdown } from "../../shared/types";
 
 export const ResultsPage: React.FC<{
   setStage: (stage: "loanForm" | "income" | "finish") => void;

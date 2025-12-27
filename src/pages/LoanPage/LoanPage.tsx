@@ -1,7 +1,8 @@
 import classNames from "classnames";
-import { LoanForm, type LoanFormValues } from "../components/loan/LoanForm";
-import { PageHeader } from "../components/loan/PageHeader";
 import type { Dispatch, SetStateAction } from "react";
+import { PageHeader } from "./components/PageHeader";
+import type { LoanFormValues } from "../../shared/types";
+import { LoanForm } from "./components/LoanForm";
 
 export const LoanPage: React.FC<{
   setTotalUndergradLoan: Dispatch<SetStateAction<number>>;

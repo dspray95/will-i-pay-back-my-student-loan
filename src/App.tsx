@@ -1,7 +1,5 @@
 import { useState } from "react";
-import { type LoanFormValues } from "./components/loan/LoanForm";
-import { LoanPage } from "./pages/LoanPage";
-import { IncomePage } from "./pages/IncomePage";
+import { IncomePage } from "./pages/IncomePage/IncomePage";
 import { getForgivenessPlanForYear, type LoanPlan } from "./data";
 
 import {
@@ -9,11 +7,11 @@ import {
   calculateLoanAtRepayment,
 } from "./utils/compountInterest";
 import { ResultsPage } from "./pages/ResultsPage/ResultsPage";
-import { Carousel } from "./components/Carousel";
+import { Carousel } from "./shared/components/Carousel";
 import { processResults } from "./pages/ResultsPage/processResults";
-import type { RepaymentPlan } from "./types";
+import type { LoanFormValues, RepaymentPlan } from "./shared/types";
+import { LoanPage } from "./pages/LoanPage/LoanPage";
 
-// Define the order of your stages here
 const STAGES = ["loanForm", "income", "finish"] as const;
 type Stage = (typeof STAGES)[number];
 
@@ -81,7 +79,7 @@ function App() {
     incomeByYear: Record<number, number>,
     loanFormValues: LoanFormValues
   ) => {
-    // Called when the user submits their incom (from the IncomePage)
+    // Called when the user submits their incomr (from the IncomePage)
     if (!loanFormValues) {
       return;
     }

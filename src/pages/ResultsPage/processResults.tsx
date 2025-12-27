@@ -1,4 +1,4 @@
-import type { RepaymentPlan } from "../../types";
+import type { RepaymentPlan } from "../../shared/types";
 import type { CalculationResults } from "./types";
 
 export const processResults = (

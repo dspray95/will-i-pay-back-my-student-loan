@@ -3,7 +3,7 @@ import {
   getInterestRateAtRepayment,
   getRepaymentThreshold,
 } from "../data/repaymentThresholds";
-import type { RepaymentPlan } from "../types";
+import type { RepaymentPlan } from "../shared/types";
 import { getDaysInMonth } from "date-fns";
 
 /**

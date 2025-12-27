@@ -1,5 +1,5 @@
 import Plot from "react-plotly.js";
-import type { RepaymentBreakdown } from "../../../types";
+import type { RepaymentBreakdown } from "../../../shared/types";
 
 export const RepaymentPlot: React.FC<{
   undergraduateRepaymentBreakdown: RepaymentBreakdown;

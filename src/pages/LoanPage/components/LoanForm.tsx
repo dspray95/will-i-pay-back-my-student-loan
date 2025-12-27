@@ -1,6 +1,6 @@
 import { Formik, Form, Field, ErrorMessage, useFormikContext } from "formik";
 import React, { useEffect, useState } from "react";
-import { getLoanPlan } from "../../utils/loanPlan";
+import { getLoanPlan } from "../../../utils/loanPlan";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import classNames from "classnames";
@@ -8,23 +8,9 @@ import {
   getFeesForYear,
   LOAN_PLANS,
   type FeesLoansAndGrants,
-  type LoanPlan,
-} from "../../data";
-import { Button } from "../button/Button";
-
-export type LoanFormValues = {
-  courseStartYear: number;
-  courseLength: number;
-  country: string;
-  loanPlan: LoanPlan;
-  tutionFeeLoan: number;
-  mastersTutionFeeLoan: number;
-  maintenanceLoan: number;
-  maintenanceGrant: number;
-  postgrad: string;
-  mastersStartYear: number;
-  mastersLength: number;
-};
+} from "../../../data";
+import { Button } from "../../../shared/components/Button";
+import type { LoanFormValues } from "../../../shared/types";
 
 interface LoanFormContentProps {
   setTotalUndergradLoan: (amount: number) => void;
