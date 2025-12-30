@@ -1,32 +1,36 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #00f5a0;
-  --color-primary-light: #23ffb2;
-  --color-secondary: #a78bfa;
-  --color-secondary-light: #baa4fc;
-  --color-background: #1e2131;
-  --color-background-light: #25283b;
+  
+  /* Rebrand Colors */
+  --color-piccadilly-blue: #003688;
+  --color-central-red: #E32017;
+  --color-district-green: #00782A;
+  --color-northern-not-black: #2D2C27;
+  --color-beck-beige: #F9E6C6;
+  --color-not-white: #FAF3E8;
 
-  /* Text colors */
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #b4b4b8;
-  --color-text-contrast: #32374f;
+  /* Legacy Colors */ 
+  --color-primary: var(--color-piccadilly-blue);
+  --color-primary-light:  var(--color-piccadilly-blue);
+  --color-secondary: var(--color-district-green);
+  --color-secondary-light: var(--color-district-green);
+  --color-background: var(--color-beck-beige);
+  --color-background-light: var(--color-beck-beige);
 
-  --color-text-muted: #8e8e93;
+  --color-text-primary: var(--color-northern-not-black);
+  --color-text-secondary: var(--color-northern-not-black);
+  --color-text-contrast: var(--color-northern-not-black);
+  --color-text-muted: var(--color-northern-not-black);
 
-  /* Header colors */
-  --color-heading-primary: #00f5a0;
-  --color-heading-secondary: #a78bfa;
+  --color-heading-primary: var(--color-piccadilly-blue);
+  --color-heading-secondary: var(--color-piccadilly-blue);
 }
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -38,7 +42,6 @@ html,
 body {
   height: 100%;
   margin: 0;
-  background-color: var(--color-background);
 }
 
 h1 {
@@ -50,24 +53,24 @@ h1 {
 h2 {
   font-size: 1.875rem; /* 30px */
   font-weight: 600;
-  color: var(--color-heading-secondary);
+  color: var(--color-piccadilly-blue);
 }
 
 h3 {
   font-size: 1.5rem; /* 24px */
   font-weight: 500;
-  color: var(--color-heading-secondary);
+  color: var(--color-district-green);
 }
 
 h5 {
   font-size: 1.25rem; /* 20px */
   font-weight: 500;
-  color: var(--color-heading-primary);
+  color: var(--color-piccadilly-blue);
 }
 
 
 .rc-slider-handle:focus,
 .rc-slider-handle-click-focused {
-  background-color: #a78bfa;
-  border: 2px solid #a78bfa;
+  background-color:  var(--color-piccadilly-blue);
+  border: 2px solid  var(--color-piccadilly-blue);
 }

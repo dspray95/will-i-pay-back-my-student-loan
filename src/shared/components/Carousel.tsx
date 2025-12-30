@@ -38,7 +38,7 @@ export const Carousel = ({ currentStepIndex, children }: CarouselProps) => {
   }, [currentStepIndex, page]);
 
   return (
-    <div className="relative w-full min-h-screen overflow-x-hidden bg-background">
+    <div className="relative w-full min-h-screen overflow-x-hidden bg-beck-beige">
       <div className="max-w-4xl mx-auto w-full relative min-h-screen flex flex-col justify-center">
         <AnimatePresence mode="popLayout" initial={false} custom={direction}>
           <motion.div

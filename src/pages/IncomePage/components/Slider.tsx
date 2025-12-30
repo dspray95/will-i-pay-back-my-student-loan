@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import {
+  colorNorthernNotBlack,
   colorSecondary,
   colorSecondaryLight,
-  colorTextMuted,
 } from "../../../utils/color";
 import styled from "styled-components";
 
@@ -128,7 +128,7 @@ export const IncomeSlider: React.FC<IncomeSliderProps> = ({
           onChange={handleSliderChange}
           styles={{
             track: { backgroundColor: colorSecondary, height: "5px" },
-            rail: { backgroundColor: colorTextMuted, height: "5px" },
+            rail: { backgroundColor: colorNorthernNotBlack, height: "5px" },
             handle: {
               width: "12px",
               height: "12px",

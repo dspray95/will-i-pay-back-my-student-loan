@@ -1,15 +1,24 @@
-export const colorPrimary = "#00F5A0";
-export const colorPrimaryLight = "#23ffb2";
-export const colorSecondary = "#A78BFA";
-export const colorSecondaryLight = "#baa4f9";
-export const colorBackground = "#1E2131";
+// Rebrand Colors
+export const colorPiccadillyBlue = "#003688";
+export const colorCentralRed = "#E32017";
+export const colorDistrictGreen = "#00782A";
+export const colorNorthernNotBlack = "#2D2C27";
+export const colorBeckBeige = "#F9E6C6";
+export const colorNotWhite = "#FAF3E8";
+
+// Legacy colors
+export const colorPrimary = colorPiccadillyBlue;
+export const colorPrimaryLight = colorPiccadillyBlue;
+export const colorSecondary = colorDistrictGreen;
+export const colorSecondaryLight = colorDistrictGreen;
+export const colorBackground = colorBeckBeige;
 
 // Text colors
-export const colorTextPrimary = "#FFFFFF";
-export const colorTextSecondary = "#B4B4B8";
-export const colorTextContrast = "#32374f";
-export const colorTextMuted = "#8E8E93";
+export const colorTextPrimary = colorNorthernNotBlack;
+export const colorTextSecondary = colorNorthernNotBlack;
+export const colorTextContrast = colorNorthernNotBlack;
+export const colorTextMuted = colorNorthernNotBlack;
 
 // Header colors
-export const colorHeadingPrimary = "#00F5A0";
-export const colorHeadingSecondary = "#A78BFA";
+export const colorHeadingPrimary = colorPiccadillyBlue;
+export const colorHeadingSecondary = colorPiccadillyBlue;

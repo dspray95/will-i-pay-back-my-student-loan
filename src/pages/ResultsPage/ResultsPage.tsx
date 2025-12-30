@@ -77,7 +77,7 @@ export const ResultsPage: React.FC<{
         <div className="flex items-center justify-center gap-2 flex-col text-sm">
           <p className="pt-8">
             You'll repay{" "}
-            <span className="font-mono text-secondary text-base">
+            <span className="font-mono northern-not-black text-base">
               £{parseFloat(totalRepaid.toFixed(2))}
             </span>{" "}
             in total
@@ -85,7 +85,7 @@ export const ResultsPage: React.FC<{
           {!willRepayLoans && (
             <p>
               You will have{" "}
-              <span className="font-mono text-secondary text-base">
+              <span className="font-mono northern-not-black text-base">
                 £{parseFloat(totalForgiven.toFixed(2))}
               </span>{" "}
               forgiven after 30 years.
@@ -93,7 +93,7 @@ export const ResultsPage: React.FC<{
           )}
           <p>
             You'll accrue{" "}
-            <span className="font-mono text-secondary text-base">
+            <span className="font-mono northern-not-black text-base">
               £{parseFloat(totalInterestAccrued.toFixed(2))}
             </span>{" "}
             in interest over the repayment period.

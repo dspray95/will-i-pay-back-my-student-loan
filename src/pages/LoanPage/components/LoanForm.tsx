@@ -56,11 +56,11 @@ const NumericField: React.FC<{
       <label className="text-sm">{label}</label>
       <div className="relative flex items-center gap-2">
         <div className="relative flex-grow">
-          <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-text-primary">
+          <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-northern-not-black">
             £
           </span>
           <Field
-            className="w-full text-heading-secondary pl-6 border-2 rounded-sm border-text-muted bg-background p-2"
+            className="w-full text-district-green pl-6 border-2 rounded-sm border-text-northern-not-black bg-beck-beige p-2"
             type="number"
             name={name}
             onKeyDown={handleNumberKeyDown}
@@ -72,9 +72,10 @@ const NumericField: React.FC<{
           className={classNames(
             "transition-colors p-1 w-8 h-8 flex items-center justify-center",
             {
-              "text-secondary hover:text-secondary-light hover:cursor-pointer":
+              "northern-not-black hover:northern-not-black hover:cursor-pointer":
                 hasChanged,
-              "text-text-muted opacity-50 cursor-not-allowed": !hasChanged,
+              "text-northern-not-black opacity-50 cursor-not-allowed":
+                !hasChanged,
             }
           )}
           title="Reset to estimate"
@@ -199,7 +200,7 @@ const LoanFormContent: React.FC<LoanFormContentProps> = ({
       <div className="flex flex-col">
         <label>what year did you start your undergrad?</label>
         <Field
-          className="border-2 rounded-sm border-text-muted text-text-primary bg-background p-2"
+          className="border-2 rounded-sm border-northern-not-black text-northern-not-black bg-background p-2"
           type="number"
           name="courseStartYear"
           min="1998"
@@ -216,7 +217,7 @@ const LoanFormContent: React.FC<LoanFormContentProps> = ({
       <div className="flex flex-col">
         <label>how many years did your undergrad last?</label>
         <Field
-          className="border-2 rounded-sm border-text-muted text-text-primary bg-background p-2"
+          className="border-2 rounded-sm border-northern-not-black text-northern-not-black bg-background p-2"
           type="number"
           name="courseLength"
           min="1"
@@ -241,8 +242,7 @@ const LoanFormContent: React.FC<LoanFormContentProps> = ({
                   {
                     "border-secondary bg-secondary bg-opacity-10":
                       values.country === country,
-                    "border-text-muted hover:border-secondary":
-                      values.country !== country,
+                    "border-northern-not-black": values.country !== country,
                   }
                 )}
               >
@@ -252,7 +252,7 @@ const LoanFormContent: React.FC<LoanFormContentProps> = ({
                   value={country}
                   className="sr-only"
                 />
-                <span className="text-text-primary">
+                <span className="text-northern-not-black">
                   {country === "NORTHERN_IRELAND"
                     ? "Northern Ireland"
                     : country.charAt(0) + country.slice(1).toLowerCase()}
@@ -271,7 +271,7 @@ const LoanFormContent: React.FC<LoanFormContentProps> = ({
       <div className="flex flex-col">
         <label>what loan plan are you on?</label>
         <Field
-          className="border-2 rounded-sm border-text-muted text-text-primary bg-background p-2"
+          className="border-2 rounded-sm border-northern-not-black text-northern-not-black bg-background p-2"
           as="select"
           name="loanPlan"
         >
@@ -299,7 +299,7 @@ const LoanFormContent: React.FC<LoanFormContentProps> = ({
               {
                 "border-secondary bg-secondary bg-opacity-10":
                   values.postgrad === opt,
-                "border-text-muted hover:border-secondary":
+                "border-northern-not-black hover:border-secondary":
                   values.postgrad !== opt,
               }
             )}
@@ -310,7 +310,7 @@ const LoanFormContent: React.FC<LoanFormContentProps> = ({
               value={opt}
               className="sr-only"
             />
-            <span className="text-text-primary">{opt}</span>
+            <span className="text-northern-not-black">{opt}</span>
           </label>
         ))}
       </div>
@@ -328,7 +328,7 @@ const LoanFormContent: React.FC<LoanFormContentProps> = ({
           <div className="flex flex-col">
             <label>when did you start your masters?</label>
             <Field
-              className="border-2 rounded-sm border-text-muted text-text-primary bg-background p-2"
+              className="border-2 rounded-sm border-northern-not-black text-northern-not-black bg-background p-2"
               type="number"
               name="mastersStartYear"
               min="1998"
@@ -339,7 +339,7 @@ const LoanFormContent: React.FC<LoanFormContentProps> = ({
           <div className="flex flex-col">
             <label>how many years did your masters last?</label>
             <Field
-              className="border-2 rounded-sm border-text-muted text-text-primary bg-background p-2"
+              className="border-2 rounded-sm border-northern-not-black text-northern-not-black bg-background p-2"
               type="number"
               name="mastersLength"
               min="1"
@@ -390,13 +390,13 @@ const LoanFormContent: React.FC<LoanFormContentProps> = ({
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-1 pt-4 border-t border-text-muted/20">
+        <div className="grid grid-cols-2 gap-1 pt-4 border-t border-northern-not-black/20">
           <label className="font-bold">Total Loan:</label>
           <h5 className="font-bold">£{totalLoan}</h5>
         </div>
         <div className="grid grid-cols-2 gap-1">
           <label>Total Grant:</label>
-          <h5 className="text-text-secondary">
+          <h5 className="text-northern-not-black">
             £{totalGrant} {totalGrant === 0 && " 😢"}
           </h5>
         </div>

@@ -29,12 +29,12 @@ export const IncomeTimeline: React.FC<{
     const currentYear = new Date().getFullYear();
     const sliders: JSX.Element[] = [];
     sliders.push(
-      <div className="flex flex-row items-center justify-center gap-2 w-full text-text-muted">
-        <div className="flex-grow border-b border-text-muted min-w-24 border-dashed" />
+      <div className="flex flex-row items-center justify-center gap-2 w-full text-northern-not-black">
+        <div className="flex-grow border-b border-northern-not-black min-w-24 border-dashed" />
         <div className="text-sm">
           repayments start the april after graduation
         </div>
-        <div className="flex-grow border-b border-text-muted  min-w-24 border-dashed" />
+        <div className="flex-grow border-b border-northern-not-black  min-w-24 border-dashed" />
       </div>
     );
     for (let year = repaymentStartYear; year <= loanForgivenessYear; year++) {
@@ -49,22 +49,22 @@ export const IncomeTimeline: React.FC<{
       if (year === currentYear) {
         sliders.push(
           <div className="flex flex-col">
-            <div className="flex flex-row items-center justify-center gap-2 w-full text-text-muted">
-              <div className="flex-grow border-b border-text-muted min-w-24 border-dashed" />
+            <div className="flex flex-row items-center justify-center gap-2 w-full text-northern-not-black">
+              <div className="flex-grow border-b border-northern-not-black min-w-24 border-dashed" />
               <Button variant="no-bg">
                 {"set future income based on inflation"}
               </Button>
-              <div className="flex-grow border-b border-text-muted  min-w-24 border-dashed" />
+              <div className="flex-grow border-b border-northern-not-black  min-w-24 border-dashed" />
             </div>
           </div>
         );
       }
       if (year === loanForgivenessYear) {
         sliders.push(
-          <div className="flex flex-row items-center justify-center gap-2 w-full text-text-muted">
-            <div className="flex-grow border-b border-text-muted min-w-24 border-dashed" />
+          <div className="flex flex-row items-center justify-center gap-2 w-full text-northern-not-black">
+            <div className="flex-grow border-b border-northern-not-black min-w-24 border-dashed" />
             <div className="text-sm">loan written off</div>
-            <div className="flex-grow border-b border-text-muted  min-w-24 border-dashed" />
+            <div className="flex-grow border-b border-northern-not-black  min-w-24 border-dashed" />
           </div>
         );
       }
