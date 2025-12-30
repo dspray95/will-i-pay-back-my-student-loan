@@ -1,5 +1,3 @@
-import type { LoanPlan } from "../data";
-
 export type RepaymentBreakdown = Array<{
   year: number;
   startingBalance: number;
@@ -28,3 +26,11 @@ export type LoanFormValues = {
   mastersStartYear: number;
   mastersLength: number;
 };
+
+export type LoanPlan =
+  | "plan1"
+  | "plan1NI"
+  | "plan2"
+  | "plan4"
+  | "plan5"
+  | "postgrad";

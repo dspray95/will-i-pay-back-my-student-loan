@@ -1,7 +1,8 @@
 import { useMemo, type JSX } from "react";
 import { IncomeSlider } from "./Slider";
-import { getForgivenessPlanForYear, type LoanPlan } from "../../../data";
 import { Button } from "../../../shared/components/Button";
+import { getForgivenessPlanForYear } from "../../../domain/loan/forgiveness";
+import type { LoanPlan } from "../../../shared/types";
 
 export const IncomeTimeline: React.FC<{
   incomeByYear: Record<number, number>;

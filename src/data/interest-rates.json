@@ -1,0 +1,77 @@
+{
+  "longTermRPI": 2.5,
+  "postGradRepayment": {
+    "2018": {
+      "plan1": { "min": 3.3, "max": 3.3 },
+      "plan1NI": { "min": 3.3, "max": 3.3 },
+      "plan2": { "min": 3.3, "max": 6.3 },
+      "plan4": { "min": 3.3, "max": 3.3 },
+      "plan5": { "min": 0, "max": 0 },
+      "postgrad": { "min": 6.3, "max": 6.3 }
+    },
+    "2019": {
+      "plan1": { "min": 2.4, "max": 2.4 },
+      "plan1NI": { "min": 2.4, "max": 2.4 },
+      "plan2": { "min": 2.4, "max": 5.4 },
+      "plan4": { "min": 2.4, "max": 2.4 },
+      "plan5": { "min": 0, "max": 0 },
+      "postgrad": { "min": 5.4, "max": 5.4 }
+    },
+    "2020": {
+      "plan1": { "min": 2.6, "max": 2.6 },
+      "plan1NI": { "min": 2.6, "max": 2.6 },
+      "plan2": { "min": 2.6, "max": 5.6 },
+      "plan4": { "min": 2.6, "max": 2.6 },
+      "plan5": { "min": 0, "max": 0 },
+      "postgrad": { "min": 5.6, "max": 5.6 }
+    },
+    "2021": {
+      "plan1": { "min": 1.5, "max": 1.5 },
+      "plan1NI": { "min": 1.5, "max": 1.5 },
+      "plan2": { "min": 1.5, "max": 4.5 },
+      "plan4": { "min": 1.5, "max": 1.5 },
+      "plan5": { "min": 0, "max": 0 },
+      "postgrad": { "min": 4.5, "max": 4.5 }
+    },
+    "2022": {
+      "plan1": { "min": 5.0, "max": 5.0 },
+      "plan1NI": { "min": 5.0, "max": 5.0 },
+      "plan2": { "min": 5.0, "max": 6.9 },
+      "plan4": { "min": 5.0, "max": 5.0 },
+      "plan5": { "min": 0, "max": 0 },
+      "postgrad": { "min": 6.9, "max": 6.9 }
+    },
+    "2023": {
+      "plan1": { "min": 6.25, "max": 6.25 },
+      "plan1NI": { "min": 6.25, "max": 6.25 },
+      "plan2": { "min": 5.5, "max": 7.7 },
+      "plan4": { "min": 6.25, "max": 6.25 },
+      "plan5": { "min": 0, "max": 0 },
+      "postgrad": { "min": 7.7, "max": 7.7 }
+    },
+    "2024": {
+      "plan1": { "min": 4.3, "max": 4.3 },
+      "plan1NI": { "min": 4.3, "max": 4.3 },
+      "plan2": { "min": 3.2, "max": 6.2 },
+      "plan4": { "min": 4.3, "max": 4.3 },
+      "plan5": { "min": 4.3, "max": 4.3 },
+      "postgrad": { "min": 7.3, "max": 7.3 }
+    },
+    "2025": {
+      "plan1": { "min": 4.3, "max": 4.3 },
+      "plan1NI": { "min": 4.3, "max": 4.3 },
+      "plan2": { "min": 4.3, "max": 7.3 },
+      "plan4": { "min": 4.3, "max": 4.3 },
+      "plan5": { "min": 4.3, "max": 4.3 },
+      "postgrad": { "min": 7.3, "max": 7.3 }
+    },
+    "2026": {
+      "plan1": { "min": 3.2, "max": 3.2 },
+      "plan1NI": { "min": 3.2, "max": 3.2 },
+      "plan2": { "min": 3.2, "max": 6.2 },
+      "plan4": { "min": 3.2, "max": 3.2 },
+      "plan5": { "min": 3.2, "max": 3.2 },
+      "postgrad": { "min": 6.2, "max": 6.2 }
+    }
+  }
+}

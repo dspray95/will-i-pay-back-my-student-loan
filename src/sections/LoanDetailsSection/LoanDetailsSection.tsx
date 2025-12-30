@@ -4,7 +4,7 @@ import { PageHeader } from "./components/PageHeader";
 import type { LoanFormValues } from "../../shared/types";
 import { LoanForm } from "./components/LoanForm";
 
-export const LoanPage: React.FC<{
+export const LoanDetailsSection: React.FC<{
   setTotalUndergradLoan: Dispatch<SetStateAction<number>>;
   setTotalMastersLoan: Dispatch<SetStateAction<number>>;
   setTotalMaintenanceLoan: Dispatch<SetStateAction<number>>;

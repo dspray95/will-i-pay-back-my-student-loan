@@ -2,12 +2,12 @@ import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import classNames from "classnames";
 import { useState, type Dispatch, type SetStateAction } from "react";
-import { getForgivenessPlanForYear, type LoanPlan } from "../../data";
 import { Button } from "../../shared/components/Button";
 import { IncomeTimeline } from "./components/IncomeTimeline";
-import type { LoanFormValues } from "../../shared/types";
+import type { LoanFormValues, LoanPlan } from "../../shared/types";
+import { getForgivenessPlanForYear } from "../../domain/loan/forgiveness";
 
-export const IncomePage: React.FC<{
+export const IncomeProjectionSection: React.FC<{
   undergradStartYear: number;
   undergradEndYear: number;
   repaymentPlan: LoanPlan;

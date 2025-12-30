@@ -1,5 +1,4 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button } from "../../shared/components/button";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import type { CalculationResults } from "./types";
 import { getCopyText } from "./text";
@@ -7,8 +6,9 @@ import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { RepaymentPlot } from "./components/RepaymentPlot";
 import { useRef } from "react";
 import type { RepaymentBreakdown } from "../../shared/types";
+import { Button } from "../../shared/components/Button";
 
-export const ResultsPage: React.FC<{
+export const RepaymentResultsSplashSection: React.FC<{
   setStage: (stage: "loanForm" | "income" | "finish") => void;
   calculationResults?: CalculationResults;
   undergraduateRepaymentBreakdown: RepaymentBreakdown;

@@ -1,0 +1,42 @@
+import type { LoanPlan } from "../../shared/types";
+import { getInterestRateDuringStudy } from "./plans";
+
+/**
+ * Calculate loan balance at graduation, accounting for termly disbursements.
+ */
+export const calculateLoanAtGraduation = (
+  principal: number,
+  startYear: number,
+  courseLength: number,
+  plan: LoanPlan
+): number => {
+  if (plan === "plan4" || plan === "plan5") {
+    return principal;
+  }
+
+  const annualLoanAmount = principal / courseLength;
+  const termlyInstallment = annualLoanAmount / 3;
+  let balance = 0;
+
+  for (let year = 0; year < courseLength; year++) {
+    const academicYear = startYear + year;
+    const annualRate = getInterestRateDuringStudy(academicYear, plan);
+
+    if (annualRate === 0) {
+      balance += annualLoanAmount;
+      continue;
+    }
+
+    const dailyRate = annualRate / 100 / 365;
+
+    // Process 3 installments per year
+    balance += termlyInstallment;
+    balance *= Math.pow(1 + dailyRate, 122);
+    balance += termlyInstallment;
+    balance *= Math.pow(1 + dailyRate, 121);
+    balance += termlyInstallment;
+    balance *= Math.pow(1 + dailyRate, 122);
+  }
+
+  return parseFloat(balance.toFixed(2));
+};

@@ -1,13 +1,13 @@
 import { Formik, Form, Field, ErrorMessage, useFormikContext } from "formik";
 import React, { useEffect, useState, useMemo } from "react";
-import { getLoanPlan } from "../../../utils/loanPlan";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faUndo } from "@fortawesome/free-solid-svg-icons";
 import classNames from "classnames";
-import { getFeesForYear, LOAN_PLANS } from "../../../data";
 import { Button } from "../../../shared/components/Button";
 import type { LoanFormValues } from "../../../shared/types";
 import { getYear } from "date-fns";
+import { getFeesForYear } from "../../../domain/loan/fees";
+import { getLoanPlan, LOAN_PLANS } from "../../../domain/loan/plans";
 
 interface LoanFormContentProps {
   setTotalUndergradLoan: (amount: number) => void;

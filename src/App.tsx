@@ -1,16 +1,15 @@
 import { useState } from "react";
-import { IncomePage } from "./pages/IncomePage/IncomePage";
-import { getForgivenessPlanForYear, type LoanPlan } from "./data";
+import { IncomeProjectionSection } from "./sections/IncomeProjectionSection/IncomeProjectionSection";
 
-import {
-  calculateLoanAtGraduation,
-  calculateLoanAtRepayment,
-} from "./utils/compountInterest";
-import { ResultsPage } from "./pages/ResultsPage/ResultsPage";
 import { Carousel } from "./shared/components/Carousel";
-import { processResults } from "./pages/ResultsPage/processResults";
-import type { LoanFormValues, RepaymentPlan } from "./shared/types";
-import { LoanPage } from "./pages/LoanPage/LoanPage";
+import { processResults } from "./sections/RepaymentResultsSplashSection/processResults";
+import type { LoanFormValues, LoanPlan, RepaymentPlan } from "./shared/types";
+import { LoanDetailsSection } from "./sections/LoanDetailsSection/LoanDetailsSection";
+import { RepaymentResultsSplashSection } from "./sections/RepaymentResultsSplashSection/RepaymentResultsSplashSection";
+
+import { getForgivenessPlanForYear } from "./domain/loan/forgiveness";
+import { calculateLoanAtGraduation } from "./domain/loan/calculateLoanAtGraduation";
+import { calculateRepaymentPlan } from "./domain/repayment/calculateRepaymentPlan";
 
 const STAGES = ["loanForm", "income", "finish"] as const;
 type Stage = (typeof STAGES)[number];
@@ -94,7 +93,7 @@ function App() {
 
     const repaymentEndYear = graduationYear + repaymentEnd;
 
-    const undergraduateRepayment = calculateLoanAtRepayment(
+    const undergraduateRepayment = calculateRepaymentPlan(
       undergraduateLoanAtGraduation,
       graduationYear,
       repaymentEndYear,
@@ -104,7 +103,7 @@ function App() {
 
     const postgraduateRepayment =
       totalMastersLoan > 0
-        ? calculateLoanAtRepayment(
+        ? calculateRepaymentPlan(
             postgraduateLoanAtGraduation,
             loanFormValues.mastersStartYear + loanFormValues.mastersLength,
             loanFormValues.mastersStartYear + loanFormValues.mastersLength + 30,
@@ -117,9 +116,6 @@ function App() {
             yearByYearBreakdown: [],
           };
 
-    console.log("undergrad repayment", undergraduateRepayment);
-    console.log("postgrad repayment", postgraduateRepayment);
-
     setUndergraduateRepaymenntPlan(undergraduateRepayment);
     setPostgraduateRepaymentPlan(postgraduateRepayment);
   };
@@ -127,7 +123,7 @@ function App() {
   return (
     <Carousel currentStepIndex={currentStepIndex}>
       {stage === "loanForm" && (
-        <LoanPage
+        <LoanDetailsSection
           setTotalUndergradLoan={setTotalUndergradLoan}
           setTotalMaintenanceLoan={setTotalMaintenanceLoan}
           setTotalMastersLoan={setTotalMastersLoan}
@@ -139,7 +135,7 @@ function App() {
       )}
 
       {stage === "income" && (
-        <IncomePage
+        <IncomeProjectionSection
           undergradStartYear={undergradStartYear}
           undergradEndYear={undergradEndYear}
           isActive={true}
@@ -153,7 +149,7 @@ function App() {
       )}
 
       {stage === "finish" && (
-        <ResultsPage
+        <RepaymentResultsSplashSection
           setStage={setStage}
           calculationResults={processResults(
             undergraduateRepaymentPlan,

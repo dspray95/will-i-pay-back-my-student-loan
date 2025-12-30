@@ -5,7 +5,7 @@ import {
   colorNorthernNotBlack,
   colorSecondary,
   colorSecondaryLight,
-} from "../../../utils/color";
+} from "../../../shared/constants/color";
 import styled from "styled-components";
 
 const StyledSlider = styled(Slider)`
