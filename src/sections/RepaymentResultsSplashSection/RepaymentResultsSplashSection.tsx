@@ -1,41 +1,52 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import type { CalculationResults } from "./types";
+import { faArrowLeft, faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { getCopyText } from "./text";
-import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { RepaymentPlot } from "./components/RepaymentPlot";
 import { useRef } from "react";
-import type { RepaymentBreakdown } from "../../shared/types";
 import { Button } from "../../shared/components/Button";
+import { useLoanCalculatorStore } from "../../stores/loanCalculatorStore";
+import { processResults } from "./processResults";
 
-export const RepaymentResultsSplashSection: React.FC<{
-  setStage: (stage: "loanForm" | "income" | "finish") => void;
-  calculationResults?: CalculationResults;
-  undergraduateRepaymentBreakdown: RepaymentBreakdown;
-  postgraduateRepaymentBreakdown: RepaymentBreakdown;
-  undergraduateCourseLength: number;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-}> = ({
-  setStage,
-  calculationResults,
-  undergraduateRepaymentBreakdown,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  postgraduateRepaymentBreakdown,
-  undergraduateCourseLength,
-}) => {
+const ErrorSplash: React.FC = () => {
+  const { setStage } = useLoanCalculatorStore();
+  return (
+    <div className="relative w-full flex items-center justify-center">
+      <p>Woops... Something went wrong</p>
+      <Button onClick={() => setStage("income")}>
+        back <FontAwesomeIcon icon={faArrowLeft} />
+      </Button>
+    </div>
+  );
+};
+
+export const RepaymentResultsSplashSection: React.FC = () => {
+  const {
+    setStage,
+    undergraduateRepaymentPlan,
+    postgraduateRepaymentPlan,
+    undergraduateLoanAtGraduation,
+    postgraduateLoanAtGraduation,
+    loanFormValues,
+  } = useLoanCalculatorStore();
+
   const repaymentPlotRef = useRef<HTMLDivElement>(null);
 
-  if (!calculationResults) {
-    // This shouldn't happen, but just in case...
-    return (
-      <div className="relative w-full flex items-center justify-center">
-        <p>Woops... Something went wrong</p>
-        <Button onClick={() => setStage("income")}>
-          back <FontAwesomeIcon icon={faArrowLeft} />
-        </Button>
-      </div>
-    );
+  // Guard clause for missing data
+  if (
+    !undergraduateRepaymentPlan ||
+    !postgraduateRepaymentPlan ||
+    !loanFormValues
+  ) {
+    return <ErrorSplash />;
   }
+
+  // Now TypeScript knows these are defined
+  const calculationResults = processResults(
+    undergraduateRepaymentPlan,
+    postgraduateRepaymentPlan,
+    undergraduateLoanAtGraduation,
+    postgraduateLoanAtGraduation
+  );
 
   const willRepayLoans =
     calculationResults.willRepayUndergraduateLoan &&
@@ -57,10 +68,6 @@ export const RepaymentResultsSplashSection: React.FC<{
 
   return (
     <div className="relative w-full flex flex-col items-center justify-center mb-4">
-      {/* <Button className="fixed top-6 left-6" onClick={() => setStage("income")}>
-        back <FontAwesomeIcon icon={faArrowLeft} />
-      </Button> */}
-      {/** Splash section */}
       <div className="relative flex min-h-svh -translate-y-8 flex-col items-center justify-center ">
         {willRepayLoans && (
           <>
@@ -113,11 +120,12 @@ export const RepaymentResultsSplashSection: React.FC<{
           />
         </div>
       </div>
-      {/** More details section */}
       <div ref={repaymentPlotRef}>
         <RepaymentPlot
-          undergraduateRepaymentBreakdown={undergraduateRepaymentBreakdown}
-          courseLength={undergraduateCourseLength}
+          undergraduateRepaymentBreakdown={
+            undergraduateRepaymentPlan.yearByYearBreakdown
+          }
+          courseLength={loanFormValues.courseLength}
         />
       </div>
     </div>

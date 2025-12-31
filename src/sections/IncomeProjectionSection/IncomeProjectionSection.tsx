@@ -1,59 +1,50 @@
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import classNames from "classnames";
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { useState } from "react";
 import { Button } from "../../shared/components/Button";
 import { IncomeTimeline } from "./components/IncomeTimeline";
-import type { LoanFormValues, LoanPlan } from "../../shared/types";
+import type { LoanPlan } from "../../shared/types";
 import { getForgivenessPlanForYear } from "../../domain/loan/forgiveness";
+import { useLoanCalculatorStore } from "../../stores/loanCalculatorStore";
 
 export const IncomeProjectionSection: React.FC<{
   undergradStartYear: number;
   undergradEndYear: number;
   repaymentPlan: LoanPlan;
   isActive: boolean;
-  incomeByYear: Record<number, number>;
-  setIncomeByYear: Dispatch<SetStateAction<Record<number, number>>>;
-  setStage: (stage: "loanForm" | "income" | "finish") => void;
-  loanFormValues: LoanFormValues | undefined;
-  calculateRepaymentWithIncome: (
-    incomeByYear: Record<number, number>,
-    loanFormValues: LoanFormValues
-  ) => void;
-}> = ({
-  undergradStartYear,
-  undergradEndYear,
-  isActive,
-  repaymentPlan,
-  setStage,
-  incomeByYear,
-  setIncomeByYear,
-  loanFormValues,
-  calculateRepaymentWithIncome,
-}) => {
-  const [userSetYears, setUserSetYears] = useState<Record<number, boolean>>([]);
+}> = ({ undergradStartYear, undergradEndYear, isActive, repaymentPlan }) => {
+  const {
+    incomeByYear,
+    setIncomeByYear,
+    setStage,
+    loanFormValues,
+    calculateRepaymentWithIncome,
+  } = useLoanCalculatorStore();
+
+  const [userSetYears, setUserSetYears] = useState<Record<number, boolean>>({});
+
   const loanForgivenessYear =
     undergradEndYear +
     getForgivenessPlanForYear(undergradStartYear, repaymentPlan) +
-    1; // + 1 because the repayments start the aprim AFTER graduation
+    1;
 
   const handleIncomeChange = (year: number, value: number) => {
     setUserSetYears((prev) => ({ ...prev, [year]: true }));
-    setIncomeByYear((prev) => {
-      const updatedIncome = { ...prev };
 
-      // Update the selected year
-      updatedIncome[year] = value;
+    // Create the updated income object
+    const updatedIncome = { ...incomeByYear };
+    updatedIncome[year] = value;
 
-      // Update future years if the new value is higher than their current value
-      for (let y = year + 1; y <= loanForgivenessYear; y++) {
-        if (!updatedIncome[y] || !userSetYears[y]) {
-          updatedIncome[y] = value;
-        }
+    // Update future years if the new value is higher than their current value
+    for (let y = year + 1; y <= loanForgivenessYear; y++) {
+      if (!updatedIncome[y] || !userSetYears[y]) {
+        updatedIncome[y] = value;
       }
+    }
 
-      return updatedIncome;
-    });
+    // Pass the final object to Zustand
+    setIncomeByYear(updatedIncome);
   };
 
   return (

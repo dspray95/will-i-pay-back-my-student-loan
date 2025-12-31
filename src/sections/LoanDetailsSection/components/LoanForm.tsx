@@ -8,12 +8,7 @@ import type { LoanFormValues } from "../../../shared/types";
 import { getYear } from "date-fns";
 import { getFeesForYear } from "../../../domain/loan/fees";
 import { getLoanPlan, LOAN_PLANS } from "../../../domain/loan/plans";
-
-interface LoanFormContentProps {
-  setTotalUndergradLoan: (amount: number) => void;
-  setTotalMastersLoan: (amount: number) => void;
-  setTotalMaintenanceLoan: (amount: number) => void;
-}
+import { useLoanCalculatorStore } from "../../../stores/loanCalculatorStore";
 
 const NumericField: React.FC<{
   name: string;
@@ -88,11 +83,13 @@ const NumericField: React.FC<{
   );
 };
 
-const LoanFormContent: React.FC<LoanFormContentProps> = ({
-  setTotalUndergradLoan,
-  setTotalMastersLoan,
-  setTotalMaintenanceLoan,
-}) => {
+const LoanFormContent: React.FC = () => {
+  const {
+    setTotalUndergradLoan,
+    setTotalMastersLoan,
+    setTotalMaintenanceLoan,
+  } = useLoanCalculatorStore();
+
   const { values, setFieldValue, isSubmitting } =
     useFormikContext<LoanFormValues>();
   const [showPostgradSection, setShowPostgradSection] = useState(false);
@@ -409,14 +406,10 @@ const LoanFormContent: React.FC<LoanFormContentProps> = ({
   );
 };
 
-export const LoanForm: React.FC<{
-  setTotalUndergradLoan: (amount: number) => void;
-  setTotalMastersLoan: (amount: number) => void;
-  setTotalMaintenanceLoan: (amount: number) => void;
-  updateFormValues: (values: LoanFormValues) => void;
-  setStage: (stage: "loanForm" | "income" | "finish") => void;
-  calculatePrincipalAtGraduation: (values: LoanFormValues) => void;
-}> = (props) => {
+export const LoanForm: React.FC = () => {
+  const { setLoanFormValues, calculatePrincipalAtGraduation, setStage } =
+    useLoanCalculatorStore();
+
   return (
     <Formik
       initialValues={{
@@ -439,10 +432,8 @@ export const LoanForm: React.FC<{
         return errors;
       }}
       onSubmit={async (values, { setSubmitting, validateForm, setTouched }) => {
-        // Validate the form
         const errors = await validateForm(values);
 
-        // If there are validation errors, mark all error fields as touched
         if (Object.keys(errors).length > 0) {
           const touchedFields: Record<string, boolean> = {};
           Object.keys(errors).forEach((key) => {
@@ -453,14 +444,13 @@ export const LoanForm: React.FC<{
           return;
         }
 
-        // If validation passes, proceed with submission
-        props.updateFormValues(values);
-        props.calculatePrincipalAtGraduation(values);
-        props.setStage("income");
+        setLoanFormValues(values);
+        calculatePrincipalAtGraduation(values);
+        setStage("income");
         setSubmitting(false);
       }}
     >
-      <LoanFormContent {...props} />
+      <LoanFormContent />
     </Formik>
   );
 };

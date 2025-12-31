@@ -2,24 +2,11 @@ import type { RepaymentPlan } from "../../shared/types";
 import type { CalculationResults } from "./types";
 
 export const processResults = (
-  undergraduateRepaymentPlan: RepaymentPlan | undefined,
-  postgraduateRepaymentPlan: RepaymentPlan | undefined,
-  undergraduateLoanAtGraduation: number | undefined,
-  postgraduateLoanAtGraduation: number | undefined
-): CalculationResults | undefined => {
-  if (
-    undergraduateRepaymentPlan === undefined ||
-    postgraduateRepaymentPlan === undefined ||
-    undergraduateLoanAtGraduation === undefined ||
-    postgraduateLoanAtGraduation === undefined
-  ) {
-    console.log("undergraduateRepaymentPlan", undergraduateRepaymentPlan);
-    console.log("postgraduateRepaymentPlan", postgraduateRepaymentPlan);
-    console.log("undergraduateLoanAtGraduation", undergraduateLoanAtGraduation);
-    console.log("postgraduateLoanAtGraduation", postgraduateLoanAtGraduation);
-    return undefined;
-  }
-
+  undergraduateRepaymentPlan: RepaymentPlan,
+  postgraduateRepaymentPlan: RepaymentPlan,
+  undergraduateLoanAtGraduation: number,
+  postgraduateLoanAtGraduation: number
+): CalculationResults => {
   // Will they repay their loan?
   const willRepayUndergraduateLoan =
     undergraduateRepaymentPlan.finalBalance <= 0;
