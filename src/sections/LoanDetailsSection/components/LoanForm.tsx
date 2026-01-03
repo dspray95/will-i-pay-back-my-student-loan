@@ -2,13 +2,14 @@ import { Formik, Form, Field, ErrorMessage, useFormikContext } from "formik";
 import React, { useEffect, useState, useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faUndo } from "@fortawesome/free-solid-svg-icons";
-import classNames from "classnames";
 import { Button } from "../../../shared/components/Button";
 import type { LoanFormValues } from "../../../shared/types";
 import { getYear } from "date-fns";
 import { getFeesForYear } from "../../../domain/loan/fees";
 import { getLoanPlan, LOAN_PLANS } from "../../../domain/loan/plans";
 import { useLoanCalculatorStore } from "../../../stores/loanCalculatorStore";
+import { STAGES } from "../../../shared/constants/stages";
+import clsx from "clsx";
 
 const NumericField: React.FC<{
   name: string;
@@ -64,7 +65,7 @@ const NumericField: React.FC<{
         <button
           type="button"
           onClick={() => onReset(name)}
-          className={classNames(
+          className={clsx(
             "transition-colors p-1 w-8 h-8 flex items-center justify-center",
             {
               "northern-not-black hover:northern-not-black hover:cursor-pointer":
@@ -234,7 +235,7 @@ const LoanFormContent: React.FC = () => {
             (country) => (
               <label
                 key={country}
-                className={classNames(
+                className={clsx(
                   "flex items-center justify-center p-3 border-2 rounded-sm cursor-pointer transition-colors",
                   {
                     "border-secondary bg-secondary bg-opacity-10":
@@ -291,7 +292,7 @@ const LoanFormContent: React.FC = () => {
         {["yes", "no"].map((opt) => (
           <label
             key={opt}
-            className={classNames(
+            className={clsx(
               "flex items-center justify-center p-3 border-2 rounded-sm cursor-pointer transition-colors",
               {
                 "border-secondary bg-secondary bg-opacity-10":
@@ -313,7 +314,7 @@ const LoanFormContent: React.FC = () => {
       </div>
 
       <div
-        className={classNames(
+        className={clsx(
           "transition-all duration-500 ease-in-out overflow-hidden origin-top",
           {
             "max-h-0 scale-y-0": !showPostgradSection,
@@ -446,7 +447,7 @@ export const LoanForm: React.FC = () => {
 
         setLoanFormValues(values);
         calculatePrincipalAtGraduation(values);
-        setStage("income");
+        setStage(STAGES.incomeProjection);
         setSubmitting(false);
       }}
     >

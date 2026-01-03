@@ -1,11 +1,9 @@
 import { create } from "zustand";
-import type { LoanFormValues, RepaymentPlan } from "../shared/types";
+import type { LoanFormValues, RepaymentPlan, Stage } from "../shared/types";
 import { getForgivenessPlanForYear } from "../domain/loan/forgiveness";
 import { calculateLoanAtGraduation } from "../domain/loan/calculateLoanAtGraduation";
 import { calculateRepaymentPlan } from "../domain/repayment/calculateRepaymentPlan";
-
-const STAGES = ["loanForm", "income", "finish"] as const;
-type Stage = (typeof STAGES)[number];
+import { STAGES } from "../shared/constants/stages";
 
 interface LoanCalculatorState {
   // State
@@ -36,7 +34,7 @@ interface LoanCalculatorState {
 }
 
 const initialState = {
-  stage: "loanForm" as Stage,
+  stage: STAGES.loanDetails,
   loanFormValues: undefined,
   totalUndergradLoan: 0,
   totalMaintenanceLoan: 0,

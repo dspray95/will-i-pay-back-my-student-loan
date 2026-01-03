@@ -1,5 +1,5 @@
 // Rebrand Colors
-export const colorPiccadillyBlue = "#003688";
+export const colorPiccadillyBlue = "#4056A4";
 export const colorCentralRed = "#E32017";
 export const colorDistrictGreen = "#00782A";
 export const colorNorthernNotBlack = "#2D2C27";

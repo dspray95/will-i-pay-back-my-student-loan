@@ -6,13 +6,14 @@ import { useRef } from "react";
 import { Button } from "../../shared/components/Button";
 import { useLoanCalculatorStore } from "../../stores/loanCalculatorStore";
 import { processResults } from "./processResults";
+import { STAGES } from "../../shared/constants/stages";
 
 const ErrorSplash: React.FC = () => {
   const { setStage } = useLoanCalculatorStore();
   return (
     <div className="relative w-full flex items-center justify-center">
       <p>Woops... Something went wrong</p>
-      <Button onClick={() => setStage("income")}>
+      <Button onClick={() => setStage(STAGES.incomeProjection)}>
         back <FontAwesomeIcon icon={faArrowLeft} />
       </Button>
     </div>
@@ -21,7 +22,6 @@ const ErrorSplash: React.FC = () => {
 
 export const RepaymentResultsSplashSection: React.FC = () => {
   const {
-    setStage,
     undergraduateRepaymentPlan,
     postgraduateRepaymentPlan,
     undergraduateLoanAtGraduation,

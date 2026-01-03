@@ -1,16 +1,17 @@
 import { IncomeProjectionSection } from "../../sections/IncomeProjectionSection/IncomeProjectionSection";
-import { Carousel } from "../../shared/components/Carousel";
 import type { LoanPlan } from "../../shared/types";
 import { LoanDetailsSection } from "../../sections/LoanDetailsSection/LoanDetailsSection";
 import { RepaymentResultsSplashSection } from "../../sections/RepaymentResultsSplashSection/RepaymentResultsSplashSection";
 import { useLoanCalculatorStore } from "../../stores/loanCalculatorStore";
-
-const STAGES = ["loanForm", "income", "finish"] as const;
+import { STAGES } from "../../shared/constants/stages";
+import { useState } from "react";
+import clsx from "clsx";
+import { BorderWrappers } from "./components/BorderWrappers";
 
 export const LoanCalculatorFlow = () => {
   const { stage, loanFormValues } = useLoanCalculatorStore();
-
-  const currentStepIndex = STAGES.indexOf(stage);
+  // Local state
+  const [showBottomBorder, setShowBottomBorder] = useState(false);
 
   let undergradEndYear = 2018;
   let undergradStartYear = 2015;
@@ -20,20 +21,26 @@ export const LoanCalculatorFlow = () => {
     undergradStartYear = loanFormValues.courseStartYear;
   }
 
+  if (stage >= STAGES.repaymentResultsSplash) setShowBottomBorder(true);
+
   return (
-    <Carousel currentStepIndex={currentStepIndex}>
-      {stage === "loanForm" && <LoanDetailsSection isActive={true} />}
+    <BorderWrappers showBottomBorder={showBottomBorder}>
+      <div className="w-full md:max-w-1/3">
+        {stage >= STAGES.loanDetails && <LoanDetailsSection isActive={true} />}
 
-      {stage === "income" && (
-        <IncomeProjectionSection
-          undergradStartYear={undergradStartYear}
-          undergradEndYear={undergradEndYear}
-          isActive={true}
-          repaymentPlan={(loanFormValues?.loanPlan as LoanPlan) || "plan1"}
-        />
-      )}
+        {stage >= STAGES.incomeProjection && (
+          <IncomeProjectionSection
+            undergradStartYear={undergradStartYear}
+            undergradEndYear={undergradEndYear}
+            isActive={true}
+            repaymentPlan={(loanFormValues?.loanPlan as LoanPlan) || "plan1"}
+          />
+        )}
 
-      {stage === "finish" && <RepaymentResultsSplashSection />}
-    </Carousel>
+        {stage >= STAGES.repaymentResultsSplash && (
+          <RepaymentResultsSplashSection />
+        )}
+      </div>
+    </BorderWrappers>
   );
 };

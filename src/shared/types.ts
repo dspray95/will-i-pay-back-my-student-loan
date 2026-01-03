@@ -1,3 +1,5 @@
+import type { STAGES } from "./constants/stages";
+
 export type RepaymentBreakdown = Array<{
   year: number;
   startingBalance: number;
@@ -34,3 +36,5 @@ export type LoanPlan =
   | "plan4"
   | "plan5"
   | "postgrad";
+
+export type Stage = (typeof STAGES)[keyof typeof STAGES];

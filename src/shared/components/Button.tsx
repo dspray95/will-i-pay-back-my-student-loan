@@ -1,4 +1,4 @@
-import classNames from "classnames";
+import clsx from "clsx";
 
 export const Button: React.FC<{
   className?: string;
@@ -35,7 +35,7 @@ export const Button: React.FC<{
       type={type}
       disabled={disabled}
       onClick={onClick}
-      className={classNames(...builtinClassNames, classNameOverride)}
+      className={clsx(...builtinClassNames, classNameOverride)}
     >
       {children}
     </button>

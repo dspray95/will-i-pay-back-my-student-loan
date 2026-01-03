@@ -1,12 +1,14 @@
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import classNames from "classnames";
+
 import { useState } from "react";
 import { Button } from "../../shared/components/Button";
 import { IncomeTimeline } from "./components/IncomeTimeline";
 import type { LoanPlan } from "../../shared/types";
 import { getForgivenessPlanForYear } from "../../domain/loan/forgiveness";
 import { useLoanCalculatorStore } from "../../stores/loanCalculatorStore";
+import { STAGES } from "../../shared/constants/stages";
+import clsx from "clsx";
 
 export const IncomeProjectionSection: React.FC<{
   undergradStartYear: number;
@@ -49,7 +51,7 @@ export const IncomeProjectionSection: React.FC<{
 
   return (
     <div
-      className={classNames(
+      className={clsx(
         "flex flex-col items-center justify-center transform transition-all ease-in-out overflow-hidden",
         {
           " translate-x-0 pointer-events-auto duration-300": isActive,
@@ -60,7 +62,7 @@ export const IncomeProjectionSection: React.FC<{
       <div className="relative w-full flex items-center justify-center mb-4">
         <Button
           className="absolute top-2 left-0"
-          onClick={() => setStage("loanForm")}
+          onClick={() => setStage(STAGES.loanDetails)}
         >
           back <FontAwesomeIcon icon={faArrowLeft} />
         </Button>
@@ -81,7 +83,7 @@ export const IncomeProjectionSection: React.FC<{
         onClick={() => {
           if (loanFormValues)
             calculateRepaymentWithIncome(incomeByYear, loanFormValues);
-          setStage("finish");
+          setStage(STAGES.repaymentResultsSplash);
         }}
       >
         results <FontAwesomeIcon icon={faArrowRight} />

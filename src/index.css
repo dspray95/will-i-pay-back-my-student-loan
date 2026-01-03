@@ -1,9 +1,37 @@
 @import "tailwindcss";
 
+@layer base {
+  @font-face {
+    font-family: 'Railway';
+    src: url('./assets/fonts/Railway.woff2') format('woff2'),
+         url('./assets/fonts/Railway.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'Railway';
+    src: url('./assets/fonts/Railway-Semibold.woff2') format('woff2'),
+         url('./assets/fonts/Railway-Semibold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'RailwayAlternate';
+    src: url('./assets/fonts/RailwayAlternate.woff2') format('woff2'),
+         url('./assets/fonts/RailwayAlternate.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+}
+
 @theme {
-  
   /* Rebrand Colors */
-  --color-piccadilly-blue: #003688;
+  --color-piccadilly-blue: #4056A4;
   --color-central-red: #E32017;
   --color-district-green: #00782A;
   --color-northern-not-black: #2D2C27;
@@ -25,18 +53,25 @@
 
   --color-heading-primary: var(--color-piccadilly-blue);
   --color-heading-secondary: var(--color-piccadilly-blue);
+
+
+  /* Fonts */
+  --font-railway: "Railway", ui-sans-serif, system-ui, sans-serif;
+  --font-railway-alt: "RailwayAlternate", ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* Apply your custom font variable here */
+  font-family: var(--font-railway);
   line-height: 1.5;
   font-weight: 400;
-
+  
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
 
 html,
 body {
@@ -45,7 +80,8 @@ body {
 }
 
 h1 {
-  font-size: 2.25rem; /* 36px */
+  font-family: var(--font-railway-semibold); /* Maybe use alternate for headings? */
+  font-size: 2.25rem;
   font-weight: 700;
   color: var(--color-heading-primary);
 }

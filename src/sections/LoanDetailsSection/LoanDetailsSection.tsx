@@ -1,13 +1,13 @@
-import classNames from "classnames";
 import { PageHeader } from "./components/PageHeader";
 import { LoanForm } from "./components/LoanForm";
+import clsx from "clsx";
 
 export const LoanDetailsSection: React.FC<{
   isActive: boolean;
 }> = ({ isActive }) => {
   return (
     <div
-      className={classNames(
+      className={clsx(
         "mx-2 flex flex-col justify-center",
         "transform transition-all  ease-in-out overflow-hidden",
         {
