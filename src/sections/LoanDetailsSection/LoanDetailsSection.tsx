@@ -1,5 +1,4 @@
-import { PageHeader } from "./components/PageHeader";
-import { LoanForm } from "./components/LoanForm";
+import { LoanForm } from "./components/LoanForm/LoanForm";
 import clsx from "clsx";
 
 export const LoanDetailsSection: React.FC<{
@@ -16,8 +15,6 @@ export const LoanDetailsSection: React.FC<{
         }
       )}
     >
-      <PageHeader />
-      <h3>undergraduate</h3>
       <LoanForm />
     </div>
   );

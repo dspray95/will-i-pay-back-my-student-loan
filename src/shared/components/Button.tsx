@@ -1,64 +1,48 @@
 import clsx from "clsx";
 
-export const Button: React.FC<{
+type ButtonVariant = "primary" | "secondary" | "no-bg";
+
+interface ButtonProps {
   className?: string;
   disabled?: boolean;
-  variant?: "primary" | "secondary" | "no-bg";
+  variant?: ButtonVariant;
   type?: "button" | "submit" | "reset";
   onClick?: () => void;
   children: React.ReactNode;
-}> = ({
-  className: classNameOverride,
+}
+
+export const Button: React.FC<ButtonProps> = ({
+  className,
   disabled = false,
   variant = "primary",
   type = "button",
   onClick,
   children,
 }) => {
-  let builtinClassNames: string[];
-  switch (variant) {
-    case "primary":
-      builtinClassNames = PRIMARY_BUTTON_CLASS;
-      break;
-    case "secondary":
-      builtinClassNames = PRIMARY_BUTTON_CLASS;
-      break;
-    case "no-bg":
-      builtinClassNames = NO_BG_BUTTON_CLASS;
-      break;
-    default:
-      builtinClassNames = PRIMARY_BUTTON_CLASS;
-      break;
-  }
   return (
     <button
       type={type}
       disabled={disabled}
       onClick={onClick}
-      className={clsx(...builtinClassNames, classNameOverride)}
+      className={clsx(
+        // Base styles for all buttons
+        "font-semibold  cursor-pointer transition-colors",
+        // Variant-specific styles
+        {
+          "text-md text-not-white px-4 py-2 rounded-md border-none bg-piccadilly-blue hover:bg-piccadilly-blue-1 active:bg-piccadilly-blue-1":
+            variant === "primary",
+          "text-md px-4 py-2 rounded-md border-none text-northern-not-black bg-district-green hover:bg-district-green-1 active:bg-district-green-1 active:text-not-white":
+            variant === "secondary",
+          "text-xs border-b border-northern-not-black px-2 bg-transparent hover:bg-transparent hover:opacity-80 active:text-not-white":
+            variant === "no-bg",
+        },
+        // Disabled styles
+        disabled && "disabled:opacity-50 disabled:cursor-not-allowed",
+        // overrides
+        className
+      )}
     >
       {children}
     </button>
   );
 };
-
-const PRIMARY_BUTTON_CLASS = [
-  "text-md font-semibold text-northern-not-black bg-primary border-none px-4 py-2 rounded-md cursor-pointer",
-  "hover:bg-primary-hover active:bg-primary-active disabled:bg-primary-disabled disabled:cursor-not-allowed",
-];
-
-const NO_BG_BUTTON_CLASS: string[] = [
-  "text-xs font-semibold northern-not-black border-b border-secondary cursor-pointer px-2",
-  "hover:!bg-transparent hover:northern-not-black-light",
-];
-// button {
-//     font-size: 1rem; /* 16px */
-//     font-weight: 600;
-//     color: var(--color-northern-not-black);
-//     background-color: var(--color-primary);
-//     border: none;
-//     padding: 0.5rem 1rem; /* 8px 16px */
-//     border-radius: 0.375rem; /* 6px */
-//     cursor: pointer;
-
-//   }

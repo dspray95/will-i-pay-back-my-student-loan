@@ -5,8 +5,8 @@ import { RepaymentResultsSplashSection } from "../../sections/RepaymentResultsSp
 import { useLoanCalculatorStore } from "../../stores/loanCalculatorStore";
 import { STAGES } from "../../shared/constants/stages";
 import { useState } from "react";
-import clsx from "clsx";
 import { BorderWrappers } from "./components/BorderWrappers";
+import { PageHeader } from "./components/PageHeader";
 
 export const LoanCalculatorFlow = () => {
   const { stage, loanFormValues } = useLoanCalculatorStore();
@@ -25,7 +25,9 @@ export const LoanCalculatorFlow = () => {
 
   return (
     <BorderWrappers showBottomBorder={showBottomBorder}>
-      <div className="w-full md:max-w-1/3">
+      <div className="w-full md:max-w-2/3 xl:max-w-1/3">
+        <PageHeader />
+
         {stage >= STAGES.loanDetails && <LoanDetailsSection isActive={true} />}
 
         {stage >= STAGES.incomeProjection && (

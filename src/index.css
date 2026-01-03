@@ -32,9 +32,12 @@
 @theme {
   /* Rebrand Colors */
   --color-piccadilly-blue: #4056A4;
+  --color-piccadilly-blue-1: #35478a;
   --color-central-red: #E32017;
   --color-district-green: #00782A;
+  --color-district-green-1: #078433;
   --color-northern-not-black: #2D2C27;
+  --color-northern-not-black-1: #595852;
   --color-beck-beige: #F9E6C6;
   --color-not-white: #FAF3E8;
 
@@ -54,7 +57,6 @@
   --color-heading-primary: var(--color-piccadilly-blue);
   --color-heading-secondary: var(--color-piccadilly-blue);
 
-
   /* Fonts */
   --font-railway: "Railway", ui-sans-serif, system-ui, sans-serif;
   --font-railway-alt: "RailwayAlternate", ui-sans-serif, system-ui, sans-serif;
@@ -63,6 +65,7 @@
 :root {
   /* Apply your custom font variable here */
   font-family: var(--font-railway);
+  color: var(--color-northern-not-black);
   line-height: 1.5;
   font-weight: 400;
   
@@ -72,38 +75,11 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-
 html,
 body {
   height: 100%;
   margin: 0;
 }
-
-h1 {
-  font-family: var(--font-railway-semibold); /* Maybe use alternate for headings? */
-  font-size: 2.25rem;
-  font-weight: 700;
-  color: var(--color-heading-primary);
-}
-
-h2 {
-  font-size: 1.875rem; /* 30px */
-  font-weight: 600;
-  color: var(--color-piccadilly-blue);
-}
-
-h3 {
-  font-size: 1.5rem; /* 24px */
-  font-weight: 500;
-  color: var(--color-district-green);
-}
-
-h5 {
-  font-size: 1.25rem; /* 20px */
-  font-weight: 500;
-  color: var(--color-piccadilly-blue);
-}
-
 
 .rc-slider-handle:focus,
 .rc-slider-handle-click-focused {
