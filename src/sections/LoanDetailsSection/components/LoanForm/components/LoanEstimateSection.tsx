@@ -10,8 +10,9 @@ interface LoanEstimatesSectionProps {
   } | null;
   totalLoan: number;
   totalGrant: number;
-  onFieldChange: (fieldName: string) => void;
   onReset: (fieldName: string) => void;
+  onFieldChange: (fieldName: string) => void;
+  isFieldEdited: (fieldName: string) => boolean;
 }
 
 export const LoanEstimatesSection: React.FC<LoanEstimatesSectionProps> = ({
@@ -19,56 +20,57 @@ export const LoanEstimatesSection: React.FC<LoanEstimatesSectionProps> = ({
   defaultValues,
   totalLoan,
   totalGrant,
-  onFieldChange,
   onReset,
+  onFieldChange,
+  isFieldEdited,
 }) => {
   return (
     <div className="flex flex-col gap-3 pt-8">
       <div className="flex flex-col mb-4">
-        <span className="text-2xl">LOAN AND GRAND ESTIMATES</span>
+        <span className="text-2xl">LOAN AND GRANT ESTIMATES</span>
         <span>
           These are our predicted estimates for your student loans and grants.
-          You can change these if they are innacurate.
+          You can change these if they are inaccurate.
         </span>
       </div>
-      <div onChange={() => onFieldChange("tutionFeeLoan")}>
-        <NumericField
-          name="tutionFeeLoan"
-          label="TUITION FEE LOAN"
-          defaultValue={defaultValues?.tutionFeeLoan || 0}
-          onReset={onReset}
-        />
-      </div>
+
+      <NumericField
+        name="tutionFeeLoan"
+        label="TUITION FEE LOAN"
+        defaultValue={defaultValues?.tutionFeeLoan || 0}
+        onReset={onReset}
+        onChange={onFieldChange}
+        isEdited={isFieldEdited("tutionFeeLoan")}
+      />
 
       {showPostgradSection && (
-        <div onChange={() => onFieldChange("mastersTutionFeeLoan")}>
-          <NumericField
-            name="mastersTutionFeeLoan"
-            label="POSTGRADUATE TUATION FEE LOAN"
-            isHidden={!showPostgradSection}
-            defaultValue={defaultValues?.mastersTutionFeeLoan || 0}
-            onReset={onReset}
-          />
-        </div>
+        <NumericField
+          name="mastersTutionFeeLoan"
+          label="POSTGRADUATE TUITION FEE LOAN"
+          defaultValue={defaultValues?.mastersTutionFeeLoan || 0}
+          onReset={onReset}
+          onChange={onFieldChange}
+          isEdited={isFieldEdited("mastersTutionFeeLoan")}
+        />
       )}
 
-      <div onChange={() => onFieldChange("maintenanceLoan")}>
-        <NumericField
-          name="maintenanceLoan"
-          label="MAINTENANCE LOAN"
-          defaultValue={defaultValues?.maintenanceLoan || 0}
-          onReset={onReset}
-        />
-      </div>
+      <NumericField
+        name="maintenanceLoan"
+        label="MAINTENANCE LOAN"
+        defaultValue={defaultValues?.maintenanceLoan || 0}
+        onReset={onReset}
+        onChange={onFieldChange}
+        isEdited={isFieldEdited("maintenanceLoan")}
+      />
 
-      <div onChange={() => onFieldChange("maintenanceGrant")}>
-        <NumericField
-          name="maintenanceGrant"
-          label="MAINTENANCE GRANT"
-          defaultValue={defaultValues?.maintenanceGrant || 0}
-          onReset={onReset}
-        />
-      </div>
+      <NumericField
+        name="maintenanceGrant"
+        label="MAINTENANCE GRANT"
+        defaultValue={defaultValues?.maintenanceGrant || 0}
+        onReset={onReset}
+        onChange={onFieldChange}
+        isEdited={isFieldEdited("maintenanceGrant")}
+      />
 
       <div className="font-semi-bold grid grid-cols-2 gap-1 pt-4 border-t border-northern-not-black/20">
         <label className="font-bold">TOTAL LOAN</label>

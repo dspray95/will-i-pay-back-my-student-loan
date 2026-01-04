@@ -1,39 +1,43 @@
-import { useEffect, useState, useMemo } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { useFormikContext } from "formik";
-import type { LoanFormValues } from "../../../../../shared/types";
-import { useLoanCalculatorStore } from "../../../../../stores/loanCalculatorStore";
 import { getFeesForYear } from "../../../../../domain/loan/fees";
 import { getLoanPlan } from "../../../../../domain/loan/plans";
-
+import type { LoanFormValues } from "../../../../../shared/schemas/LoanFormSchema";
 export const useLoanFormLogic = () => {
   const { values, setFieldValue } = useFormikContext<LoanFormValues>();
-  const [showPostgradSection, setShowPostgradSection] = useState(false);
   const [manuallyEdited, setManuallyEdited] = useState<Set<string>>(new Set());
 
-  const {
-    setTotalUndergradLoan,
-    setTotalMastersLoan,
-    setTotalMaintenanceLoan,
-  } = useLoanCalculatorStore();
-
   const defaultValues = useMemo(() => {
-    if (!values.courseStartYear) return null;
+    if (
+      !values.courseStartYear ||
+      values.courseLength === undefined ||
+      !values.loanPlan ||
+      !values.country
+    ) {
+      return null;
+    }
 
     const fees = getFeesForYear(values.courseStartYear);
-    const mastersFees =
-      values.postgrad === "yes"
-        ? getFeesForYear(values.mastersStartYear)
-        : undefined;
-
     if (!fees) return null;
+
+    let mastersTutionFeeLoan = 0;
+    if (
+      values.postgrad === "yes" &&
+      values.mastersStartYear !== undefined &&
+      values.mastersLength !== undefined
+    ) {
+      const mastersFees = getFeesForYear(values.mastersStartYear);
+      if (mastersFees) {
+        mastersTutionFeeLoan =
+          mastersFees.postGraduateLoan * values.mastersLength;
+      }
+    }
 
     return {
       tutionFeeLoan: fees.tuition * values.courseLength,
       maintenanceLoan: fees.maintenanceLoan * values.courseLength,
       maintenanceGrant: fees.maintenanceGrant * values.courseLength,
-      mastersTutionFeeLoan: mastersFees
-        ? mastersFees.postGraduateLoan * values.mastersLength
-        : 0,
+      mastersTutionFeeLoan,
     };
   }, [
     values.courseStartYear,
@@ -41,28 +45,29 @@ export const useLoanFormLogic = () => {
     values.postgrad,
     values.mastersStartYear,
     values.mastersLength,
+    values.loanPlan,
+    values.country,
   ]);
 
-  // Update store totals
+  // Auto-populate fields whenever defaultValues changes (unless manually edited)
   useEffect(() => {
-    const total =
-      (values.tutionFeeLoan || 0) +
-      (values.maintenanceLoan || 0) +
-      (values.mastersTutionFeeLoan || 0);
+    if (!defaultValues) return;
 
-    setTotalMaintenanceLoan(values.maintenanceLoan || 0);
-    setTotalMastersLoan(values.mastersTutionFeeLoan || 0);
-    setTotalUndergradLoan(total);
-  }, [
-    values.tutionFeeLoan,
-    values.maintenanceLoan,
-    values.mastersTutionFeeLoan,
-    setTotalMaintenanceLoan,
-    setTotalMastersLoan,
-    setTotalUndergradLoan,
-  ]);
+    if (!manuallyEdited.has("tutionFeeLoan")) {
+      setFieldValue("tutionFeeLoan", defaultValues.tutionFeeLoan);
+    }
+    if (!manuallyEdited.has("maintenanceLoan")) {
+      setFieldValue("maintenanceLoan", defaultValues.maintenanceLoan);
+    }
+    if (!manuallyEdited.has("maintenanceGrant")) {
+      setFieldValue("maintenanceGrant", defaultValues.maintenanceGrant);
+    }
+    if (!manuallyEdited.has("mastersTutionFeeLoan")) {
+      setFieldValue("mastersTutionFeeLoan", defaultValues.mastersTutionFeeLoan);
+    }
+  }, [defaultValues, manuallyEdited, setFieldValue]);
 
-  // Auto-select loan plan
+  // Auto-select loan plan when dependencies change
   useEffect(() => {
     if (values.courseStartYear && values.country) {
       const suggestedPlan = getLoanPlan(values.courseStartYear, values.country);
@@ -72,47 +77,38 @@ export const useLoanFormLogic = () => {
     }
   }, [values.courseStartYear, values.country, setFieldValue]);
 
-  // Update default values
-  useEffect(() => {
-    if (defaultValues) {
-      if (!manuallyEdited.has("tutionFeeLoan"))
-        setFieldValue("tutionFeeLoan", defaultValues.tutionFeeLoan);
-      if (!manuallyEdited.has("maintenanceLoan"))
-        setFieldValue("maintenanceLoan", defaultValues.maintenanceLoan);
-      if (!manuallyEdited.has("maintenanceGrant"))
-        setFieldValue("maintenanceGrant", defaultValues.maintenanceGrant);
-      if (!manuallyEdited.has("mastersTutionFeeLoan"))
-        setFieldValue(
-          "mastersTutionFeeLoan",
-          defaultValues.mastersTutionFeeLoan
-        );
-    }
-  }, [defaultValues, manuallyEdited, setFieldValue]);
+  const showPostgradSection = values.postgrad === "yes";
 
-  // Toggle masters section
-  useEffect(() => {
-    setShowPostgradSection(values.postgrad === "yes");
-  }, [values.postgrad]);
+  const resetFieldToDefault = useCallback(
+    (fieldName: string) => {
+      if (defaultValues) {
+        setFieldValue(fieldName, (defaultValues as any)[fieldName]);
+        setManuallyEdited((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(fieldName);
+          return newSet;
+        });
+      }
+    },
+    [defaultValues, setFieldValue]
+  );
 
-  const resetFieldToDefault = (fieldName: string) => {
-    if (defaultValues) {
-      setFieldValue(fieldName, (defaultValues as any)[fieldName]);
-      setManuallyEdited((prev) => {
-        const newSet = new Set(prev);
-        newSet.delete(fieldName);
-        return newSet;
-      });
-    }
-  };
-
-  const handleFieldChange = (fieldName: string) => {
+  const handleFieldChange = useCallback((fieldName: string) => {
     setManuallyEdited((prev) => new Set(prev).add(fieldName));
-  };
+  }, []);
+
+  const isFieldEdited = useCallback(
+    (fieldName: string) => {
+      return manuallyEdited.has(fieldName);
+    },
+    [manuallyEdited]
+  );
 
   return {
     showPostgradSection,
     defaultValues,
     resetFieldToDefault,
     handleFieldChange,
+    isFieldEdited,
   };
 };

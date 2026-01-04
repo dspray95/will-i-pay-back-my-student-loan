@@ -1,9 +1,9 @@
 import { Field, useFormikContext } from "formik";
-import type { LoanFormValues } from "../../../../../shared/types";
 import clsx from "clsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUndo } from "@fortawesome/free-solid-svg-icons";
 import { FIELD_CLASS } from "../consts";
+import type { LoanFormValues } from "../../../../../shared/schemas/LoanFormSchema";
 
 export const NumericField: React.FC<{
   name: string;
@@ -11,10 +11,21 @@ export const NumericField: React.FC<{
   isHidden?: boolean;
   defaultValue: number;
   onReset: (fieldName: string) => void;
-}> = ({ name, label, isHidden = false, defaultValue, onReset }) => {
+  onChange: (fieldName: string) => void;
+  isEdited: boolean;
+}> = ({
+  name,
+  label,
+  isHidden = false,
+  defaultValue,
+  onReset,
+  onChange,
+  isEdited,
+}) => {
   const { values } = useFormikContext<LoanFormValues>();
   const currentValue = (values as any)[name] || 0;
   const hasChanged = currentValue !== defaultValue;
+  const showUndoButton = hasChanged && isEdited;
 
   const handleNumberKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (
@@ -39,7 +50,7 @@ export const NumericField: React.FC<{
     }
   };
 
-  if (isHidden) return <></>;
+  if (isHidden) return null;
 
   return (
     <div className="grid grid-cols-2 gap-1 items-center">
@@ -54,6 +65,20 @@ export const NumericField: React.FC<{
             type="number"
             name={name}
             onKeyDown={handleNumberKeyDown}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              onChange(name);
+              // Let Formik handle the actual value update
+              setTimeout(() => {
+                const formikField = document.querySelector(
+                  `input[name="${name}"]`
+                );
+                if (formikField) {
+                  formikField.dispatchEvent(
+                    new Event("input", { bubbles: true })
+                  );
+                }
+              }, 0);
+            }}
           />
         </div>
         <button
@@ -63,12 +88,12 @@ export const NumericField: React.FC<{
             "transition-colors p-1 w-8 h-8 flex items-center justify-center",
             {
               "text-central-red hover:text-central-red-1 hover:cursor-pointer":
-                hasChanged,
-              "text-northern-not-black opacity-50": !hasChanged,
+                showUndoButton,
+              "text-northern-not-black opacity-50": !showUndoButton,
             }
           )}
           title="Reset to estimate"
-          disabled={!hasChanged}
+          disabled={!showUndoButton}
         >
           <FontAwesomeIcon icon={faUndo} size="sm" />
         </button>

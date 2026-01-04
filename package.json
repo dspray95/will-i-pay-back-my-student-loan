@@ -4,11 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
+    "dev": "bun x --bun vite",
+    "build": "bun x --bun vite build",
+    "test": "bun test",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "test": "vitest"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.0.0",
@@ -27,6 +27,7 @@
     "react-plotly.js": "^2.6.0",
     "react-router-dom": "^7.9.6",
     "styled-components": "^6.1.19",
+    "zod": "^4.3.5",
     "zustand": "^5.0.9"
   },
   "devDependencies": {

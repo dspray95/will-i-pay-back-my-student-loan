@@ -1,10 +1,9 @@
-// LoanForm.tsx
 import { Formik, Form, Field, useFormikContext } from "formik";
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { getYear } from "date-fns";
-import type { LoanFormValues } from "../../../../shared/types";
+
 import { useLoanFormLogic } from "./hooks/useLoanFormLogic";
 import { FormField } from "./components/FormField";
 import { RadioButtonGroup } from "./components/RadioButtonGroup";
@@ -15,6 +14,11 @@ import { Button } from "../../../../shared/components/Button";
 import { useLoanCalculatorStore } from "../../../../stores/loanCalculatorStore";
 import { STAGES } from "../../../../shared/constants/stages";
 import { COUNTRY_OPTIONS, FIELD_CLASS, POSTGRAD_OPTIONS } from "./consts";
+import {
+  LoanFormSchema,
+  ValidatedLoanFormSchema,
+  type LoanFormValues,
+} from "../../../../shared/schemas/LoanFormSchema";
 
 const LoanFormContent: React.FC = () => {
   const { values, isSubmitting } = useFormikContext<LoanFormValues>();
@@ -22,6 +26,7 @@ const LoanFormContent: React.FC = () => {
     showPostgradSection,
     defaultValues,
     resetFieldToDefault,
+    isFieldEdited,
     handleFieldChange,
   } = useLoanFormLogic();
 
@@ -62,7 +67,7 @@ const LoanFormContent: React.FC = () => {
         />
       </FormField>
 
-      <FormField label="WHERE DID YOU TAKE OYUR LOAN?" name="country">
+      <FormField label="WHERE DID YOU TAKE YOUR LOAN?" name="country">
         <RadioButtonGroup
           name="country"
           options={COUNTRY_OPTIONS}
@@ -71,7 +76,7 @@ const LoanFormContent: React.FC = () => {
         />
       </FormField>
 
-      <FormField label="YOUR LOAN PLAN">
+      <FormField label="YOUR LOAN PLAN" name="loanPlan">
         <Field className={FIELD_CLASS} as="select" name="loanPlan">
           <option value="">-- Select --</option>
           {Object.entries(LOAN_PLANS).map(([key, plan]) => (
@@ -82,16 +87,13 @@ const LoanFormContent: React.FC = () => {
         </Field>
       </FormField>
 
-      <div>
-        <span className="w-full flex pt-1">
-          DID YOU TAKE A POST-GRADUATE LOAN?
-        </span>
+      <FormField label="DID YOU TAKE A POST-GRADUATE LOAN?" name="postgrad">
         <RadioButtonGroup
           name="postgrad"
           options={POSTGRAD_OPTIONS}
           selectedValue={values.postgrad}
         />
-      </div>
+      </FormField>
       <MastersSection isVisible={showPostgradSection} />
 
       <LoanEstimatesSection
@@ -99,8 +101,9 @@ const LoanFormContent: React.FC = () => {
         defaultValues={defaultValues}
         totalLoan={totalLoan}
         totalGrant={totalGrant}
-        onFieldChange={handleFieldChange}
         onReset={resetFieldToDefault}
+        onFieldChange={handleFieldChange}
+        isFieldEdited={isFieldEdited}
       />
 
       <Button type="submit" disabled={isSubmitting}>
@@ -111,33 +114,48 @@ const LoanFormContent: React.FC = () => {
 };
 
 export const LoanForm: React.FC = () => {
-  const { setLoanFormValues, calculatePrincipalAtGraduation, setStage } =
-    useLoanCalculatorStore();
+  const {
+    setLoanFormValues,
+    calculatePrincipalAtGraduation,
+    setStage,
+    setTotalUndergradLoan,
+    setTotalMastersLoan,
+    setTotalMaintenanceLoan,
+  } = useLoanCalculatorStore();
 
   return (
     <Formik
       initialValues={{
-        courseStartYear: 2015,
-        courseLength: 3,
+        courseStartYear: undefined,
+        courseLength: undefined,
         country: "",
-        loanPlan: LOAN_PLANS.plan1.id,
+        loanPlan: undefined,
         tutionFeeLoan: 0,
         mastersTutionFeeLoan: 0,
         maintenanceLoan: 0,
         maintenanceGrant: 0,
-        postgrad: "no",
-        mastersLength: 1,
-        mastersStartYear: 2018,
+        postgrad: undefined,
+        mastersLength: undefined,
+        mastersStartYear: undefined,
       }}
       validate={(values) => {
-        const errors: any = {};
-        if (!values.courseStartYear) errors.courseStartYear = "Required";
-        if (!values.country) errors.country = "Required";
-        return errors;
+        const result = ValidatedLoanFormSchema.safeParse(values);
+
+        if (!result.success) {
+          const errors: Record<string, string> = {};
+          result.error.issues.forEach((issue) => {
+            if (issue.path.length > 0) {
+              errors[issue.path[0] as string] = issue.message;
+            }
+          });
+          return errors;
+        }
+
+        return {};
       }}
       onSubmit={async (values, { setSubmitting, validateForm, setTouched }) => {
+        // Error handling
         const errors = await validateForm(values);
-
         if (Object.keys(errors).length > 0) {
           const touchedFields: Record<string, boolean> = {};
           Object.keys(errors).forEach((key) => {
@@ -148,8 +166,26 @@ export const LoanForm: React.FC = () => {
           return;
         }
 
-        setLoanFormValues(values);
-        calculatePrincipalAtGraduation(values);
+        // Parse form values
+        const result = LoanFormSchema.safeParse(values);
+        if (!result.success) {
+          setSubmitting(false);
+          return;
+        }
+        const parsedValues = result.data;
+
+        // Calculate and update store totals
+        const totalLoan =
+          (parsedValues.tutionFeeLoan || 0) +
+          (parsedValues.maintenanceLoan || 0) +
+          (parsedValues.mastersTutionFeeLoan || 0);
+
+        setTotalMaintenanceLoan(values.maintenanceLoan || 0);
+        setTotalMastersLoan(values.mastersTutionFeeLoan || 0);
+        setTotalUndergradLoan(totalLoan);
+
+        setLoanFormValues(parsedValues);
+        calculatePrincipalAtGraduation(parsedValues);
         setStage(STAGES.incomeProjection);
         setSubmitting(false);
       }}
