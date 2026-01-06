@@ -1,6 +1,7 @@
 // components/RadioButtonGroup.tsx
 import { Field } from "formik";
 import clsx from "clsx";
+import { Font } from "../../../../../shared/components/Text";
 
 interface RadioOption {
   value: string;
@@ -34,7 +35,7 @@ export const RadioButtonGroup: React.FC<RadioButtonGroupProps> = ({
               "flex items-center justify-center p-3 border-2 rounded-sm cursor-pointer transition-colors",
               {
                 // Selected state
-                "border-none bg-district-green hover:bg-district-green-1 text-beck-beige":
+                "border-none bg-district-green hover:bg-district-green-1 ":
                   isSelected,
                 // Unselected state
                 "border-northern-not-black text-northern-not-black hover:opacity-75":
@@ -48,7 +49,14 @@ export const RadioButtonGroup: React.FC<RadioButtonGroupProps> = ({
               value={option.value}
               className="sr-only"
             />
-            <span>{option.label}</span>
+            <Font.Label
+              className={clsx({
+                "text-beck-beige": isSelected,
+                "text-northern-not-black": !isSelected,
+              })}
+            >
+              {option.label}
+            </Font.Label>
           </label>
         );
       })}

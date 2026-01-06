@@ -7,7 +7,7 @@ export const LoanDetailsSection: React.FC<{
   return (
     <div
       className={clsx(
-        "mx-2 flex flex-col justify-center",
+        "mx-2 flex flex-col items-center pb-8",
         "transform transition-all  ease-in-out overflow-hidden",
         {
           "translate-x-0 duration-300": isActive,

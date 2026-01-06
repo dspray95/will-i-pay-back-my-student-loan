@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUndo } from "@fortawesome/free-solid-svg-icons";
 import { FIELD_CLASS } from "../consts";
 import type { LoanFormValues } from "../../../../../shared/schemas/LoanFormSchema";
+import { Font } from "../../../../../shared/components/Text";
 
 export const NumericField: React.FC<{
   name: string;
@@ -54,12 +55,12 @@ export const NumericField: React.FC<{
 
   return (
     <div className="grid grid-cols-2 gap-1 items-center">
-      <label className="text-sm">{label}</label>
+      <Font.Label>{label}</Font.Label>
       <div className="relative flex items-center gap-2">
-        <div className="relative flex-grow">
-          <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-northern-not-black">
+        <div className="relative grow">
+          <Font.Body className="absolute left-2 top-1/2 transform -translate-y-1/2 ">
             £
-          </span>
+          </Font.Body>
           <Field
             className={clsx(FIELD_CLASS, "pl-6")}
             type="number"

@@ -7,16 +7,16 @@ export const BorderWrappers: React.FC<{
   return (
     <div
       className={clsx({
-        "w-full min-h-svh bg-beck-beige p-[10px] pb-0 overflow-hidden flex flex-col":
+        "w-full min-h-svh bg-beck-beige p-2.5 pb-0 overflow-hidden flex flex-col":
           true,
-        "pb-[10px]": showBottomBorder,
+        "pb-2.5": showBottomBorder,
       })}
     >
       <div
         className={clsx({
-          "w-full flex-1 border-t-[20px] border-x-[20px] border-piccadilly-blue p-[4px] pb-0 flex flex-col":
+          "w-full flex-1 border-t-20 border-x-20 border-piccadilly-blue p-1 pb-0 flex flex-col":
             true,
-          "border-b-[20px] pb-[4px]": showBottomBorder,
+          "border-b-20 pb-1": showBottomBorder,
         })}
       >
         <div

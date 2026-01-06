@@ -1,3 +1,4 @@
+import { Font } from "../../../../../shared/components/Text";
 import { NumericField } from "./NumericField";
 
 interface LoanEstimatesSectionProps {
@@ -27,11 +28,11 @@ export const LoanEstimatesSection: React.FC<LoanEstimatesSectionProps> = ({
   return (
     <div className="flex flex-col gap-3 pt-8">
       <div className="flex flex-col mb-4">
-        <span className="text-2xl">LOAN AND GRANT ESTIMATES</span>
-        <span>
+        <Font.H2>LOAN AND GRANT ESTIMATES</Font.H2>
+        <Font.Body>
           These are our predicted estimates for your student loans and grants.
           You can change these if they are inaccurate.
-        </span>
+        </Font.Body>
       </div>
 
       <NumericField
@@ -72,18 +73,18 @@ export const LoanEstimatesSection: React.FC<LoanEstimatesSectionProps> = ({
         isEdited={isFieldEdited("maintenanceGrant")}
       />
 
-      <div className="font-semi-bold grid grid-cols-2 gap-1 pt-4 border-t border-northern-not-black/20">
-        <label className="font-bold">TOTAL LOAN</label>
-        <h5 className="font-semi-bold text-piccadilly-blue">
+      <div className="grid grid-cols-2 gap-1 pt-4 border-t border-northern-not-black/20">
+        <Font.Label>TOTAL LOAN</Font.Label>
+        <Font.Body className="font-semi-bold text-piccadilly-blue">
           £ {totalLoan.toLocaleString()}
-        </h5>
+        </Font.Body>
       </div>
 
-      <div className="font-semi-bold grid grid-cols-2 gap-1">
-        <label>TOTAL GRANT</label>
-        <h5 className="font-semi-bold text-piccadilly-blue">
+      <div className=" grid grid-cols-2 gap-1">
+        <Font.Label>TOTAL GRANT</Font.Label>
+        <Font.Body className="font-semi-bold text-piccadilly-blue">
           £ {totalGrant.toLocaleString()} {totalGrant === 0 && " 😢"}
-        </h5>
+        </Font.Body>
       </div>
     </div>
   );

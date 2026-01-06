@@ -1,5 +1,6 @@
 import { ErrorMessage } from "formik";
 import React from "react";
+import { Font } from "../../../../../shared/components/Text";
 
 interface FormFieldProps {
   label?: string;
@@ -14,7 +15,7 @@ export const FormField: React.FC<FormFieldProps> = ({
 }) => {
   return (
     <div className="flex flex-col">
-      {label && <label>{label}</label>}
+      {label && <Font.Label>{label}</Font.Label>}
       {children}
       {name && (
         <ErrorMessage

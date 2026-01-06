@@ -13,7 +13,7 @@ A UK student loan projection tool built with React 19, Vite, and Bun. This proje
 
 ## Getting Started
 
-This project uses **Bun**. If you don't have it installed, run `curl -fsSL https://bun.sh/install | bash`.
+This project uses **Bun**. If you don't have it installed, run `curl -fsSL https://bun.sh/install | bash` (Linux/MacOS) or `powershell -c "irm bun.sh/install.ps1|iex"` (windows).
 
 ### Installation
 
