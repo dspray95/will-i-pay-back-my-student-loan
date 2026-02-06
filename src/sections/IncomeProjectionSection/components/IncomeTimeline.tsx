@@ -1,83 +1,185 @@
-import { useMemo, type JSX } from "react";
-import { IncomeSlider } from "./Slider";
-import { Button } from "../../../shared/components/Button";
+import { useMemo, useState } from "react";
 import { getForgivenessPlanForYear } from "../../../domain/loan/forgiveness";
 import type { LoanPlan } from "../../../shared/types";
+import { arrays } from "../../../shared/utils/arrays";
+import { FutureIncomeSelector } from "./FutureIncomeSelector";
+import { useLoanCalculatorStore } from "../../../stores/loanCalculatorStore";
+import { IncomeSliderSet } from "./IncomeSliderSet";
+import { WrittenOffDivider } from "./WrittenOffDivider";
+import { cn } from "../../../shared/utils/ClassNames";
+import { Modal } from "../../../shared/components/Modal";
+
+const ANNUAL_INFLATION_RATE = 0.03; // 3%
 
 export const IncomeTimeline: React.FC<{
-  incomeByYear: Record<number, number>;
-  handleIncomeChange: (year: number, value: number) => void;
   undergradStartYear: number;
   undergradEndYear: number;
   repaymentPlan: LoanPlan;
-}> = ({
-  incomeByYear,
-  handleIncomeChange,
-  undergradStartYear,
-  undergradEndYear,
-  repaymentPlan,
-}) => {
-  const sliders = useMemo<JSX.Element[]>(() => {
-    const forgivenessPlan = getForgivenessPlanForYear(
-      undergradStartYear,
-      repaymentPlan
-    );
+}> = ({ undergradStartYear, undergradEndYear, repaymentPlan }) => {
+  // State
+  const [incomeMode, setIncomeMode] = useState<"auto" | "manual">();
+  const [userSetYears, setUserSetYears] = useState<Record<number, boolean>>({});
+  const [showWarningModal, setShowWarningModal] = useState(false);
 
-    // Repayments start the april after graduation
-    const repaymentStartYear = undergradEndYear + 1;
-    const loanForgivenessYear = repaymentStartYear + forgivenessPlan;
+  // Shared state
+  const { incomeByYear, setIncomeByYear } = useLoanCalculatorStore();
 
-    const currentYear = new Date().getFullYear();
-    const sliders: JSX.Element[] = [];
-    sliders.push(
-      <div className="flex flex-row items-center justify-center gap-2 w-full text-northern-not-black">
-        <div className="flex-grow border-b border-northern-not-black min-w-24 border-dashed" />
-        <div className="text-sm">
-          repayments start the april after graduation
-        </div>
-        <div className="flex-grow border-b border-northern-not-black  min-w-24 border-dashed" />
-      </div>
-    );
-    for (let year = repaymentStartYear; year <= loanForgivenessYear; year++) {
-      sliders.push(
-        <IncomeSlider
-          key={year}
-          year={year}
-          value={incomeByYear[year] || 0}
-          onChange={handleIncomeChange}
-        />
-      );
-      if (year === currentYear) {
-        sliders.push(
-          <div className="flex flex-col">
-            <div className="flex flex-row items-center justify-center gap-2 w-full text-northern-not-black">
-              <div className="flex-grow border-b border-northern-not-black min-w-24 border-dashed" />
-              <Button variant="no-bg">
-                {"set future income based on inflation"}
-              </Button>
-              <div className="flex-grow border-b border-northern-not-black  min-w-24 border-dashed" />
-            </div>
-          </div>
-        );
-      }
-      if (year === loanForgivenessYear) {
-        sliders.push(
-          <div className="flex flex-row items-center justify-center gap-2 w-full text-northern-not-black">
-            <div className="flex-grow border-b border-northern-not-black min-w-24 border-dashed" />
-            <div className="text-sm">loan written off</div>
-            <div className="flex-grow border-b border-northern-not-black  min-w-24 border-dashed" />
-          </div>
-        );
+  // Slider functions
+  const currentYear = new Date().getFullYear();
+  const repaymentStartYear = undergradEndYear + 1;
+
+  const forgivenessPlan = useMemo(
+    () => getForgivenessPlanForYear(undergradStartYear, repaymentPlan),
+    [undergradStartYear, repaymentPlan],
+  );
+
+  const loanForgivenessYear = repaymentStartYear + forgivenessPlan;
+
+  const handleIncomeChange = (year: number, value: number) => {
+    setUserSetYears((prev) => ({ ...prev, [year]: true }));
+
+    const updatedIncome = { ...incomeByYear };
+    updatedIncome[year] = value;
+
+    // Propagate to future untouched years up to forgiveness
+    const propagateUntil =
+      incomeMode === "auto" ? currentYear : loanForgivenessYear;
+
+    for (let y = year + 1; y <= propagateUntil; y++) {
+      if (!userSetYears[y]) {
+        updatedIncome[y] = value;
       }
     }
-    return sliders;
-  }, [
-    incomeByYear,
-    handleIncomeChange,
-    undergradEndYear,
-    undergradStartYear,
-    repaymentPlan,
-  ]);
 
-  return <div className="pb-4">{sliders}</div>;
+    setIncomeByYear(updatedIncome);
+  };
+
+  const applyIncomeMode = (mode: "auto" | "manual") => {
+    setIncomeMode(mode);
+
+    if (mode === "auto") {
+      const currentIncomeByYear =
+        useLoanCalculatorStore.getState().incomeByYear;
+      const baseIncome = currentIncomeByYear[currentYear] ?? 0;
+      const futureYears = arrays.range(currentYear + 1, loanForgivenessYear);
+
+      console.log("currentYear:", currentYear);
+      console.log("loanForgivenessYear:", loanForgivenessYear);
+      console.log("futureYears:", futureYears);
+      console.log("baseIncome:", baseIncome);
+
+      const updatedIncome: Record<number, number> = {};
+
+      Object.entries(currentIncomeByYear).forEach(([year, value]) => {
+        if (Number(year) <= currentYear) {
+          updatedIncome[Number(year)] = value;
+        }
+      });
+
+      futureYears.forEach((year, index) => {
+        updatedIncome[year] = Math.round(
+          baseIncome * Math.pow(1 + ANNUAL_INFLATION_RATE, index + 1),
+        );
+      });
+
+      console.log("updatedIncome:", updatedIncome);
+
+      setIncomeByYear(updatedIncome);
+
+      setUserSetYears((prev) => {
+        const updated: Record<number, boolean> = {};
+        Object.entries(prev).forEach(([year, value]) => {
+          if (Number(year) <= currentYear) {
+            updated[Number(year)] = value;
+          }
+        });
+        return updated;
+      });
+    }
+  };
+
+  const handleIncomeModeChange = (mode: "auto" | "manual") => {
+    if (mode === "auto") {
+      const hasFutureManualEntries = Object.keys(userSetYears).some(
+        (year) => Number(year) > currentYear && userSetYears[Number(year)],
+      );
+
+      if (hasFutureManualEntries) {
+        setShowWarningModal(true);
+        return;
+      }
+    }
+
+    applyIncomeMode(mode);
+  };
+
+  const confirmModeSwitch = () => {
+    applyIncomeMode("auto");
+    setShowWarningModal(false);
+  };
+
+  // Year ranges
+  const yearsToNow = arrays.range(repaymentStartYear, currentYear);
+  const yearsFromNowToForgiveness = arrays.range(
+    currentYear + 1,
+    loanForgivenessYear,
+  );
+
+  return (
+    <>
+      <div className="pb-4 flex flex-col gap-6">
+        {/** Income to current year */}
+        <IncomeSliderSet
+          yearsRange={yearsToNow}
+          handleIncomeChange={handleIncomeChange}
+        />
+        <FutureIncomeSelector
+          selectedMode={incomeMode}
+          handleIncomeModeChange={handleIncomeModeChange}
+        />
+        {/** Income from current year - could be set manually or by inflation estimations.
+         * Hidden until the user has chosen how they want to set their future income */}
+        <div
+          className={cn("grid transition-all duration-500 ease-in-out", {
+            "grid-rows-[1fr] opacity-100": incomeMode,
+            "grid-rows-[0fr] opacity-0": !incomeMode,
+          })}
+        >
+          <div className="overflow-hidden">
+            <IncomeSliderSet
+              yearsRange={yearsFromNowToForgiveness}
+              handleIncomeChange={handleIncomeChange}
+            />
+            <WrittenOffDivider />
+          </div>
+        </div>
+      </div>
+      {/* Warning modal for when the user clicks the 'set by inflation' button when they've
+       *  already set some future income values manually */}
+      <Modal
+        isOpen={showWarningModal}
+        onClose={() => setShowWarningModal(false)}
+      >
+        <h3 className="text-lg font-semibold mb-4">Switch to Auto Mode?</h3>
+        <p className="mb-6">
+          This will replace your manually entered future income values with
+          auto-calculated ones based on predicted inflation. Are you sure?
+        </p>
+        <div className="flex gap-3 justify-end">
+          <button
+            onClick={() => setShowWarningModal(false)}
+            className="px-4 py-2 border rounded"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={confirmModeSwitch}
+            className="px-4 py-2 bg-district-green text-beck-beige rounded"
+          >
+            Continue
+          </button>
+        </div>
+      </Modal>
+    </>
+  );
 };

@@ -28,13 +28,12 @@ export const LoanCalculatorFlow = () => {
       <div className="w-full md:max-w-2/3 xl:max-w-1/3">
         <PageHeader />
 
-        {stage >= STAGES.loanDetails && <LoanDetailsSection isActive={true} />}
+        {stage >= STAGES.loanDetails && <LoanDetailsSection />}
 
         {stage >= STAGES.incomeProjection && (
           <IncomeProjectionSection
             undergradStartYear={undergradStartYear}
             undergradEndYear={undergradEndYear}
-            isActive={true}
             repaymentPlan={(loanFormValues?.loanPlan as LoanPlan) || "plan1"}
           />
         )}

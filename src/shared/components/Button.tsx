@@ -26,10 +26,10 @@ export const Button: React.FC<ButtonProps> = ({
       onClick={onClick}
       className={clsx(
         // Base styles for all buttons
-        "font-semibold  cursor-pointer transition-colors",
+        "font-semibold  cursor-pointer transition-colors flex items-center justify-center gap-2",
         // Variant-specific styles
         {
-          "text-md text-not-white px-4 py-2 rounded-md border-none bg-piccadilly-blue hover:bg-piccadilly-blue-1 active:bg-piccadilly-blue-1":
+          "text-xl text-semibold text-beck-beige rounded-sm px-4 py-2 border-none bg-piccadilly-blue hover:bg-piccadilly-blue-1 active:bg-piccadilly-blue-1":
             variant === "primary",
           "text-md px-4 py-2 rounded-md border-none text-northern-not-black bg-district-green hover:bg-district-green-1 active:bg-district-green-1 active:text-not-white":
             variant === "secondary",

@@ -8,14 +8,14 @@ interface RadioOption {
   label: string;
 }
 
-interface RadioButtonGroupProps {
+interface FormikRadioButtonGridProps {
   name: string;
   options: RadioOption[];
   selectedValue: string;
   columns?: number;
 }
 
-export const RadioButtonGroup: React.FC<RadioButtonGroupProps> = ({
+export const FormikRadioButtonGrid: React.FC<FormikRadioButtonGridProps> = ({
   name,
   options,
   selectedValue,

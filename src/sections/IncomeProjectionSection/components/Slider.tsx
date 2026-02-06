@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import {
+  colorBeckBeigeDark1,
+  colorDistrictGreen,
   colorNorthernNotBlack,
-  colorSecondary,
-  colorSecondaryLight,
+  colorNotWhite,
 } from "../../../shared/constants/color";
 import styled from "styled-components";
+import { Font } from "../../../shared/components/Text";
 
 const StyledSlider = styled(Slider)`
   .rc-slider-handle:focus,
@@ -41,6 +43,36 @@ const generateIncomeSteps = () => {
 
 const incomeSteps: number[] = generateIncomeSteps();
 
+const getInterpolatedIndex = (value: number): number => {
+  if (value <= 0) return 0;
+  if (value >= incomeSteps[incomeSteps.length - 1]) {
+    return incomeSteps.length - 1;
+  }
+
+  for (let i = 0; i < incomeSteps.length - 1; i++) {
+    if (value >= incomeSteps[i] && value <= incomeSteps[i + 1]) {
+      const lowerValue = incomeSteps[i];
+      const upperValue = incomeSteps[i + 1];
+      const ratio = (value - lowerValue) / (upperValue - lowerValue);
+      return i + ratio;
+    }
+  }
+
+  return 0;
+};
+
+const generateSparseMarks = (steps: number[], fraction: number = 0.1) => {
+  const total = steps.length;
+  const interval = Math.floor(total * fraction);
+  const sparseMarks: Record<number, string> = {};
+
+  for (let i = 0; i < total; i += interval) {
+    sparseMarks[i] = "";
+  }
+
+  return sparseMarks;
+};
+
 type IncomeSliderProps = {
   year: number;
   value: number;
@@ -52,20 +84,25 @@ export const IncomeSlider: React.FC<IncomeSliderProps> = ({
   value,
   onChange,
 }) => {
-  const [selectedIndex, setSelectedIndex] = useState<number>(0);
+  const [selectedIndex, setSelectedIndex] = useState<number>(() =>
+    getInterpolatedIndex(value),
+  );
 
   useEffect(() => {
-    // When parent provides a new value, sync the local index
-    const newIndex = incomeSteps.findIndex((step) => step === value);
-    if (newIndex !== -1 && newIndex !== selectedIndex) {
+    console.log(
+      `Slider ${year} useEffect - value: ${value}, current selectedIndex: ${selectedIndex}`,
+    );
+    const newIndex = getInterpolatedIndex(value);
+    console.log(`Slider ${year} - newIndex: ${newIndex}`);
+    if (newIndex !== selectedIndex) {
       setSelectedIndex(newIndex);
     }
-  }, [value]);
+  }, [value]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleSliderChange = (value: number | number[]) => {
-    if (typeof value === "number") {
-      setSelectedIndex(value);
-      onChange(year, incomeSteps[value]);
+  const handleSliderChange = (val: number | number[]) => {
+    if (typeof val === "number") {
+      setSelectedIndex(val);
+      onChange(year, incomeSteps[val]);
     }
   };
 
@@ -79,38 +116,8 @@ export const IncomeSlider: React.FC<IncomeSliderProps> = ({
     }
 
     const numericValue = parseInt(rawValue, 10);
-
     onChange(year, numericValue);
-
-    // Find the step range and interpolate
-    let lowerIndex = 0;
-    let upperIndex = incomeSteps.length - 1;
-
-    // Find the two steps that bracket this value
-    for (let i = 0; i < incomeSteps.length - 1; i++) {
-      if (
-        numericValue >= incomeSteps[i] &&
-        numericValue <= incomeSteps[i + 1]
-      ) {
-        lowerIndex = i;
-        upperIndex = i + 1;
-        break;
-      }
-    }
-
-    // If value is beyond max, clamp to max
-    if (numericValue >= incomeSteps[incomeSteps.length - 1]) {
-      setSelectedIndex(incomeSteps.length - 1);
-      return;
-    }
-
-    // Interpolate between the two indices
-    const lowerValue = incomeSteps[lowerIndex];
-    const upperValue = incomeSteps[upperIndex];
-    const ratio = (numericValue - lowerValue) / (upperValue - lowerValue);
-    const interpolatedIndex = lowerIndex + ratio;
-
-    setSelectedIndex(interpolatedIndex);
+    setSelectedIndex(getInterpolatedIndex(numericValue));
   };
 
   const marks = generateSparseMarks(incomeSteps, 0.1);
@@ -127,42 +134,32 @@ export const IncomeSlider: React.FC<IncomeSliderProps> = ({
           value={selectedIndex}
           onChange={handleSliderChange}
           styles={{
-            track: { backgroundColor: colorSecondary, height: "5px" },
-            rail: { backgroundColor: colorNorthernNotBlack, height: "5px" },
+            track: { backgroundColor: colorDistrictGreen, height: "7.5px" },
+            rail: { backgroundColor: colorBeckBeigeDark1, height: "7.5px" },
             handle: {
-              width: "12px",
-              height: "12px",
+              width: "16px",
+              height: "16px",
               margin: "0px",
               padding: "0px",
-              transform: "translateY(0)",
               bottom: "0px",
               top: "1.5px",
-              backgroundColor: colorSecondaryLight,
-              border: "0px",
+              backgroundColor: colorNotWhite,
+              border: `3px solid ${colorNorthernNotBlack}`,
+              opacity: 1,
             },
           }}
         />
       </div>
       <div className="relative col-span-2 pl-2 text-sm">
-        <span className="absolute left-2 top-1/2 -translate-y-1/2">£</span>
+        <Font.Label className="absolute left-2 top-1/2 -translate-y-1/2">
+          £
+        </Font.Label>
         <input
           className="px-3 w-full"
           value={value.toLocaleString()}
           onChange={handleChange}
-        ></input>
+        />
       </div>
     </div>
   );
-};
-
-const generateSparseMarks = (steps: number[], fraction: number = 0.1) => {
-  const total = steps.length;
-  const interval = Math.floor(total * fraction);
-  const sparseMarks: Record<number, string> = {};
-
-  for (let i = 0; i < total; i += interval) {
-    sparseMarks[i] = "";
-  }
-
-  return sparseMarks;
 };

@@ -28,7 +28,7 @@ interface LoanCalculatorState {
   calculatePrincipalAtGraduation: (loanFormValues: LoanFormValues) => void;
   calculateRepaymentWithIncome: (
     incomeByYear: Record<number, number>,
-    loanFormValues: LoanFormValues
+    loanFormValues: LoanFormValues,
   ) => void;
   reset: () => void;
 }
@@ -60,7 +60,10 @@ export const useLoanCalculatorStore = create<LoanCalculatorState>(
 
     setTotalMastersLoan: (amount) => set({ totalMastersLoan: amount }),
 
-    setIncomeByYear: (income) => set({ incomeByYear: income }),
+    setIncomeByYear: (income) => {
+      console.log("Store setIncomeByYear called with:", income);
+      set({ incomeByYear: income });
+    },
 
     calculatePrincipalAtGraduation: (loanFormValues) => {
       const state = get();
@@ -72,19 +75,19 @@ export const useLoanCalculatorStore = create<LoanCalculatorState>(
         totalLoan,
         loanFormValues.courseStartYear,
         loanFormValues.courseLength,
-        loanFormValues.loanPlan
+        loanFormValues.loanPlan,
       );
 
       const mastersLoanAtGraduation = calculateLoanAtGraduation(
         state.totalMastersLoan,
         loanFormValues.mastersStartYear,
         loanFormValues.mastersLength,
-        "postgrad"
+        "postgrad",
       );
 
       console.log(
         "Undergrad balance at graduation:",
-        undergradLoanAtGraduation
+        undergradLoanAtGraduation,
       );
       console.log("Masters balance at graduation:", mastersLoanAtGraduation);
 
@@ -100,7 +103,7 @@ export const useLoanCalculatorStore = create<LoanCalculatorState>(
       const state = get();
       const repaymentEnd = getForgivenessPlanForYear(
         loanFormValues.courseStartYear,
-        loanFormValues.loanPlan
+        loanFormValues.loanPlan,
       );
 
       const graduationYear =
@@ -112,7 +115,7 @@ export const useLoanCalculatorStore = create<LoanCalculatorState>(
         graduationYear,
         repaymentEndYear,
         loanFormValues.loanPlan,
-        incomeByYear
+        incomeByYear,
       );
 
       const postgraduateRepayment =
@@ -124,7 +127,7 @@ export const useLoanCalculatorStore = create<LoanCalculatorState>(
                 loanFormValues.mastersLength +
                 30,
               "postgrad",
-              incomeByYear
+              incomeByYear,
             )
           : {
               finalBalance: 0,
@@ -139,5 +142,5 @@ export const useLoanCalculatorStore = create<LoanCalculatorState>(
     },
 
     reset: () => set(initialState),
-  })
+  }),
 );

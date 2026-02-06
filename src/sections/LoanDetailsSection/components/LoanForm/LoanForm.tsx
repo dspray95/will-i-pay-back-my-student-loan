@@ -1,12 +1,12 @@
 import { Formik, Form, Field, useFormikContext } from "formik";
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { faArrowDown, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { getYear } from "date-fns";
 
 import { useLoanFormLogic } from "./hooks/useLoanFormLogic";
 import { FormField } from "./components/FormField";
-import { RadioButtonGroup } from "./components/RadioButtonGroup";
+import { FormikRadioButtonGrid } from "./components/FormikRadioButtonGroup";
 import { LOAN_PLANS } from "../../../../domain/loan/plans";
 import { MastersSection } from "./components/MastersSection";
 import { LoanEstimatesSection } from "./components/LoanEstimateSection";
@@ -19,6 +19,7 @@ import {
   ValidatedLoanFormSchema,
   type LoanFormValues,
 } from "../../../../shared/schemas/LoanFormSchema";
+import { Font } from "../../../../shared/components/Text";
 
 const LoanFormContent: React.FC = () => {
   const { values, isSubmitting } = useFormikContext<LoanFormValues>();
@@ -38,7 +39,7 @@ const LoanFormContent: React.FC = () => {
 
   return (
     <Form className="flex flex-col gap-4">
-      <span className="text-piccadilly-blue text-xl">UNDERGRADUATE</span>
+      <Font.H2>UNDERGRADUATE</Font.H2>
 
       <FormField
         label="WHAT YEAR DID YOU START YOUR UNDERGRADUATE DEGREE?"
@@ -68,7 +69,7 @@ const LoanFormContent: React.FC = () => {
       </FormField>
 
       <FormField label="WHERE DID YOU TAKE YOUR LOAN?" name="country">
-        <RadioButtonGroup
+        <FormikRadioButtonGrid
           name="country"
           options={COUNTRY_OPTIONS}
           selectedValue={values.country}
@@ -86,16 +87,17 @@ const LoanFormContent: React.FC = () => {
           ))}
         </Field>
       </FormField>
-
-      <FormField label="DID YOU TAKE A POST-GRADUATE LOAN?" name="postgrad">
-        <RadioButtonGroup
-          name="postgrad"
-          options={POSTGRAD_OPTIONS}
-          selectedValue={values.postgrad}
-        />
-      </FormField>
-      <MastersSection isVisible={showPostgradSection} />
-
+      <div className="pt-6">
+        <Font.H2 className="pb-3">POSTGRADUATE</Font.H2>
+        <FormField label="DID YOU TAKE A POST-GRADUATE LOAN?" name="postgrad">
+          <FormikRadioButtonGrid
+            name="postgrad"
+            options={POSTGRAD_OPTIONS}
+            selectedValue={values.postgrad}
+          />
+        </FormField>
+        <MastersSection isVisible={showPostgradSection} />
+      </div>
       <LoanEstimatesSection
         showPostgradSection={showPostgradSection}
         defaultValues={defaultValues}
@@ -107,7 +109,8 @@ const LoanFormContent: React.FC = () => {
       />
 
       <Button type="submit" disabled={isSubmitting}>
-        income <FontAwesomeIcon icon={faArrowRight} />
+        <Font.Body className="text-beck-beige text-2xl pt-1">NEXT</Font.Body>
+        <FontAwesomeIcon className="text-base" icon={faArrowDown} />
       </Button>
     </Form>
   );
