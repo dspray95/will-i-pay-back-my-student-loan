@@ -1,10 +1,11 @@
 import { Fragment } from "react/jsx-runtime";
-import { IncomeSlider } from "./Slider";
+import { IncomeSlider } from "./IncomeSlider";
 import { useLoanCalculatorStore } from "../../../stores/loanCalculatorStore";
 
 interface IncomeSliderSetProps {
   yearsRange: number[];
   handleIncomeChange: (year: number, value: number) => void;
+  showButton?: boolean;
 }
 
 export const IncomeSliderSet: React.FC<IncomeSliderSetProps> = ({
@@ -14,7 +15,7 @@ export const IncomeSliderSet: React.FC<IncomeSliderSetProps> = ({
   const { incomeByYear } = useLoanCalculatorStore();
   console.log("IncomeSliderSet rendering, incomeByYear:", incomeByYear);
   return (
-    <div>
+    <div className="relative overflow-visible">
       {yearsRange.map((year) => (
         <Fragment key={year}>
           <IncomeSlider

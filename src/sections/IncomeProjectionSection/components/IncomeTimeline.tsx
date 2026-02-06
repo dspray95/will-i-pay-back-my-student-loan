@@ -8,6 +8,7 @@ import { IncomeSliderSet } from "./IncomeSliderSet";
 import { WrittenOffDivider } from "./WrittenOffDivider";
 import { cn } from "../../../shared/utils/ClassNames";
 import { Modal } from "../../../shared/components/Modal";
+import { AutoSetButton } from "./AutoSetButton";
 
 const ANNUAL_INFLATION_RATE = 0.03; // 3%
 
@@ -20,6 +21,7 @@ export const IncomeTimeline: React.FC<{
   const [incomeMode, setIncomeMode] = useState<"auto" | "manual">();
   const [userSetYears, setUserSetYears] = useState<Record<number, boolean>>({});
   const [showWarningModal, setShowWarningModal] = useState(false);
+  const [lastTouchedYear, setLastTouchedYear] = useState<number>();
 
   // Shared state
   const { incomeByYear, setIncomeByYear } = useLoanCalculatorStore();
@@ -37,6 +39,7 @@ export const IncomeTimeline: React.FC<{
 
   const handleIncomeChange = (year: number, value: number) => {
     setUserSetYears((prev) => ({ ...prev, [year]: true }));
+    setLastTouchedYear(year);
 
     const updatedIncome = { ...incomeByYear };
     updatedIncome[year] = value;
@@ -54,47 +57,44 @@ export const IncomeTimeline: React.FC<{
     setIncomeByYear(updatedIncome);
   };
 
+  const applyInflationFill = (fromYear: number) => {
+    const currentIncomeByYear =
+      useLoanCalculatorStore.getState().incomeByYear;
+    const baseIncome = currentIncomeByYear[fromYear] ?? 0;
+    const futureYears = arrays.range(fromYear + 1, loanForgivenessYear);
+
+    const updatedIncome: Record<number, number> = {};
+
+    Object.entries(currentIncomeByYear).forEach(([year, value]) => {
+      if (Number(year) <= fromYear) {
+        updatedIncome[Number(year)] = value;
+      }
+    });
+
+    futureYears.forEach((year, index) => {
+      updatedIncome[year] = Math.round(
+        baseIncome * Math.pow(1 + ANNUAL_INFLATION_RATE, index + 1),
+      );
+    });
+
+    setIncomeByYear(updatedIncome);
+
+    setUserSetYears((prev) => {
+      const updated: Record<number, boolean> = {};
+      Object.entries(prev).forEach(([year, value]) => {
+        if (Number(year) <= fromYear) {
+          updated[Number(year)] = value;
+        }
+      });
+      return updated;
+    });
+  };
+
   const applyIncomeMode = (mode: "auto" | "manual") => {
     setIncomeMode(mode);
 
     if (mode === "auto") {
-      const currentIncomeByYear =
-        useLoanCalculatorStore.getState().incomeByYear;
-      const baseIncome = currentIncomeByYear[currentYear] ?? 0;
-      const futureYears = arrays.range(currentYear + 1, loanForgivenessYear);
-
-      console.log("currentYear:", currentYear);
-      console.log("loanForgivenessYear:", loanForgivenessYear);
-      console.log("futureYears:", futureYears);
-      console.log("baseIncome:", baseIncome);
-
-      const updatedIncome: Record<number, number> = {};
-
-      Object.entries(currentIncomeByYear).forEach(([year, value]) => {
-        if (Number(year) <= currentYear) {
-          updatedIncome[Number(year)] = value;
-        }
-      });
-
-      futureYears.forEach((year, index) => {
-        updatedIncome[year] = Math.round(
-          baseIncome * Math.pow(1 + ANNUAL_INFLATION_RATE, index + 1),
-        );
-      });
-
-      console.log("updatedIncome:", updatedIncome);
-
-      setIncomeByYear(updatedIncome);
-
-      setUserSetYears((prev) => {
-        const updated: Record<number, boolean> = {};
-        Object.entries(prev).forEach(([year, value]) => {
-          if (Number(year) <= currentYear) {
-            updated[Number(year)] = value;
-          }
-        });
-        return updated;
-      });
+      applyInflationFill(currentYear);
     }
   };
 
@@ -125,6 +125,14 @@ export const IncomeTimeline: React.FC<{
     loanForgivenessYear,
   );
 
+  // h-10 = 40px per slider row
+  const SLIDER_ROW_HEIGHT = 40;
+  const lastTouchedYearIndex = lastTouchedYear
+    ? yearsFromNowToForgiveness.indexOf(lastTouchedYear)
+    : -1;
+  const buttonOffset =
+    lastTouchedYearIndex >= 0 ? lastTouchedYearIndex * SLIDER_ROW_HEIGHT : 0;
+
   return (
     <>
       <div className="pb-4 flex flex-col gap-6">
@@ -140,11 +148,21 @@ export const IncomeTimeline: React.FC<{
         {/** Income from current year - could be set manually or by inflation estimations.
          * Hidden until the user has chosen how they want to set their future income */}
         <div
-          className={cn("grid transition-all duration-500 ease-in-out", {
-            "grid-rows-[1fr] opacity-100": incomeMode,
-            "grid-rows-[0fr] opacity-0": !incomeMode,
-          })}
+          className={cn(
+            "relative grid transition-all duration-500 ease-in-out",
+            {
+              "grid-rows-[1fr] opacity-100 overflow-visible": incomeMode,
+              "grid-rows-[0fr] opacity-0": !incomeMode,
+            },
+          )}
         >
+          {incomeMode === "manual" && (
+            <AutoSetButton
+              year={lastTouchedYear}
+              topOffset={buttonOffset}
+              onClick={() => lastTouchedYear && applyInflationFill(lastTouchedYear)}
+            />
+          )}
           <div className="overflow-hidden">
             <IncomeSliderSet
               yearsRange={yearsFromNowToForgiveness}

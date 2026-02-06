@@ -123,7 +123,7 @@ export const IncomeSlider: React.FC<IncomeSliderProps> = ({
   const marks = generateSparseMarks(incomeSteps, 0.1);
 
   return (
-    <div className="grid grid-cols-12 items-center max-w-full justify-center py-2 px-4">
+    <div className="grid grid-cols-12 items-center max-w-full justify-center h-10 px-4">
       <span className="col-span-1 text-sm">{year}</span>
       <div className="col-span-9 px-4">
         <StyledSlider

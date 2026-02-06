@@ -21,7 +21,7 @@ export const IncomeProjectionSection: React.FC<{
   } = useLoanCalculatorStore();
 
   return (
-    <div className="flex flex-col gap-2 items-center justify-center py-12 bg-pink-500">
+    <div className="flex flex-col gap-2 items-center justify-center py-12">
       <div className="relative w-full flex flex-col items-center justify-center mb-4 text-center">
         <Font.H1>INCOME</Font.H1>
         <Font.Body>
@@ -37,7 +37,6 @@ export const IncomeProjectionSection: React.FC<{
           repaymentPlan={repaymentPlan}
         />
       </div>
-      =
       <Button
         className="w-full"
         type="submit"
