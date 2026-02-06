@@ -4,14 +4,11 @@ import { LoanDetailsSection } from "../../sections/LoanDetailsSection/LoanDetail
 import { RepaymentResultsSplashSection } from "../../sections/RepaymentResultsSplashSection/RepaymentResultsSplashSection";
 import { useLoanCalculatorStore } from "../../stores/loanCalculatorStore";
 import { STAGES } from "../../shared/constants/stages";
-import { useState } from "react";
 import { BorderWrappers } from "./components/BorderWrappers";
 import { PageHeader } from "./components/PageHeader";
 
 export const LoanCalculatorFlow = () => {
   const { stage, loanFormValues } = useLoanCalculatorStore();
-  // Local state
-  const [showBottomBorder, setShowBottomBorder] = useState(false);
 
   let undergradEndYear = 2018;
   let undergradStartYear = 2015;
@@ -21,7 +18,7 @@ export const LoanCalculatorFlow = () => {
     undergradStartYear = loanFormValues.courseStartYear;
   }
 
-  if (stage >= STAGES.repaymentResultsSplash) setShowBottomBorder(true);
+  const showBottomBorder = stage >= STAGES.repaymentResultsSplash;
 
   return (
     <BorderWrappers showBottomBorder={showBottomBorder}>

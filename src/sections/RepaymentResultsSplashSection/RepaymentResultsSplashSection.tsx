@@ -1,20 +1,20 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { getCopyText } from "./text";
-import { RepaymentPlot } from "./components/RepaymentPlot";
-import { useRef } from "react";
+import { useEffect, useMemo } from "react";
 import { Button } from "../../shared/components/Button";
 import { useLoanCalculatorStore } from "../../stores/loanCalculatorStore";
 import { processResults } from "./processResults";
 import { STAGES } from "../../shared/constants/stages";
+import { Font } from "../../shared/components/Text";
 
 const ErrorSplash: React.FC = () => {
   const { setStage } = useLoanCalculatorStore();
   return (
-    <div className="relative w-full flex items-center justify-center">
-      <p>Woops... Something went wrong</p>
+    <div className="flex flex-col items-center justify-center gap-4 py-12">
+      <Font.Body>Woops... Something went wrong</Font.Body>
       <Button onClick={() => setStage(STAGES.incomeProjection)}>
-        back <FontAwesomeIcon icon={faArrowLeft} />
+        <FontAwesomeIcon icon={faArrowLeft} /> back
       </Button>
     </div>
   );
@@ -27,9 +27,19 @@ export const RepaymentResultsSplashSection: React.FC = () => {
     undergraduateLoanAtGraduation,
     postgraduateLoanAtGraduation,
     loanFormValues,
+    incomeByYear,
+    calculateRepaymentWithIncome,
+    setStage,
   } = useLoanCalculatorStore();
 
-  const repaymentPlotRef = useRef<HTMLDivElement>(null);
+  // Recalculate when upstream inputs change (debounced for slider drags)
+  useEffect(() => {
+    if (!loanFormValues) return;
+    const timer = setTimeout(() => {
+      calculateRepaymentWithIncome(incomeByYear, loanFormValues);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [incomeByYear, loanFormValues, undergraduateLoanAtGraduation, postgraduateLoanAtGraduation, calculateRepaymentWithIncome]);
 
   // Guard clause for missing data
   if (
@@ -40,7 +50,6 @@ export const RepaymentResultsSplashSection: React.FC = () => {
     return <ErrorSplash />;
   }
 
-  // Now TypeScript knows these are defined
   const calculationResults = processResults(
     undergraduateRepaymentPlan,
     postgraduateRepaymentPlan,
@@ -51,6 +60,12 @@ export const RepaymentResultsSplashSection: React.FC = () => {
   const willRepayLoans =
     calculationResults.willRepayUndergraduateLoan &&
     calculationResults.willRepayPostgraduateLoan;
+
+  // Stabilize random copy text — only re-pick when the yes/no outcome changes
+  const copyText = useMemo(() => ({
+    heading: willRepayLoans ? getCopyText("yes") : getCopyText("no"),
+    snark: willRepayLoans ? getCopyText("yes-snark") : getCopyText("no-snark"),
+  }), [willRepayLoans]);
 
   const totalRepaid =
     calculationResults.totalPostgraduateDebtPaid +
@@ -64,68 +79,54 @@ export const RepaymentResultsSplashSection: React.FC = () => {
     calculationResults.undergraduateAmountForgiven +
     calculationResults.postgraduateAmountForgiven;
 
-  console.log(calculationResults);
-
   return (
-    <div className="relative w-full flex flex-col items-center justify-center mb-4">
-      <div className="relative flex min-h-svh -translate-y-8 flex-col items-center justify-center ">
-        {willRepayLoans && (
+    <div className="flex flex-col gap-2 items-center justify-center py-12">
+      <div className="w-full flex flex-col items-center justify-center mb-4 text-center">
+        {willRepayLoans ? (
           <>
-            <h1>{getCopyText("yes")}</h1>
-            <p>{getCopyText("yes-snark")}</p>
+            <Font.H1>{copyText.heading}</Font.H1>
+            <Font.Body>{copyText.snark}</Font.Body>
+          </>
+        ) : (
+          <>
+            <Font.H1>{copyText.heading}</Font.H1>
+            <Font.Body small>{copyText.snark}</Font.Body>
           </>
         )}
-        {!willRepayLoans && (
-          <>
-            <h1>{getCopyText("no")}</h1>
-            <p className="text-xs text-gray-400">{getCopyText("no-snark")}</p>
-          </>
-        )}
-        <div className="flex items-center justify-center gap-2 flex-col text-sm">
-          <p className="pt-8">
-            You'll repay{" "}
-            <span className="font-mono northern-not-black text-base">
-              £{parseFloat(totalRepaid.toFixed(2))}
-            </span>{" "}
-            in total
-          </p>
-          {!willRepayLoans && (
-            <p>
-              You will have{" "}
-              <span className="font-mono northern-not-black text-base">
-                £{parseFloat(totalForgiven.toFixed(2))}
-              </span>{" "}
-              forgiven after 30 years.
-            </p>
-          )}
-          <p>
-            You'll accrue{" "}
-            <span className="font-mono northern-not-black text-base">
-              £{parseFloat(totalInterestAccrued.toFixed(2))}
-            </span>{" "}
-            in interest over the repayment period.
-          </p>
-        </div>
-        <div
-          className="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center justify-center, hover:cursor-pointer gap-1"
-          onClick={() => {
-            repaymentPlotRef.current?.scrollIntoView({ behavior: "smooth" });
-          }}
-        >
-          <span>More details</span>
-          <FontAwesomeIcon
-            className="animate-bounce"
-            width={200}
-            icon={faChevronDown}
-          />
-        </div>
       </div>
-      <div ref={repaymentPlotRef}>
-        <RepaymentPlot
-          undergraduateRepaymentBreakdown={
-            undergraduateRepaymentPlan.yearByYearBreakdown
-          }
-          courseLength={loanFormValues.courseLength}
+      <div className="flex items-center justify-center gap-2 flex-col text-sm">
+        <Font.Body>
+          You'll repay{" "}
+          <span className="font-mono text-northern-not-black text-base font-semibold">
+            £{parseFloat(totalRepaid.toFixed(2))}
+          </span>{" "}
+          in total
+        </Font.Body>
+        {!willRepayLoans && (
+          <Font.Body>
+            You will have{" "}
+            <span className="font-mono text-northern-not-black text-base font-semibold">
+              £{parseFloat(totalForgiven.toFixed(2))}
+            </span>{" "}
+            forgiven after 30 years.
+          </Font.Body>
+        )}
+        <Font.Body>
+          You'll accrue{" "}
+          <span className="font-mono text-northern-not-black text-base font-semibold">
+            £{parseFloat(totalInterestAccrued.toFixed(2))}
+          </span>{" "}
+          in interest over the repayment period.
+        </Font.Body>
+      </div>
+      <div
+        className="flex flex-col items-center justify-center cursor-pointer gap-1 pt-8"
+        onClick={() => setStage(STAGES.repaymentBreakdown)}
+      >
+        <Font.Body small>More details</Font.Body>
+        <FontAwesomeIcon
+          className="animate-bounce text-northern-not-black"
+          icon={faChevronDown}
         />
       </div>
     </div>
