@@ -2,10 +2,12 @@ import { IncomeProjectionSection } from "../../sections/IncomeProjectionSection/
 import type { LoanPlan } from "../../shared/types";
 import { LoanDetailsSection } from "../../sections/LoanDetailsSection/LoanDetailsSection";
 import { RepaymentResultsSplashSection } from "../../sections/RepaymentResultsSplashSection/RepaymentResultsSplashSection";
+import { RepaymentBreakdownSection } from "../../sections/RepaymentBreakdownSection/RepaymentBreakdownSection";
 import { useLoanCalculatorStore } from "../../stores/loanCalculatorStore";
 import { STAGES } from "../../shared/constants/stages";
 import { BorderWrappers } from "./components/BorderWrappers";
 import { PageHeader } from "./components/PageHeader";
+import { ScrollOnReveal } from "./components/ScrollOnReveal";
 
 export const LoanCalculatorFlow = () => {
   const { stage, loanFormValues } = useLoanCalculatorStore();
@@ -18,7 +20,7 @@ export const LoanCalculatorFlow = () => {
     undergradStartYear = loanFormValues.courseStartYear;
   }
 
-  const showBottomBorder = stage >= STAGES.repaymentResultsSplash;
+  const showBottomBorder = stage >= STAGES.repaymentBreakdown;
 
   return (
     <BorderWrappers showBottomBorder={showBottomBorder}>
@@ -28,15 +30,25 @@ export const LoanCalculatorFlow = () => {
         {stage >= STAGES.loanDetails && <LoanDetailsSection />}
 
         {stage >= STAGES.incomeProjection && (
-          <IncomeProjectionSection
-            undergradStartYear={undergradStartYear}
-            undergradEndYear={undergradEndYear}
-            repaymentPlan={(loanFormValues?.loanPlan as LoanPlan) || "plan1"}
-          />
+          <ScrollOnReveal>
+            <IncomeProjectionSection
+              undergradStartYear={undergradStartYear}
+              undergradEndYear={undergradEndYear}
+              repaymentPlan={(loanFormValues?.loanPlan as LoanPlan) || "plan1"}
+            />
+          </ScrollOnReveal>
         )}
 
         {stage >= STAGES.repaymentResultsSplash && (
-          <RepaymentResultsSplashSection />
+          <ScrollOnReveal>
+            <RepaymentResultsSplashSection />
+          </ScrollOnReveal>
+        )}
+
+        {stage >= STAGES.repaymentBreakdown && (
+          <ScrollOnReveal>
+            <RepaymentBreakdownSection />
+          </ScrollOnReveal>
         )}
       </div>
     </BorderWrappers>

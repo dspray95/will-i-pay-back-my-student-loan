@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, forwardRef, useImperativeHandle } from "react";
 import { getForgivenessPlanForYear } from "../../../domain/loan/forgiveness";
 import type { LoanPlan } from "../../../shared/types";
 import { arrays } from "../../../shared/utils/arrays";
@@ -12,11 +12,19 @@ import { AutoSetButton } from "./AutoSetButton";
 
 const ANNUAL_INFLATION_RATE = 0.03; // 3%
 
-export const IncomeTimeline: React.FC<{
-  undergradStartYear: number;
-  undergradEndYear: number;
-  repaymentPlan: LoanPlan;
-}> = ({ undergradStartYear, undergradEndYear, repaymentPlan }) => {
+export interface IncomeTimelineRef {
+  expandFutureIncome: () => void;
+}
+
+export const IncomeTimeline = forwardRef<
+  IncomeTimelineRef,
+  {
+    undergradStartYear: number;
+    undergradEndYear: number;
+    repaymentPlan: LoanPlan;
+    onFutureIncomeModeChange?: (mode: "auto" | "manual" | undefined) => void;
+  }
+>(({ undergradStartYear, undergradEndYear, repaymentPlan, onFutureIncomeModeChange }, ref) => {
   // State
   const [incomeMode, setIncomeMode] = useState<"auto" | "manual">();
   const [userSetYears, setUserSetYears] = useState<Record<number, boolean>>({});
@@ -92,6 +100,7 @@ export const IncomeTimeline: React.FC<{
 
   const applyIncomeMode = (mode: "auto" | "manual") => {
     setIncomeMode(mode);
+    onFutureIncomeModeChange?.(mode);
 
     if (mode === "auto") {
       applyInflationFill(currentYear);
@@ -117,6 +126,15 @@ export const IncomeTimeline: React.FC<{
     applyIncomeMode("auto");
     setShowWarningModal(false);
   };
+
+  // Expose method to parent
+  useImperativeHandle(ref, () => ({
+    expandFutureIncome: () => {
+      if (!incomeMode) {
+        setIncomeMode("auto");
+      }
+    },
+  }));
 
   // Year ranges
   const yearsToNow = arrays.range(repaymentStartYear, currentYear);
@@ -200,4 +218,4 @@ export const IncomeTimeline: React.FC<{
       </Modal>
     </>
   );
-};
+});
