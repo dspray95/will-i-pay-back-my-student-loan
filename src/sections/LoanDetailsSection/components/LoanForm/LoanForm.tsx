@@ -178,14 +178,9 @@ export const LoanForm: React.FC = () => {
         const parsedValues = result.data;
 
         // Calculate and update store totals
-        const totalLoan =
-          (parsedValues.tutionFeeLoan || 0) +
-          (parsedValues.maintenanceLoan || 0) +
-          (parsedValues.mastersTutionFeeLoan || 0);
-
-        setTotalMaintenanceLoan(values.maintenanceLoan || 0);
-        setTotalMastersLoan(values.mastersTutionFeeLoan || 0);
-        setTotalUndergradLoan(totalLoan);
+        setTotalUndergradLoan(parsedValues.tutionFeeLoan || 0);
+        setTotalMaintenanceLoan(parsedValues.maintenanceLoan || 0);
+        setTotalMastersLoan(parsedValues.mastersTutionFeeLoan || 0);
 
         setLoanFormValues(parsedValues);
         calculatePrincipalAtGraduation(parsedValues);

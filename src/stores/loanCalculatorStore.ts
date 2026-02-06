@@ -69,8 +69,6 @@ export const useLoanCalculatorStore = create<LoanCalculatorState>(
       const state = get();
       const totalLoan = state.totalUndergradLoan + state.totalMaintenanceLoan;
 
-      console.log("total loan no interest: ", totalLoan);
-
       const undergradLoanAtGraduation = calculateLoanAtGraduation(
         totalLoan,
         loanFormValues.courseStartYear,
@@ -78,18 +76,17 @@ export const useLoanCalculatorStore = create<LoanCalculatorState>(
         loanFormValues.loanPlan,
       );
 
-      const mastersLoanAtGraduation = calculateLoanAtGraduation(
-        state.totalMastersLoan,
-        loanFormValues.mastersStartYear,
-        loanFormValues.mastersLength,
-        "postgrad",
-      );
-
-      console.log(
-        "Undergrad balance at graduation:",
-        undergradLoanAtGraduation,
-      );
-      console.log("Masters balance at graduation:", mastersLoanAtGraduation);
+      const mastersLoanAtGraduation =
+        state.totalMastersLoan > 0 &&
+        loanFormValues.mastersStartYear !== undefined &&
+        loanFormValues.mastersLength !== undefined
+          ? calculateLoanAtGraduation(
+              state.totalMastersLoan,
+              loanFormValues.mastersStartYear,
+              loanFormValues.mastersLength,
+              "postgrad",
+            )
+          : 0;
 
       set({
         undergraduateLoanAtGraduation: undergradLoanAtGraduation,

@@ -56,7 +56,7 @@ export const processResults = (
   let totalPostgraduateLoanAmount = 0;
   let totalPostgraduateDebtPaid = 0;
 
-  if (totalPostgraduateLoanAmount !== 0) {
+  if (postgraduateLoanAtGraduation !== 0) {
     totalPostgraduateLoanAmount =
       postgraduateLoanAtGraduation +
       postgraduateRepaymentPlan.yearByYearBreakdown

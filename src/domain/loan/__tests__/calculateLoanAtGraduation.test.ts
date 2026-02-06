@@ -3,14 +3,16 @@ import { calculateLoanAtGraduation } from "../calculateLoanAtGraduation";
 
 describe("calculateLoanAtGraduation", () => {
   describe("interest-free plans", () => {
-    it("Plan 4 (Scotland) - no interest accrued", () => {
-      const result = calculateLoanAtGraduation(27000, 2022, 3, "plan4");
-      expect(result).toBe(27000);
-    });
-
     it("Plan 5 (post-2023 England/Wales) - no interest accrued", () => {
       const result = calculateLoanAtGraduation(30000, 2023, 3, "plan5");
       expect(result).toBe(30000);
+    });
+  });
+
+  describe("Plan 4 (Scotland) - accrues interest during study", () => {
+    it("Plan 4 accrues interest over a 3-year course", () => {
+      const result = calculateLoanAtGraduation(27000, 2022, 3, "plan4");
+      expect(result).toBeGreaterThan(27000);
     });
   });
   describe("termly disbursement modeling", () => {

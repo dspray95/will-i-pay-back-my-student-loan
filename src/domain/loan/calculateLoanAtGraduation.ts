@@ -10,7 +10,7 @@ export const calculateLoanAtGraduation = (
   courseLength: number,
   plan: LoanPlan
 ): number => {
-  if (plan === "plan4" || plan === "plan5") {
+  if (plan === "plan5") {
     return principal;
   }
 
