@@ -1,7 +1,7 @@
 import { Formik, Form, Field, useFormikContext } from "formik";
-import React from "react";
+import React, { useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowDown, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { faArrowDown } from "@fortawesome/free-solid-svg-icons";
 import { getYear } from "date-fns";
 
 import { useLoanFormLogic } from "./hooks/useLoanFormLogic";
@@ -30,6 +30,37 @@ const LoanFormContent: React.FC = () => {
     isFieldEdited,
     handleFieldChange,
   } = useLoanFormLogic();
+
+  const {
+    stage,
+    incomeByYear,
+    setLoanFormValues,
+    calculatePrincipalAtGraduation,
+    calculateRepaymentWithIncome,
+    setTotalUndergradLoan,
+    setTotalMastersLoan,
+    setTotalMaintenanceLoan,
+  } = useLoanCalculatorStore();
+
+  // Auto-recalculate when form values change and results are already showing
+  useEffect(() => {
+    if (stage < STAGES.repaymentResultsSplash) return;
+
+    const result = LoanFormSchema.safeParse(values);
+    if (!result.success) return;
+    const parsedValues = result.data;
+
+    const timer = setTimeout(() => {
+      setTotalUndergradLoan(parsedValues.tutionFeeLoan || 0);
+      setTotalMaintenanceLoan(parsedValues.maintenanceLoan || 0);
+      setTotalMastersLoan(parsedValues.mastersTutionFeeLoan || 0);
+      setLoanFormValues(parsedValues);
+      calculatePrincipalAtGraduation(parsedValues);
+      calculateRepaymentWithIncome(incomeByYear, parsedValues);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [values, stage, incomeByYear]);
 
   const totalLoan =
     (values.tutionFeeLoan || 0) +
@@ -118,8 +149,11 @@ const LoanFormContent: React.FC = () => {
 
 export const LoanForm: React.FC = () => {
   const {
+    stage,
+    incomeByYear,
     setLoanFormValues,
     calculatePrincipalAtGraduation,
+    calculateRepaymentWithIncome,
     setStage,
     setTotalUndergradLoan,
     setTotalMastersLoan,
@@ -184,7 +218,12 @@ export const LoanForm: React.FC = () => {
 
         setLoanFormValues(parsedValues);
         calculatePrincipalAtGraduation(parsedValues);
-        setStage(STAGES.incomeProjection);
+
+        if (stage >= STAGES.repaymentResultsSplash) {
+          calculateRepaymentWithIncome(incomeByYear, parsedValues);
+        } else {
+          setStage(STAGES.incomeProjection);
+        }
         setSubmitting(false);
       }}
     >

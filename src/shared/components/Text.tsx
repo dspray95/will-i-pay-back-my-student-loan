@@ -1,4 +1,5 @@
 import { cn } from "../utils/ClassNames";
+import { OutlineText } from "./OutlineText";
 
 const styles = {
   h1: "text-3xl semibold text-piccadilly-blue",
@@ -37,4 +38,25 @@ export const Font = {
     const textSize = small ? "text-sm" : "text-base";
     return <p className={cn(styles.body, textSize, className)}>{children}</p>;
   },
+  CurrencyBody: ({ children, className }: TextProps) => {
+    return (
+      <span
+        className={cn(
+          "font-mono text-northern-not-black text-base font-semibold",
+          className,
+        )}
+      >
+        {children}
+      </span>
+    );
+  },
+  Subtle: ({ children, className, small }: TextProps) => {
+    const textSize = small ? "text-sm" : "text-base";
+    return (
+      <p className={cn("text-northern-not-black-1", textSize, className)}>
+        {children}
+      </p>
+    );
+  },
+  OutlineHeader: OutlineText,
 };

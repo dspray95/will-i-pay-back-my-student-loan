@@ -2,21 +2,22 @@ import Plot from "react-plotly.js";
 import type { RepaymentBreakdown } from "../../../shared/types";
 
 export const RepaymentPlot: React.FC<{
-  undergraduateRepaymentBreakdown: RepaymentBreakdown;
+  repaymentBreakdown: RepaymentBreakdown;
   courseLength: number;
-}> = ({ undergraduateRepaymentBreakdown, courseLength }) => {
-  const startYear = undergraduateRepaymentBreakdown[0].year - courseLength - 1;
+  title?: string;
+}> = ({ repaymentBreakdown, courseLength, title = "Repayments" }) => {
+  const startYear = repaymentBreakdown[0].year - courseLength - 1;
 
   let years: number[] = [];
   for (
     let year = startYear;
-    year < undergraduateRepaymentBreakdown[0].year;
+    year < repaymentBreakdown[0].year;
     year++
   ) {
     years.push(year);
   }
   years = years.concat(
-    undergraduateRepaymentBreakdown.map((year) => year.year)
+    repaymentBreakdown.map((year) => year.year)
   );
 
   let repayments: number[] = [];
@@ -24,15 +25,15 @@ export const RepaymentPlot: React.FC<{
     repayments.push(0);
   }
   repayments = repayments.concat(
-    undergraduateRepaymentBreakdown.map((year) => year.repayment)
+    repaymentBreakdown.map((year) => year.repayment)
   );
 
   let repaymentsRunningTotal: number[] = [];
-  for (let i = 0; i < undergraduateRepaymentBreakdown.length; i++) {
+  for (let i = 0; i < repaymentBreakdown.length; i++) {
     const value = repaymentsRunningTotal[i - 1]
       ? repaymentsRunningTotal[i - 1]
       : 0;
-    const runningTotal = value + undergraduateRepaymentBreakdown[i].repayment;
+    const runningTotal = value + repaymentBreakdown[i].repayment;
     repaymentsRunningTotal.push(runningTotal);
   }
   repaymentsRunningTotal = Array(courseLength)
@@ -43,7 +44,7 @@ export const RepaymentPlot: React.FC<{
     loanBalance.push(0);
   }
   loanBalance = loanBalance.concat(
-    undergraduateRepaymentBreakdown.map((year) => year.endingBalance)
+    repaymentBreakdown.map((year) => year.endingBalance)
   );
 
   return (
@@ -78,7 +79,7 @@ export const RepaymentPlot: React.FC<{
       layout={{
         width: 700,
         height: 500,
-        title: { text: "Repayments" },
+        title: { text: title },
         paper_bgcolor: "rgba(0,0,0,0)", // Transparent background
         plot_bgcolor: "rgba(0,0,0,0)", // Transparent plot area
         font: {

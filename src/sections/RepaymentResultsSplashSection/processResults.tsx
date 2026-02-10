@@ -42,7 +42,7 @@ export const processResults = (
       undergraduateLoanAtGraduation +
       undergraduateRepaymentPlan.yearByYearBreakdown
         .map((year) => year.interestAccrued)
-        .reduce((accumulator, currentValue) => accumulator + currentValue);
+        .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 
     totalUndergraduateDebtPaid =
       undergraduateRepaymentPlan.yearByYearBreakdown.reduce(
@@ -61,7 +61,7 @@ export const processResults = (
       postgraduateLoanAtGraduation +
       postgraduateRepaymentPlan.yearByYearBreakdown
         .map((year) => year.interestAccrued)
-        .reduce((accumulator, currentValue) => accumulator + currentValue);
+        .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 
     totalPostgraduateDebtPaid =
       postgraduateRepaymentPlan.yearByYearBreakdown.reduce(

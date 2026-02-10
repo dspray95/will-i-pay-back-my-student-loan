@@ -12,8 +12,9 @@ import { ScrollOnReveal } from "./components/ScrollOnReveal";
 export const LoanCalculatorFlow = () => {
   const { stage, loanFormValues } = useLoanCalculatorStore();
 
-  let undergradEndYear = 2018;
   let undergradStartYear = 2015;
+  let undergradEndYear = 2018;
+
   if (loanFormValues) {
     undergradEndYear =
       loanFormValues.courseStartYear + loanFormValues.courseLength;
@@ -45,10 +46,10 @@ export const LoanCalculatorFlow = () => {
           </ScrollOnReveal>
         )}
 
-        {stage >= STAGES.repaymentBreakdown && (
-          <ScrollOnReveal>
+        {stage >= STAGES.repaymentResultsSplash && (
+          <div id="repayment-breakdown">
             <RepaymentBreakdownSection />
-          </ScrollOnReveal>
+          </div>
         )}
       </div>
     </BorderWrappers>
