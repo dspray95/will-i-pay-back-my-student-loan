@@ -32,7 +32,7 @@ describe("getRepaymentThreshold", () => {
 
 describe("getUpperInterestThreshold", () => {
   it("returns correct upper threshold for Plan 2", () => {
-    expect(getUpperInterestThreshold(2025, "plan2")).toBe(52885);
+    expect(getUpperInterestThreshold(2025, "plan2")).toBe(51245);
     expect(getUpperInterestThreshold(2024, "plan2")).toBe(53312);
   });
 

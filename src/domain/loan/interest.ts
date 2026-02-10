@@ -60,7 +60,8 @@ const LONG_TERM_FORECAST: {
 export function getInterestRateAtRepayment(
   year: number,
   plan: LoanPlan,
-  annualIncome: number
+  annualIncome: number,
+  overrideRepaymentThreshold?: number
 ): number {
   const ratesForYear = POSTGRAD_INTEREST_RATES[year];
   const planRates = ratesForYear
@@ -69,7 +70,8 @@ export function getInterestRateAtRepayment(
 
   // Plan 2 uses progressive interest rates based on income
   if (plan === "plan2") {
-    const lowerThreshold = getRepaymentThreshold(year, plan);
+    const lowerThreshold =
+      overrideRepaymentThreshold ?? getRepaymentThreshold(year, plan);
     const upperThreshold = getUpperInterestThreshold(year, plan);
 
     if (annualIncome <= lowerThreshold) {

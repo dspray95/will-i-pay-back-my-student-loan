@@ -73,13 +73,13 @@ describe("getInterestRateDuringStudy", () => {
   it("returns correct rates for known years", () => {
     expect(getInterestRateDuringStudy(2025, "plan2")).toBe(6.2);
     expect(getInterestRateDuringStudy(2024, "plan1")).toBe(4.3);
-    expect(getInterestRateDuringStudy(2023, "plan5")).toBe(0);
+    expect(getInterestRateDuringStudy(2023, "plan5")).toBe(4.7);
   });
 
-  it("returns 0% for Plan 5 (interest-free while studying)", () => {
-    expect(getInterestRateDuringStudy(2023, "plan5")).toBe(0);
-    expect(getInterestRateDuringStudy(2024, "plan5")).toBe(0);
-    expect(getInterestRateDuringStudy(2025, "plan5")).toBe(0);
+  it("returns RPI rate for Plan 5 during study", () => {
+    expect(getInterestRateDuringStudy(2023, "plan5")).toBe(4.7);
+    expect(getInterestRateDuringStudy(2024, "plan5")).toBe(4.3);
+    expect(getInterestRateDuringStudy(2025, "plan5")).toBe(3.2);
   });
 
   it("falls back to earliest rate for years predating data", () => {

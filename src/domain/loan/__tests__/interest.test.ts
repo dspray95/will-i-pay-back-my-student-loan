@@ -16,7 +16,7 @@ describe("getInterestRateAtRepayment", () => {
     });
 
     it("returns maximum rate when income is at or above upper threshold", () => {
-      const rate = getInterestRateAtRepayment(2025, "plan2", 52885);
+      const rate = getInterestRateAtRepayment(2025, "plan2", 51245);
       expect(rate).toBe(7.3);
 
       const rateAboveThreshold = getInterestRateAtRepayment(
@@ -30,7 +30,7 @@ describe("getInterestRateAtRepayment", () => {
     it("interpolates rate for income between thresholds", () => {
       // Income exactly in the middle should give rate in the middle
       const lowerThreshold = 28470;
-      const upperThreshold = 52885;
+      const upperThreshold = 51245;
       const midIncome = (lowerThreshold + upperThreshold) / 2;
 
       const rate = getInterestRateAtRepayment(2025, "plan2", midIncome);
@@ -41,15 +41,15 @@ describe("getInterestRateAtRepayment", () => {
 
     it("calculates correct progressive rate for specific income", () => {
       // Income: £40,000
-      // Lower threshold: £28,470, Upper threshold: £52,885
+      // Lower threshold: £28,470, Upper threshold: £51,245
       // Min rate: 4.3%, Max rate: 7.3%
       // Income above lower: 40000 - 28470 = 11530
-      // Range: 52885 - 28470 = 24415
+      // Range: 51245 - 28470 = 22775
       // Rate range: 7.3 - 4.3 = 3.0
-      // Expected: 4.3 + (11530 / 24415) * 3.0 ≈ 5.72%
+      // Expected: 4.3 + (11530 / 22775) * 3.0 ≈ 5.82%
 
       const rate = getInterestRateAtRepayment(2025, "plan2", 40000);
-      expect(rate).toBeCloseTo(5.72, 1);
+      expect(rate).toBeCloseTo(5.82, 1);
     });
   });
 

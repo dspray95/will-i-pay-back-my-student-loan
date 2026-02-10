@@ -2,10 +2,13 @@ import { describe, expect, it } from "vitest";
 import { calculateLoanAtGraduation } from "../calculateLoanAtGraduation";
 
 describe("calculateLoanAtGraduation", () => {
-  describe("interest-free plans", () => {
-    it("Plan 5 (post-2023 England/Wales) - no interest accrued", () => {
+  describe("Plan 5 accrues RPI interest during study", () => {
+    it("Plan 5 (post-2023 England) - accrues RPI interest", () => {
       const result = calculateLoanAtGraduation(30000, 2023, 3, "plan5");
-      expect(result).toBe(30000);
+      // Plan 5 charges RPI during study (no +3% margin)
+      // 2023: 4.7%, 2024: 4.3%, 2025: 3.2%
+      expect(result).toBeGreaterThan(30000);
+      expect(result).toBeLessThan(34000);
     });
   });
 

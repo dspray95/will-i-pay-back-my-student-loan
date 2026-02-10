@@ -22,12 +22,21 @@ export const calculateRepaymentPlan = (
     const previousYearIncome = incomeByYear[year - 1] || 0;
     const startingBalance = balance;
 
-    const annualInterestRate = getInterestRateAtRepayment(
+    const threshold = getRepaymentThreshold(year, plan);
+
+    // Interest rates change each September, mid-tax-year.
+    // April–August uses current year's rate; September–March uses the next.
+    const rateAprilToAug = getInterestRateAtRepayment(
       year,
       plan,
       previousYearIncome
     );
-    const threshold = getRepaymentThreshold(year, plan);
+    const rateSepToMar = getInterestRateAtRepayment(
+      year + 1,
+      plan,
+      previousYearIncome,
+      threshold
+    );
 
     let annualRepayment = 0;
     if (annualIncome > threshold) {
@@ -36,7 +45,6 @@ export const calculateRepaymentPlan = (
     }
 
     const monthlyRepayment = annualRepayment / 12;
-    const dailyRate = annualInterestRate / 100 / 365;
     let yearInterestAccrued = 0;
     let yearTotalRepaid = 0;
 
@@ -44,6 +52,11 @@ export const calculateRepaymentPlan = (
       const month = (3 + monthOffset) % 12;
       const calendarYear = month < 3 ? year + 1 : year;
       const daysInMonth = getDaysInMonth(new Date(calendarYear, month));
+
+      // September (monthOffset 5) is when SLC rates change
+      const annualInterestRate =
+        monthOffset < 5 ? rateAprilToAug : rateSepToMar;
+      const dailyRate = annualInterestRate / 100 / 365;
 
       const monthInterest =
         balance * (Math.pow(1 + dailyRate, daysInMonth) - 1);

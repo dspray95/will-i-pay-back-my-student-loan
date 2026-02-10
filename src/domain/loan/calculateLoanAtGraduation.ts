@@ -10,10 +10,6 @@ export const calculateLoanAtGraduation = (
   courseLength: number,
   plan: LoanPlan
 ): number => {
-  if (plan === "plan5") {
-    return principal;
-  }
-
   const annualLoanAmount = principal / courseLength;
   const termlyInstallment = annualLoanAmount / 3;
   let balance = 0;
