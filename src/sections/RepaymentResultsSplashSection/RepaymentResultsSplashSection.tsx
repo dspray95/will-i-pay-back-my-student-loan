@@ -107,7 +107,7 @@ export const RepaymentResultsSplashSection: React.FC = () => {
         <Font.OutlineHeader>{copyText.result}</Font.OutlineHeader>
         <Font.Body>{copyText.subheading}</Font.Body>
         <Font.Subtle small>{copyText.snark}</Font.Subtle>
-        {!willRepayUndergraduateLoan && willRepayPostgraduateLoan && (
+        {hasPostgradLoan && !willRepayUndergraduateLoan && willRepayPostgraduateLoan && (
           <Font.Subtle small>
             You will repay your postgrad loan though!
           </Font.Subtle>

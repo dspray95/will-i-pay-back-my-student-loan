@@ -25,7 +25,7 @@ describe("integration: graduation to repayment", () => {
 
     expect(repayment.totalRepaid).toBeGreaterThan(0);
     expect(repayment.yearByYearBreakdown.length).toBeGreaterThan(0);
-    expect(repayment.yearByYearBreakdown.length).toBeLessThanOrEqual(10);
+    expect(repayment.yearByYearBreakdown.length).toBeLessThanOrEqual(11); // 10 repayment years + 1 gap year
   });
 
   it("combined undergrad + postgrad repayment", () => {
@@ -75,7 +75,8 @@ describe("integration: graduation to repayment", () => {
         incomeByYear
       );
 
-      const year1 = result.yearByYearBreakdown[0];
+      // Index 1 = first repayment year (index 0 is the graduation gap year)
+      const year1 = result.yearByYearBreakdown[1];
 
       // Repayment check: (35000 - 27295) * 0.09 = 693.45
       expect(year1.repayment).toBeGreaterThan(690);
@@ -100,7 +101,7 @@ describe("integration: graduation to repayment", () => {
 
       expect(result.finalBalance).toBe(0);
       expect(result.totalRepaid).toBeLessThan(9000);
-      expect(result.yearByYearBreakdown[0].endingBalance).toBe(0);
+      expect(result.yearByYearBreakdown[1].endingBalance).toBe(0);
     });
 
     it("leap year February has 29 days", () => {
@@ -157,8 +158,9 @@ describe("integration: graduation to repayment", () => {
         incomeByYear
       );
 
-      const year1 = result.yearByYearBreakdown[0];
-      const year2 = result.yearByYearBreakdown[1];
+      // Index 1 and 2 = first and second repayment years (index 0 is gap year)
+      const year1 = result.yearByYearBreakdown[1];
+      const year2 = result.yearByYearBreakdown[2];
 
       // With a flat rate, lower balance MUST mean lower interest.
       expect(year2.interestAccrued).toBeLessThan(year1.interestAccrued);
@@ -183,7 +185,8 @@ describe("integration: graduation to repayment", () => {
         incomeByYear
       );
 
-      const year2024 = result.yearByYearBreakdown[0];
+      // Index 1 = first repayment year 2024 (index 0 is gap year)
+      const year2024 = result.yearByYearBreakdown[1];
 
       // Interest Check:
       // Rate should be based on 2023 income (£0) -> ~4.3% (2024 RPI)
@@ -212,7 +215,8 @@ describe("integration: graduation to repayment", () => {
         incomeByYear
       );
 
-      const year2025 = result.yearByYearBreakdown[1];
+      // Index 2 = second repayment year 2025 (index 0 is gap year)
+      const year2025 = result.yearByYearBreakdown[2];
 
       // Repayment Check: Based on current income (£0) -> £0
       expect(year2025.repayment).toBe(0);

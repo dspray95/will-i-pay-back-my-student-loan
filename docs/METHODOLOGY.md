@@ -70,17 +70,32 @@ If you have both an undergraduate and a postgraduate loan, repayments are calcul
 
 This matches the official SLC rules where the two loan types are treated as separate obligations.
 
+## User-Configurable Assumptions
+
+Two key assumptions are exposed as user-configurable controls in the Assumptions panel:
+
+### Salary growth rate (default: 3.0%)
+
+Annual percentage increase applied to future income when using the "auto" income projection mode. This represents expected nominal salary growth, combining inflation and real wage growth. The UK long-term average sits around 3-4%.
+
+### Projected inflation / RPI (default: 2.5%)
+
+Long-term RPI forecast used to project loan interest rates for years beyond published SLC data. This drives future interest rates as follows:
+
+- Plan 1 / Plan 1 NI / Plan 4 / Plan 5: RPI
+- Plan 2: RPI to RPI + 3% (progressive, based on income)
+- Postgraduate: RPI + 3%
+
+The default of 2.5% is based on the Bank of England's 2% CPI target plus a ~0.5% historical RPI-CPI formula effect. The OBR's long-term forecast typically sits between 2.5% and 3.25%.
+
+The gap between these two rates matters: if salary growth exceeds inflation, repayments become more affordable over time relative to the interest being charged.
+
 ## Future Year Projections
 
 For years beyond available SLC data:
 
 - **Repayment thresholds:** The most recent published threshold is carried forward (frozen).
-- **Interest rates:** Fall back to a long-term RPI forecast of **2.5%**, which produces:
-  - Plan 1 / Plan 1 NI / Plan 4 / Plan 5: 2.5%
-  - Plan 2: 2.5% to 5.5% (progressive)
-  - Postgraduate: 5.5%
-
-The long-term RPI assumption of 2.5% is based on the Bank of England's 2% CPI target plus a historical RPI-CPI wedge. The OBR's long-term forecast typically sits between 2.5% and 3.25%.
+- **Interest rates:** Fall back to the user-configured projected inflation (RPI) rate.
 
 ## Data Sources
 
@@ -95,7 +110,7 @@ Data is stored in JSON configuration files and updated when new rates are announ
 ## Known Simplifications
 
 1. **Threshold freezing** - Future repayment thresholds are held constant at the most recent value. In reality, some thresholds are uprated annually (e.g., Plan 5 is fixed at 25,000 by policy, while Plan 2 rises with average earnings).
-2. **Long-term RPI** - A single static forecast is used for all future interest rates. Actual rates will vary year to year.
+2. **Long-term RPI** - A single user-configurable forecast is used for all future interest rates. Actual rates will vary year to year.
 3. **Plan 5 PMR cap** - Plan 5 interest is subject to a Prevailing Market Rate cap that can reduce the rate below RPI. This cap is not currently modelled (it is not active as of 2025/26).
 4. **Income basis** - The calculator uses gross annual income. In practice, employed borrowers repay through PAYE based on each pay period's earnings, and self-employed borrowers repay via self-assessment. The annual result is equivalent.
 5. **Voluntary overpayments** - Not modelled. Only the mandatory repayment amount is calculated.

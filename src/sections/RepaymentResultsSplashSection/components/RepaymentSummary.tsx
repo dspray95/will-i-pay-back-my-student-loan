@@ -1,5 +1,5 @@
 import { Font } from "../../../shared/components/Text";
-import { formatMoney } from "../../../shared/utils/formatMoney";
+import { formatCurrency } from "../../../shared/utils/formatCurrency";
 
 export const RepaymentSummary: React.FC<{
   title?: string;
@@ -27,7 +27,7 @@ export const RepaymentSummary: React.FC<{
     <Font.Body>
       You'll repay{" "}
       <Font.CurrencyBody className="text-district-green">
-        {formatMoney(totalPaid)}
+        {formatCurrency(totalPaid)}
       </Font.CurrencyBody>{" "}
       in total
     </Font.Body>
@@ -35,7 +35,7 @@ export const RepaymentSummary: React.FC<{
       <Font.Body>
         You will have{" "}
         <Font.CurrencyBody className="text-central-red">
-          {formatMoney(amountForgiven)}
+          {formatCurrency(amountForgiven)}
         </Font.CurrencyBody>{" "}
         forgiven.
       </Font.Body>
@@ -43,7 +43,7 @@ export const RepaymentSummary: React.FC<{
     <Font.Body>
       You'll accrue{" "}
       <Font.CurrencyBody className="text-central-red">
-        {formatMoney(interestAccrued)}
+        {formatCurrency(interestAccrued)}
       </Font.CurrencyBody>{" "}
       in interest over the repayment period.
     </Font.Body>

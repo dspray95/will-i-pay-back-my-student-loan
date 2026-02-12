@@ -19,16 +19,20 @@ const LONG_TERM_RPI = INTEREST_RATES.longTermRPI;
 const POSTGRAD_INTEREST_RATES = INTEREST_RATES.postGradRepayment;
 
 // Calculate long-term forecast based on RPI
-const LONG_TERM_FORECAST: {
+function buildLongTermForecast(rpi: number): {
   [key in LoanPlan]: InterestRateRange;
-} = {
-  plan1: { min: LONG_TERM_RPI, max: LONG_TERM_RPI },
-  plan1NI: { min: LONG_TERM_RPI, max: LONG_TERM_RPI },
-  plan2: { min: LONG_TERM_RPI, max: LONG_TERM_RPI + 3.0 },
-  plan4: { min: LONG_TERM_RPI, max: LONG_TERM_RPI },
-  plan5: { min: LONG_TERM_RPI, max: LONG_TERM_RPI },
-  postgrad: { min: LONG_TERM_RPI + 3.0, max: LONG_TERM_RPI + 3.0 },
-};
+} {
+  return {
+    plan1: { min: rpi, max: rpi },
+    plan1NI: { min: rpi, max: rpi },
+    plan2: { min: rpi, max: rpi + 3.0 },
+    plan4: { min: rpi, max: rpi },
+    plan5: { min: rpi, max: rpi },
+    postgrad: { min: rpi + 3.0, max: rpi + 3.0 },
+  };
+}
+
+const LONG_TERM_FORECAST = buildLongTermForecast(LONG_TERM_RPI);
 
 /**
  * Calculate the interest rate for a given year, plan, and income level.
@@ -61,12 +65,15 @@ export function getInterestRateAtRepayment(
   year: number,
   plan: LoanPlan,
   annualIncome: number,
-  overrideRepaymentThreshold?: number
+  overrideRepaymentThreshold?: number,
+  longTermRPI?: number
 ): number {
   const ratesForYear = POSTGRAD_INTEREST_RATES[year];
-  const planRates = ratesForYear
-    ? ratesForYear[plan]
-    : LONG_TERM_FORECAST[plan];
+  const forecast =
+    longTermRPI !== undefined
+      ? buildLongTermForecast(longTermRPI)
+      : LONG_TERM_FORECAST;
+  const planRates = ratesForYear ? ratesForYear[plan] : forecast[plan];
 
   // Plan 2 uses progressive interest rates based on income
   if (plan === "plan2") {

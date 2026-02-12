@@ -3,6 +3,7 @@ import type { LoanPlan } from "../../shared/types";
 import { LoanDetailsSection } from "../../sections/LoanDetailsSection/LoanDetailsSection";
 import { RepaymentResultsSplashSection } from "../../sections/RepaymentResultsSplashSection/RepaymentResultsSplashSection";
 import { RepaymentBreakdownSection } from "../../sections/RepaymentBreakdownSection/RepaymentBreakdownSection";
+import { MethodologySection } from "../../sections/MethodologySection/MethodologySection";
 import { useLoanCalculatorStore } from "../../stores/loanCalculatorStore";
 import { STAGES } from "../../shared/constants/stages";
 import { BorderWrappers } from "./components/BorderWrappers";
@@ -10,7 +11,7 @@ import { PageHeader } from "./components/PageHeader";
 import { ScrollOnReveal } from "./components/ScrollOnReveal";
 
 export const LoanCalculatorFlow = () => {
-  const { stage, loanFormValues } = useLoanCalculatorStore();
+  const { stage, resetCount, loanFormValues } = useLoanCalculatorStore();
 
   let undergradStartYear = 2015;
   let undergradEndYear = 2018;
@@ -21,10 +22,10 @@ export const LoanCalculatorFlow = () => {
     undergradStartYear = loanFormValues.courseStartYear;
   }
 
-  const showBottomBorder = stage >= STAGES.repaymentBreakdown;
+  const showBottomBorder = stage >= STAGES.repaymentResultsSplash;
 
   return (
-    <BorderWrappers showBottomBorder={showBottomBorder}>
+    <BorderWrappers key={resetCount} showBottomBorder={showBottomBorder}>
       <div className="w-full md:max-w-2/3 xl:max-w-1/3">
         <PageHeader />
 
@@ -45,13 +46,17 @@ export const LoanCalculatorFlow = () => {
             <RepaymentResultsSplashSection />
           </ScrollOnReveal>
         )}
-
-        {stage >= STAGES.repaymentResultsSplash && (
-          <div id="repayment-breakdown">
-            <RepaymentBreakdownSection />
-          </div>
-        )}
       </div>
+      {stage >= STAGES.repaymentResultsSplash && (
+        <div className="w-full md:max-w-3/5" id="repayment-breakdown">
+          <RepaymentBreakdownSection />
+        </div>
+      )}
+      {stage >= STAGES.repaymentResultsSplash && (
+        <div className="w-full mt-20">
+          <MethodologySection />
+        </div>
+      )}
     </BorderWrappers>
   );
 };

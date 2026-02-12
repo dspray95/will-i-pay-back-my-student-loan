@@ -3,6 +3,7 @@ export const colorPiccadillyBlue = "#4056A4";
 export const colorCentralRed = "#E32017";
 export const colorDistrictGreen = "#00782A";
 export const colorNorthernNotBlack = "#2D2C27";
+export const colorNorthernNotBlackLight1 = "#595852";
 export const colorBeckBeige = "#F9E6C6";
 export const colorBeckBeigeDark1 = "#C3BDA3";
 export const colorNotWhite = "#FAF3E8";

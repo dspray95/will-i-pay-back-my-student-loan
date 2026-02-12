@@ -20,7 +20,7 @@ describe("calculateLoanAtRepayment", () => {
 
       expect(result.totalRepaid).toBe(0);
       expect(result.finalBalance).toBeGreaterThan(30000); // Interest accrued
-      expect(result.yearByYearBreakdown.length).toBe(3);
+      expect(result.yearByYearBreakdown.length).toBe(4); // 1 gap year + 3 repayment years
     });
   });
 
@@ -81,7 +81,7 @@ describe("calculateLoanAtRepayment", () => {
       );
 
       expect(result.finalBalance).toBe(0);
-      expect(result.yearByYearBreakdown.length).toBeLessThan(5); // Paid off early
+      expect(result.yearByYearBreakdown.length).toBeLessThan(6); // Paid off early (includes gap year)
 
       // Total repaid should equal initial balance + interest accrued
       expect(result.totalRepaid).toBeGreaterThan(15000);
@@ -149,8 +149,9 @@ describe("calculateLoanAtRepayment", () => {
       );
 
       // Higher previous income (2023) should trigger higher interest rate in 2024
-      expect(resultHigh.yearByYearBreakdown[0].interestAccrued).toBeGreaterThan(
-        resultLow.yearByYearBreakdown[0].interestAccrued
+      // Index 1 = first repayment year (index 0 is the graduation gap year)
+      expect(resultHigh.yearByYearBreakdown[1].interestAccrued).toBeGreaterThan(
+        resultLow.yearByYearBreakdown[1].interestAccrued
       );
     });
   });
@@ -198,8 +199,9 @@ describe("calculateLoanAtRepayment", () => {
         incomeByYear
       );
 
-      expect(result.yearByYearBreakdown[0].income).toBe(35000);
-      expect(result.yearByYearBreakdown[1].income).toBe(42000);
+      // Index 0 is the graduation gap year (income 0), repayment years start at index 1
+      expect(result.yearByYearBreakdown[1].income).toBe(35000);
+      expect(result.yearByYearBreakdown[2].income).toBe(42000);
     });
   });
 
@@ -236,8 +238,9 @@ describe("calculateLoanAtRepayment", () => {
         incomeByYear
       );
 
-      expect(result.yearByYearBreakdown[1].income).toBe(0);
-      expect(result.yearByYearBreakdown[1].repayment).toBe(0);
+      // Index 0 is gap year, index 1 is 2024, index 2 is 2025 (missing income)
+      expect(result.yearByYearBreakdown[2].income).toBe(0);
+      expect(result.yearByYearBreakdown[2].repayment).toBe(0);
     });
   });
 

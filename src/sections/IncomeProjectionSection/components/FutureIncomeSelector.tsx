@@ -1,4 +1,4 @@
-import { cn } from "../../../shared/utils/ClassNames";
+import { cn } from "../../../shared/utils/classNames";
 
 interface FutureIncomeSelectorProps {
   selectedMode: "auto" | "manual" | undefined;

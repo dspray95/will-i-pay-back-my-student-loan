@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { calculateLoanAtGraduation } from "../calculateLoanAtGraduation";
+import { calculateLoanAtGraduation, calculateStudyYearBalances } from "../calculateLoanAtGraduation";
 
 describe("calculateLoanAtGraduation", () => {
   describe("Plan 5 accrues RPI interest during study", () => {
@@ -120,5 +120,61 @@ describe("calculateLoanAtGraduation", () => {
       // This test may need adjustment based on actual historical rates
       expect(highRpiYear).not.toBe(lowRpiYear);
     });
+  });
+});
+
+describe("calculateStudyYearBalances", () => {
+  it("returns one entry per study year", () => {
+    const result = calculateStudyYearBalances(27000, 2020, 3, "plan2");
+    expect(result).toHaveLength(3);
+  });
+
+  it("returns correct year values", () => {
+    const result = calculateStudyYearBalances(27000, 2020, 3, "plan2");
+    expect(result[0].year).toBe(2020);
+    expect(result[1].year).toBe(2021);
+    expect(result[2].year).toBe(2022);
+  });
+
+  it("final entry balance matches calculateLoanAtGraduation", () => {
+    const balances = calculateStudyYearBalances(27000, 2020, 3, "plan2");
+    const graduation = calculateLoanAtGraduation(27000, 2020, 3, "plan2");
+    expect(balances[2].balance).toBe(graduation);
+  });
+
+  it("balances increase year over year with interest", () => {
+    const result = calculateStudyYearBalances(27000, 2020, 3, "plan2");
+    expect(result[1].balance).toBeGreaterThan(result[0].balance);
+    expect(result[2].balance).toBeGreaterThan(result[1].balance);
+  });
+
+  it("zero principal returns all-zero balances", () => {
+    const result = calculateStudyYearBalances(0, 2022, 3, "plan2");
+    expect(result).toHaveLength(3);
+    for (const entry of result) {
+      expect(entry.balance).toBe(0);
+    }
+  });
+
+  it("works for Plan 5", () => {
+    const balances = calculateStudyYearBalances(30000, 2023, 3, "plan5");
+    const graduation = calculateLoanAtGraduation(30000, 2023, 3, "plan5");
+    expect(balances).toHaveLength(3);
+    expect(balances[2].balance).toBe(graduation);
+  });
+
+  it("works for postgrad loans", () => {
+    const balances = calculateStudyYearBalances(11570, 2022, 2, "postgrad");
+    const graduation = calculateLoanAtGraduation(11570, 2022, 2, "postgrad");
+    expect(balances).toHaveLength(2);
+    expect(balances[1].balance).toBe(graduation);
+  });
+
+  it("single year course returns one entry matching graduation balance", () => {
+    const balances = calculateStudyYearBalances(9000, 2022, 1, "plan2");
+    const graduation = calculateLoanAtGraduation(9000, 2022, 1, "plan2");
+    expect(balances).toHaveLength(1);
+    expect(balances[0].year).toBe(2022);
+    expect(balances[0].balance).toBe(graduation);
   });
 });

@@ -1,22 +1,27 @@
 import { create } from "zustand";
 import type { LoanFormValues, RepaymentPlan, Stage } from "../shared/types";
 import { getForgivenessPlanForYear } from "../domain/loan/forgiveness";
-import { calculateLoanAtGraduation } from "../domain/loan/calculateLoanAtGraduation";
+import { calculateLoanAtGraduation, calculateStudyYearBalances } from "../domain/loan/calculateLoanAtGraduation";
 import { calculateRepaymentPlan } from "../domain/repayment/calculateRepaymentPlan";
 import { STAGES } from "../shared/constants/stages";
 
 interface LoanCalculatorState {
   // State
   stage: Stage;
+  resetCount: number;
   loanFormValues?: LoanFormValues;
   totalUndergradLoan: number;
   totalMaintenanceLoan: number;
   totalMastersLoan: number;
   undergraduateLoanAtGraduation: number;
   postgraduateLoanAtGraduation: number;
+  undergraduateStudyYearBalances: Array<{ year: number; balance: number }>;
+  postgraduateStudyYearBalances: Array<{ year: number; balance: number }>;
   incomeByYear: Record<number, number>;
   undergraduateRepaymentPlan?: RepaymentPlan;
   postgraduateRepaymentPlan?: RepaymentPlan;
+  salaryGrowthRate: number;
+  projectedInflationRate: number;
 
   // Actions
   setStage: (stage: Stage) => void;
@@ -25,6 +30,8 @@ interface LoanCalculatorState {
   setTotalMaintenanceLoan: (amount: number) => void;
   setTotalMastersLoan: (amount: number) => void;
   setIncomeByYear: (income: Record<number, number>) => void;
+  setSalaryGrowthRate: (rate: number) => void;
+  setProjectedInflationRate: (rate: number) => void;
   calculatePrincipalAtGraduation: (loanFormValues: LoanFormValues) => void;
   calculateRepaymentWithIncome: (
     incomeByYear: Record<number, number>,
@@ -35,15 +42,20 @@ interface LoanCalculatorState {
 
 const initialState = {
   stage: STAGES.loanDetails,
+  resetCount: 0,
   loanFormValues: undefined,
   totalUndergradLoan: 0,
   totalMaintenanceLoan: 0,
   totalMastersLoan: 0,
   undergraduateLoanAtGraduation: 0,
   postgraduateLoanAtGraduation: 0,
+  undergraduateStudyYearBalances: [],
+  postgraduateStudyYearBalances: [],
   incomeByYear: {},
   undergraduateRepaymentPlan: undefined,
   postgraduateRepaymentPlan: undefined,
+  salaryGrowthRate: 3.0,
+  projectedInflationRate: 2.5,
 };
 
 export const useLoanCalculatorStore = create<LoanCalculatorState>(
@@ -65,6 +77,10 @@ export const useLoanCalculatorStore = create<LoanCalculatorState>(
       set({ incomeByYear: income });
     },
 
+    setSalaryGrowthRate: (rate) => set({ salaryGrowthRate: rate }),
+
+    setProjectedInflationRate: (rate) => set({ projectedInflationRate: rate }),
+
     calculatePrincipalAtGraduation: (loanFormValues) => {
       const state = get();
       const totalLoan = state.totalUndergradLoan + state.totalMaintenanceLoan;
@@ -76,21 +92,41 @@ export const useLoanCalculatorStore = create<LoanCalculatorState>(
         loanFormValues.loanPlan,
       );
 
-      const mastersLoanAtGraduation =
+      const undergradStudyBalances = calculateStudyYearBalances(
+        totalLoan,
+        loanFormValues.courseStartYear,
+        loanFormValues.courseLength,
+        loanFormValues.loanPlan,
+      );
+
+      const hasMasters =
         state.totalMastersLoan > 0 &&
         loanFormValues.mastersStartYear !== undefined &&
-        loanFormValues.mastersLength !== undefined
-          ? calculateLoanAtGraduation(
-              state.totalMastersLoan,
-              loanFormValues.mastersStartYear,
-              loanFormValues.mastersLength,
-              "postgrad",
-            )
-          : 0;
+        loanFormValues.mastersLength !== undefined;
+
+      const mastersLoanAtGraduation = hasMasters
+        ? calculateLoanAtGraduation(
+            state.totalMastersLoan,
+            loanFormValues.mastersStartYear!,
+            loanFormValues.mastersLength!,
+            "postgrad",
+          )
+        : 0;
+
+      const mastersStudyBalances = hasMasters
+        ? calculateStudyYearBalances(
+            state.totalMastersLoan,
+            loanFormValues.mastersStartYear!,
+            loanFormValues.mastersLength!,
+            "postgrad",
+          )
+        : [];
 
       set({
         undergraduateLoanAtGraduation: undergradLoanAtGraduation,
         postgraduateLoanAtGraduation: mastersLoanAtGraduation,
+        undergraduateStudyYearBalances: undergradStudyBalances,
+        postgraduateStudyYearBalances: mastersStudyBalances,
       });
     },
 
@@ -113,6 +149,7 @@ export const useLoanCalculatorStore = create<LoanCalculatorState>(
         repaymentEndYear,
         loanFormValues.loanPlan,
         incomeByYear,
+        state.projectedInflationRate,
       );
 
       const postgraduateRepayment =
@@ -125,6 +162,7 @@ export const useLoanCalculatorStore = create<LoanCalculatorState>(
                 30,
               "postgrad",
               incomeByYear,
+              state.projectedInflationRate,
             )
           : {
               finalBalance: 0,
@@ -138,6 +176,6 @@ export const useLoanCalculatorStore = create<LoanCalculatorState>(
       });
     },
 
-    reset: () => set(initialState),
+    reset: () => set((state) => ({ ...initialState, resetCount: state.resetCount + 1 })),
   }),
 );

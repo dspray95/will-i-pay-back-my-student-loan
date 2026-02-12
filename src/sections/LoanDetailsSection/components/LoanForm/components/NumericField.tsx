@@ -23,7 +23,7 @@ export const NumericField: React.FC<{
   onChange,
   isEdited,
 }) => {
-  const { values } = useFormikContext<LoanFormValues>();
+  const { values, handleChange } = useFormikContext<LoanFormValues>();
   const currentValue = (values as any)[name] || 0;
   const hasChanged = currentValue !== defaultValue;
   const showUndoButton = hasChanged && isEdited;
@@ -68,17 +68,7 @@ export const NumericField: React.FC<{
             onKeyDown={handleNumberKeyDown}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               onChange(name);
-              // Let Formik handle the actual value update
-              setTimeout(() => {
-                const formikField = document.querySelector(
-                  `input[name="${name}"]`
-                );
-                if (formikField) {
-                  formikField.dispatchEvent(
-                    new Event("input", { bubbles: true })
-                  );
-                }
-              }, 0);
+              handleChange(e);
             }}
           />
         </div>

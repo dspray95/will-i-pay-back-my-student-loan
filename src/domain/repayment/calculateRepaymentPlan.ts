@@ -1,5 +1,6 @@
 import { getDaysInMonth } from "date-fns";
 import { getInterestRateAtRepayment } from "../loan/interest";
+import { getInterestRateDuringStudy } from "../loan/plans";
 import { getRepaymentThreshold } from "../loan/thresholds";
 import type { LoanPlan, RepaymentPlan } from "../../shared/types";
 import type { RepaymentYear } from "./types";
@@ -9,11 +10,48 @@ export const calculateRepaymentPlan = (
   graduationYear: number,
   repaymentEndYear: number,
   plan: LoanPlan,
-  incomeByYear: Record<number, number>
+  incomeByYear: Record<number, number>,
+  longTermRPI?: number
 ): RepaymentPlan => {
   let balance = loanBalanceAtGraduation;
   let totalRepaid = 0;
   const breakdown: RepaymentYear[] = [];
+
+  // Apply interest for the gap period between end of study (~August)
+  // and start of repayments (April of the following year).
+  // SLC continues charging the study interest rate until the April after leaving.
+  const gapStartingBalance = balance;
+  const gapRate = getInterestRateDuringStudy(graduationYear - 1, plan);
+  let gapInterest = 0;
+
+  if (gapRate > 0) {
+    const dailyRate = gapRate / 100 / 365;
+
+    // September to December of graduation year
+    for (let month = 8; month <= 11; month++) {
+      const daysInMonth = getDaysInMonth(new Date(graduationYear, month));
+      const monthInterest = balance * (Math.pow(1 + dailyRate, daysInMonth) - 1);
+      balance += monthInterest;
+      gapInterest += monthInterest;
+    }
+
+    // January to March of graduation year + 1
+    for (let month = 0; month <= 2; month++) {
+      const daysInMonth = getDaysInMonth(new Date(graduationYear + 1, month));
+      const monthInterest = balance * (Math.pow(1 + dailyRate, daysInMonth) - 1);
+      balance += monthInterest;
+      gapInterest += monthInterest;
+    }
+  }
+
+  breakdown.push({
+    year: graduationYear,
+    startingBalance: gapStartingBalance,
+    interestAccrued: parseFloat(gapInterest.toFixed(2)),
+    repayment: 0,
+    endingBalance: parseFloat(balance.toFixed(2)),
+    income: 0,
+  });
 
   const repaymentStartYear = graduationYear + 1;
 
@@ -29,13 +67,16 @@ export const calculateRepaymentPlan = (
     const rateAprilToAug = getInterestRateAtRepayment(
       year,
       plan,
-      previousYearIncome
+      previousYearIncome,
+      undefined,
+      longTermRPI
     );
     const rateSepToMar = getInterestRateAtRepayment(
       year + 1,
       plan,
       previousYearIncome,
-      threshold
+      threshold,
+      longTermRPI
     );
 
     let annualRepayment = 0;

@@ -28,11 +28,15 @@ export const LoanEstimatesSection: React.FC<LoanEstimatesSectionProps> = ({
   return (
     <div className="flex flex-col gap-3 pt-8">
       <div className="flex flex-col mb-4">
-        <Font.H3>LOAN AND GRANT ESTIMATES</Font.H3>
+        <Font.H2>LOAN AND GRANT ESTIMATES</Font.H2>
         <Font.Body>
           These are our predicted estimates for your student loans and grants.
           You can change these if they are inaccurate.
         </Font.Body>
+        <Font.Subtle small>
+          Here we assume you received the maximum possible loan and grant
+          values.
+        </Font.Subtle>
       </div>
 
       <NumericField
