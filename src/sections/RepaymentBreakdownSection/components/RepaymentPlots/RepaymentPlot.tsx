@@ -21,6 +21,7 @@ import {
 } from "../../../../shared/constants/color";
 import { Font } from "../../../../shared/components/Text";
 import { formatCurrency } from "../../../../shared/utils/formatCurrency";
+import { useIsMobile } from "../../../../shared/hooks/useIsMobile";
 
 export const RepaymentPlot: React.FC<{
   repaymentBreakdown: RepaymentBreakdown;
@@ -28,15 +29,18 @@ export const RepaymentPlot: React.FC<{
   studyYearBalances?: Array<{ year: number; balance: number }>;
   title?: string;
   yDomain?: [number, number];
+  compact?: boolean;
 }> = ({
   repaymentBreakdown,
   courseLength,
   studyYearBalances,
   title = "Repayments",
   yDomain,
+  compact = false,
 }) => {
   const startYear = repaymentBreakdown[0].year - courseLength;
   const [hidden, setHidden] = useState<Record<string, boolean>>({});
+  const isMobile = useIsMobile();
 
   const data: Array<{
     year: number;
@@ -75,44 +79,59 @@ export const RepaymentPlot: React.FC<{
     setHidden((prev) => ({ ...prev, [dataKey]: !prev[dataKey] }));
   };
 
-  const dotSize = 5;
-  const strokeWidth = 2.5;
+  const small = isMobile || compact;
+  const dotSize = small ? 3 : 5;
+  const strokeWidth = small ? 2 : 2.5;
+  const tickFontSize = small ? 11 : 14;
+  const showAxisLabels = !small;
 
   return (
     <div className="flex flex-col items-center gap-4">
       {title && <Font.H4>{title}</Font.H4>}
-      <ResponsiveContainer width="100%" height={500}>
+      <ResponsiveContainer width="100%" height={isMobile ? 300 : 500}>
         <ComposedChart
           data={data}
-          margin={{ left: 60, right: 20, top: 25, bottom: 30 }}
+          margin={
+            small
+              ? { left: 5, right: 5, top: 20, bottom: 5 }
+              : { left: 60, right: 20, top: 25, bottom: 30 }
+          }
         >
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.2)" />
           <XAxis
             dataKey="year"
             stroke={colorNorthernNotBlackLight1}
-            tick={{ fill: colorNorthernNotBlack }}
-            label={{
-              value: "Year",
-              position: "insideBottom",
-              offset: -15,
-              fill: colorNorthernNotBlack,
-            }}
+            tick={{ fill: colorNorthernNotBlack, fontSize: tickFontSize }}
+            label={
+              showAxisLabels
+                ? {
+                    value: "Year",
+                    position: "insideBottom",
+                    offset: -15,
+                    fill: colorNorthernNotBlack,
+                  }
+                : undefined
+            }
           />
           <YAxis
             stroke={colorNorthernNotBlackLight1}
-            tick={{ fill: colorNorthernNotBlack }}
+            tick={{ fill: colorNorthernNotBlack, fontSize: tickFontSize }}
             tickFormatter={(v: number) =>
               formatCurrency(v, { abbreviated: true })
             }
-            width={80}
+            width={small ? 55 : 80}
             domain={yDomain}
-            label={{
-              value: "Amount (£)",
-              angle: -90,
-              position: "insideLeft",
-              offset: 0,
-              fill: colorNorthernNotBlack,
-            }}
+            label={
+              showAxisLabels
+                ? {
+                    value: "Amount (£)",
+                    angle: -90,
+                    position: "insideLeft",
+                    offset: 0,
+                    fill: colorNorthernNotBlack,
+                  }
+                : undefined
+            }
           />
           <Tooltip
             formatter={(value) => formatCurrency(Number(value))}
@@ -122,7 +141,11 @@ export const RepaymentPlot: React.FC<{
             labelStyle={{ color: colorNorthernNotBlack }}
           />
           <Legend
-            wrapperStyle={{ color: colorNorthernNotBlack, paddingTop: 20 }}
+            wrapperStyle={{
+              color: colorNorthernNotBlack,
+              paddingTop: small ? 10 : 20,
+              fontSize: small ? 12 : 14,
+            }}
             onClick={(e) => handleLegendClick(e.dataKey as string)}
             formatter={(value, entry) => (
               <span
@@ -147,15 +170,15 @@ export const RepaymentPlot: React.FC<{
             stroke={colorNorthernNotBlackLight1}
             strokeDasharray="6 4"
             label={{
-              value: "Repayments start",
+              value: small ? "Start" : "Repayments start",
               position: "top",
               fill: colorNorthernNotBlack,
-              fontSize: 12,
+              fontSize: small ? 10 : 12,
             }}
           />
           <Bar
             dataKey="repayment"
-            name="Yearly Repayment"
+            name={compact ? "Repayment" : "Yearly Repayment"}
             fill={colorPiccadillyBlue}
             opacity={0.8}
             hide={hidden.repayment}
@@ -163,7 +186,7 @@ export const RepaymentPlot: React.FC<{
           <Line
             type="monotone"
             dataKey="loanBalance"
-            name="Remaining Balance"
+            name={compact ? "Balance" : "Remaining Balance"}
             stroke={colorCentralRed}
             strokeWidth={strokeWidth}
             dot={{ r: dotSize }}
@@ -172,7 +195,7 @@ export const RepaymentPlot: React.FC<{
           <Line
             type="monotone"
             dataKey="totalRepayments"
-            name="Total Repaid"
+            name={compact ? "Repaid" : "Total Repaid"}
             stroke={colorDistrictGreen}
             strokeWidth={strokeWidth}
             dot={{ r: dotSize }}

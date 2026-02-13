@@ -16,7 +16,7 @@ export const OutlineText: React.FC<{
         fill="transparent"
         stroke={color}
         strokeWidth="2"
-        style={{ fontSize: "6rem", fontWeight: 600 }}
+        style={{ fontSize: "clamp(4rem, 8vw, 6rem)", fontWeight: 600 }}
       >
         {children}
       </text>

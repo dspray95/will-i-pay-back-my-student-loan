@@ -50,7 +50,7 @@ export const RepaymentPlots: React.FC = () => {
   ];
 
   return (
-    <div className="flex gap-6 items-center justify-cente flex-col md:flex-row w-full">
+    <div className="flex gap-6 items-center justify-center flex-col md:flex-row w-full">
       <div className="w-full">
         <RepaymentPlot
           repaymentBreakdown={undergraduateRepaymentPlan.yearByYearBreakdown}
@@ -58,6 +58,7 @@ export const RepaymentPlots: React.FC = () => {
           studyYearBalances={undergraduateStudyYearBalances}
           title="Undergraduate Repayments"
           yDomain={hasPostgrad ? sharedYDomain : undefined}
+          compact={!!hasPostgrad}
         />
       </div>
       {hasPostgrad && loanFormValues.mastersLength && (
@@ -68,6 +69,7 @@ export const RepaymentPlots: React.FC = () => {
             studyYearBalances={postgraduateStudyYearBalances}
             title="Postgraduate Repayments"
             yDomain={sharedYDomain}
+            compact
           />
         </div>
       )}

@@ -26,14 +26,14 @@ export const AssumptionsPanel: React.FC<AssumptionsPanelProps> = ({
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-piccadilly-blue/5 transition-colors"
       >
-        <div className="flex items-center gap-3">
-          <span className="text-sm font-semibold text-piccadilly-blue uppercase tracking-wide">
+        <div className="flex items-center gap-3 grow">
+          <span className="text-sm grow font-semibold text-piccadilly-blue uppercase tracking-wide">
             Assumptions
           </span>
           {!isOpen && (
-            <span className="text-xs text-northern-not-black/60">
-              Salary growth: {salaryGrowthRate}% &middot; Projected inflation:{" "}
-              {projectedInflationRate}%
+            <span className="flex flex-col md:flex-row text-xs text-northern-not-black/60 items-start align-center text-left grow md:gap-4">
+              <span>Salary growth: {salaryGrowthRate}% </span>
+              <span>Projected inflation: {projectedInflationRate}%</span>
             </span>
           )}
         </div>

@@ -19,7 +19,9 @@ export const RepaymentBreakdownSection: React.FC = () => {
 
   return (
     <div className="flex gap-12 items-center justify-center py-12 flex-col">
-      <PageHeader showExplainer={false} />
+      <div className="max-w-full">
+        <PageHeader showExplainer={false} />
+      </div>
       <SummaryStats />
       <ProportionBar />
       <RepaymentPlots />

@@ -1,30 +1,22 @@
-import { cn } from "../../../shared/utils/classNames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDown } from "@fortawesome/free-solid-svg-icons";
 
 type AutoSetButtonProps = {
   year?: number;
-  topOffset: number;
   onClick: () => void;
 };
 
 export const AutoSetButton: React.FC<AutoSetButtonProps> = ({
   year,
-  topOffset,
   onClick,
 }) => (
   <button
-    className={cn(
-      "absolute left-full w-fit text-piccadilly-blue underline hover:cursor-pointer",
-      "flex items-center justify-center gap-2 transition-all duration-300",
-    )}
-    style={{ top: topOffset }}
+    className="sticky top-0 z-20 w-full py-2 bg-not-white/90 backdrop-blur-sm text-piccadilly-blue underline hover:cursor-pointer flex items-center justify-center gap-2"
     onClick={onClick}
   >
-    <div className="flex flex-col w-fit whitespace-nowrap z-10">
-      <span>AUTO SET</span>
-      <span>FROM {year ?? "..."}</span>
-    </div>
+    <span>
+      AUTO SET FROM {year ?? "..."}
+    </span>
     <FontAwesomeIcon icon={faArrowDown} />
   </button>
 );

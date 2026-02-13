@@ -5,7 +5,7 @@ export const processResults = (
   undergraduateRepaymentPlan: RepaymentPlan,
   postgraduateRepaymentPlan: RepaymentPlan,
   undergraduateLoanAtGraduation: number,
-  postgraduateLoanAtGraduation: number
+  postgraduateLoanAtGraduation: number,
 ): CalculationResults => {
   // Will they repay their loan?
   const willRepayUndergraduateLoan =
@@ -25,7 +25,7 @@ export const processResults = (
   // Repayments
   const undergraduateRepayments =
     undergraduateRepaymentPlan.yearByYearBreakdown.map(
-      (year) => year.repayment
+      (year) => year.repayment,
     );
   const postgraduateRepayments =
     postgraduateRepaymentPlan.yearByYearBreakdown.map((year) => year.repayment);
@@ -49,7 +49,7 @@ export const processResults = (
         (accumulator, year) => {
           return accumulator + year.repayment;
         },
-        0
+        0,
       );
   }
 
@@ -68,7 +68,7 @@ export const processResults = (
         (accumulator, year) => {
           return accumulator + year.repayment;
         },
-        0
+        0,
       );
   }
 
@@ -86,6 +86,5 @@ export const processResults = (
     totalUndergraduateDebtPaid,
     totalPostgraduateDebtPaid,
   };
-  console.log(results);
   return results;
 };

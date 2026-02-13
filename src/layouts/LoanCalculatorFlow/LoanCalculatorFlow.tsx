@@ -26,7 +26,7 @@ export const LoanCalculatorFlow = () => {
 
   return (
     <BorderWrappers key={resetCount} showBottomBorder={showBottomBorder}>
-      <div className="w-full md:max-w-2/3 xl:max-w-1/3">
+      <div className="w-full md:max-w-2/3 xl:max-w-3/5">
         <PageHeader />
 
         {stage >= STAGES.loanDetails && <LoanDetailsSection />}
@@ -48,7 +48,7 @@ export const LoanCalculatorFlow = () => {
         )}
       </div>
       {stage >= STAGES.repaymentResultsSplash && (
-        <div className="w-full md:max-w-3/5" id="repayment-breakdown">
+        <div className="w-full md:max-w-4/5" id="repayment-breakdown">
           <RepaymentBreakdownSection />
         </div>
       )}

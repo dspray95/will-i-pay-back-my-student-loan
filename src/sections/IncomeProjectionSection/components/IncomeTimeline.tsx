@@ -163,14 +163,6 @@ export const IncomeTimeline = forwardRef<
       loanForgivenessYear,
     );
 
-    // h-10 = 40px per slider row
-    const SLIDER_ROW_HEIGHT = 40;
-    const lastTouchedYearIndex = lastTouchedYear
-      ? yearsFromNowToForgiveness.indexOf(lastTouchedYear)
-      : -1;
-    const buttonOffset =
-      lastTouchedYearIndex >= 0 ? lastTouchedYearIndex * SLIDER_ROW_HEIGHT : 0;
-
     return (
       <>
         <div className="pb-4 flex flex-col gap-6">
@@ -183,6 +175,15 @@ export const IncomeTimeline = forwardRef<
             selectedMode={incomeMode}
             handleIncomeModeChange={handleIncomeModeChange}
           />
+          {/** Auto-set button — placed outside overflow-hidden so sticky works */}
+          {incomeMode === "manual" && (
+            <AutoSetButton
+              year={lastTouchedYear}
+              onClick={() =>
+                lastTouchedYear && applyInflationFill(lastTouchedYear)
+              }
+            />
+          )}
           {/** Income from current year - could be set manually or by inflation estimations.
            * Hidden until the user has chosen how they want to set their future income */}
           <div
@@ -194,15 +195,6 @@ export const IncomeTimeline = forwardRef<
               },
             )}
           >
-            {incomeMode === "manual" && (
-              <AutoSetButton
-                year={lastTouchedYear}
-                topOffset={buttonOffset}
-                onClick={() =>
-                  lastTouchedYear && applyInflationFill(lastTouchedYear)
-                }
-              />
-            )}
             <div className="overflow-hidden">
               <IncomeSliderSet
                 yearsRange={yearsFromNowToForgiveness}

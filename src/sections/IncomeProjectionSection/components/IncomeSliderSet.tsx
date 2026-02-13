@@ -13,7 +13,6 @@ export const IncomeSliderSet: React.FC<IncomeSliderSetProps> = ({
   handleIncomeChange,
 }) => {
   const { incomeByYear } = useLoanCalculatorStore();
-  console.log("IncomeSliderSet rendering, incomeByYear:", incomeByYear);
   return (
     <div className="relative overflow-visible">
       {yearsRange.map((year) => (

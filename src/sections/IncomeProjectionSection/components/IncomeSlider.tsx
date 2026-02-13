@@ -89,11 +89,7 @@ export const IncomeSlider: React.FC<IncomeSliderProps> = ({
   );
 
   useEffect(() => {
-    console.log(
-      `Slider ${year} useEffect - value: ${value}, current selectedIndex: ${selectedIndex}`,
-    );
     const newIndex = getInterpolatedIndex(value);
-    console.log(`Slider ${year} - newIndex: ${newIndex}`);
     if (newIndex !== selectedIndex) {
       setSelectedIndex(newIndex);
     }

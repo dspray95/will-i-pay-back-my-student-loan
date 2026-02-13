@@ -1,7 +1,10 @@
 import { create } from "zustand";
 import type { LoanFormValues, RepaymentPlan, Stage } from "../shared/types";
 import { getForgivenessPlanForYear } from "../domain/loan/forgiveness";
-import { calculateLoanAtGraduation, calculateStudyYearBalances } from "../domain/loan/calculateLoanAtGraduation";
+import {
+  calculateLoanAtGraduation,
+  calculateStudyYearBalances,
+} from "../domain/loan/calculateLoanAtGraduation";
 import { calculateRepaymentPlan } from "../domain/repayment/calculateRepaymentPlan";
 import { STAGES } from "../shared/constants/stages";
 
@@ -73,7 +76,6 @@ export const useLoanCalculatorStore = create<LoanCalculatorState>(
     setTotalMastersLoan: (amount) => set({ totalMastersLoan: amount }),
 
     setIncomeByYear: (income) => {
-      console.log("Store setIncomeByYear called with:", income);
       set({ incomeByYear: income });
     },
 
@@ -176,6 +178,7 @@ export const useLoanCalculatorStore = create<LoanCalculatorState>(
       });
     },
 
-    reset: () => set((state) => ({ ...initialState, resetCount: state.resetCount + 1 })),
+    reset: () =>
+      set((state) => ({ ...initialState, resetCount: state.resetCount + 1 })),
   }),
 );
