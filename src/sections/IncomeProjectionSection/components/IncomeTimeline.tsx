@@ -13,7 +13,7 @@ import { FutureIncomeSelector } from "./FutureIncomeSelector";
 import { useLoanCalculatorStore } from "../../../stores/loanCalculatorStore";
 import { IncomeSliderSet } from "./IncomeSliderSet";
 import { WrittenOffDivider } from "./WrittenOffDivider";
-import { cn } from "../../../shared/utils/classNames";
+import { cn } from "../../../shared/utils/ClassNames";
 import { Modal } from "../../../shared/components/Modal";
 import { AutoSetButton } from "./AutoSetButton";
 import { useIsMobile } from "../../../shared/hooks/useIsMobile";

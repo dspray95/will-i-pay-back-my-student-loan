@@ -8,7 +8,7 @@ import type { LoanPlan } from "../../shared/types";
 import { useLoanCalculatorStore } from "../../stores/loanCalculatorStore";
 import { STAGES } from "../../shared/constants/stages";
 import { Font } from "../../shared/components/Text";
-import { useState } from "react";
+import { useEffect } from "react";
 
 export const IncomeProjectionSection: React.FC<{
   undergradStartYear: number;
@@ -16,19 +16,24 @@ export const IncomeProjectionSection: React.FC<{
   repaymentPlan: LoanPlan;
 }> = ({ undergradStartYear, undergradEndYear, repaymentPlan }) => {
   const {
+    stage,
     incomeByYear,
     setStage,
     loanFormValues,
     calculateRepaymentWithIncome,
+    futureIncomeMode,
+    setFutureIncomeMode,
     salaryGrowthRate,
     projectedInflationRate,
     setSalaryGrowthRate,
     setProjectedInflationRate,
   } = useLoanCalculatorStore();
 
-  const [futureIncomeMode, setFutureIncomeMode] = useState<
-    "auto" | "manual" | undefined
-  >();
+  // Revert to income projection when income changes after results are showing
+  useEffect(() => {
+    if (stage < STAGES.repaymentResultsSplash) return;
+    setStage(STAGES.incomeProjection);
+  }, [incomeByYear]);
 
   const handleResultsClick = () => {
     if (!loanFormValues) return;
@@ -47,7 +52,7 @@ export const IncomeProjectionSection: React.FC<{
           salary growth.
         </Font.Body>
         <Font.Subtle className="text-left md:text-center" small>
-          Consider if you have any plans to take a career break or maternity
+          Consider if you have any plans to take a career break or parental
           leave, or plan to relocate to a city with different salary
           expectations.
         </Font.Subtle>

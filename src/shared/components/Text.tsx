@@ -1,4 +1,4 @@
-import { cn } from "../utils/classNames";
+import { cn } from "../utils/ClassNames";
 import { OutlineText } from "./OutlineText";
 
 const styles = {

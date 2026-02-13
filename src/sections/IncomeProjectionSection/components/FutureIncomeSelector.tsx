@@ -1,4 +1,4 @@
-import { cn } from "../../../shared/utils/classNames";
+import { cn } from "../../../shared/utils/ClassNames";
 
 interface FutureIncomeSelectorProps {
   selectedMode: "auto" | "manual" | undefined;
@@ -10,7 +10,7 @@ export const FutureIncomeSelector: React.FC<FutureIncomeSelectorProps> = ({
   handleIncomeModeChange,
 }) => {
   return (
-    <div className="flex items-center justify-center text-center">
+    <div className="flex items-stretch justify-center text-center">
       <button
         type="button"
         onClick={() => handleIncomeModeChange("auto")}
@@ -33,7 +33,7 @@ export const FutureIncomeSelector: React.FC<FutureIncomeSelectorProps> = ({
           SET FUTURE INCOME WITH PREDICTED INFLATION
         </span>
       </button>
-      <div className="w-1/5">-OR-</div>
+      <div className="w-1/5 self-center">-OR-</div>
       <button
         type="button"
         onClick={() => handleIncomeModeChange("manual")}

@@ -17,7 +17,7 @@ export const RepaymentSummary: React.FC<{
   alignLeft,
 }) => (
   <div
-    className={`flex gap-2 flex-col text-sm ${alignLeft ? "items-start text-left" : "items-center text-center"}`}
+    className={`flex gap-2 flex-col text-sm ${alignLeft ? "items-center md:items-start text-center md:text-left" : "items-center text-center"}`}
   >
     {title && (
       <div className={alignLeft ? "w-full text-center" : ""}>

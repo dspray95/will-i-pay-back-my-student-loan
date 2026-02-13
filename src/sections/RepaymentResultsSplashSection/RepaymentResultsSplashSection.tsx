@@ -17,55 +17,8 @@ export const RepaymentResultsSplashSection: React.FC = () => {
     undergraduateLoanAtGraduation,
     postgraduateLoanAtGraduation,
     loanFormValues,
-    incomeByYear,
-    calculateRepaymentWithIncome,
     setStage,
   } = useLoanCalculatorStore();
-
-  // Recalculate when upstream inputs change (debounced for slider drags)
-  useEffect(() => {
-    if (!loanFormValues) return;
-    const timer = setTimeout(() => {
-      calculateRepaymentWithIncome(incomeByYear, loanFormValues);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [
-    incomeByYear,
-    loanFormValues,
-    undergraduateLoanAtGraduation,
-    postgraduateLoanAtGraduation,
-    calculateRepaymentWithIncome,
-  ]);
-
-  // Guard clause for missing data
-  if (!undergraduateRepaymentPlan || !loanFormValues) {
-    return <ErrorSplash />;
-  }
-
-  const defaultEmptyPlan: RepaymentPlan = {
-    finalBalance: 0,
-    totalRepaid: 0,
-    yearByYearBreakdown: [],
-  };
-
-  const calculationResults = processResults(
-    undergraduateRepaymentPlan,
-    postgraduateRepaymentPlan ?? defaultEmptyPlan,
-    undergraduateLoanAtGraduation,
-    postgraduateLoanAtGraduation,
-  );
-
-  const { willRepayUndergraduateLoan, willRepayPostgraduateLoan } =
-    calculationResults;
-
-  const hasPostgradLoan =
-    postgraduateLoanAtGraduation > 0 &&
-    !!postgraduateRepaymentPlan &&
-    postgraduateRepaymentPlan.yearByYearBreakdown.length > 0;
-
-  const copyText = willRepayUndergraduateLoan
-    ? RESULTS_TEXT_REPAID
-    : RESULTS_TEXT_NOT_REPAID;
 
   const buttonRef = useRef<HTMLDivElement>(null);
 
@@ -101,19 +54,50 @@ export const RepaymentResultsSplashSection: React.FC = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [setStage]);
 
+  if (!undergraduateRepaymentPlan || !loanFormValues) {
+    return <ErrorSplash />;
+  }
+
+  const defaultEmptyPlan: RepaymentPlan = {
+    finalBalance: 0,
+    totalRepaid: 0,
+    yearByYearBreakdown: [],
+  };
+
+  const calculationResults = processResults(
+    undergraduateRepaymentPlan,
+    postgraduateRepaymentPlan ?? defaultEmptyPlan,
+    undergraduateLoanAtGraduation,
+    postgraduateLoanAtGraduation,
+  );
+
+  const { willRepayUndergraduateLoan, willRepayPostgraduateLoan } =
+    calculationResults;
+
+  const hasPostgradLoan =
+    postgraduateLoanAtGraduation > 0 &&
+    !!postgraduateRepaymentPlan &&
+    postgraduateRepaymentPlan.yearByYearBreakdown.length > 0;
+
+  const copyText = willRepayUndergraduateLoan
+    ? RESULTS_TEXT_REPAID
+    : RESULTS_TEXT_NOT_REPAID;
+
   return (
     <div className="relative flex flex-col gap-8 items-center justify-center py-12 min-h-svh">
       <div className="w-full flex flex-col gap-4 items-center justify-center mb-4 text-center">
         <Font.OutlineHeader>{copyText.result}</Font.OutlineHeader>
         <Font.Body>{copyText.subheading}</Font.Body>
         <Font.Subtle small>{copyText.snark}</Font.Subtle>
-        {hasPostgradLoan && !willRepayUndergraduateLoan && willRepayPostgraduateLoan && (
-          <Font.Subtle small>
-            You will repay your postgrad loan though!
-          </Font.Subtle>
-        )}
+        {hasPostgradLoan &&
+          !willRepayUndergraduateLoan &&
+          willRepayPostgraduateLoan && (
+            <Font.Subtle small>
+              You will repay your postgrad loan though!
+            </Font.Subtle>
+          )}
       </div>
-      <div className="w-full flex gap-12 items-start justify-center">
+      <div className="w-full flex-col md:flex-row flex gap-12 items-start justify-center">
         <RepaymentSummary
           title={hasPostgradLoan ? "Undergraduate" : undefined}
           totalPaid={calculationResults.totalUndergraduateDebtPaid}

@@ -24,7 +24,10 @@ export const FormikRadioButtonGrid: React.FC<FormikRadioButtonGridProps> = ({
   return (
     <div
       className="grid gap-2"
-      style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
+      style={{
+        gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+        gridAutoRows: "1fr",
+      }}
     >
       {options.map((option) => {
         const isSelected = selectedValue === option.value;
@@ -32,7 +35,7 @@ export const FormikRadioButtonGrid: React.FC<FormikRadioButtonGridProps> = ({
           <label
             key={option.value}
             className={clsx(
-              "flex items-center justify-center p-3 border-2 rounded-sm cursor-pointer transition-colors",
+              "flex items-center justify-center text-center p-3 border-2 rounded-sm cursor-pointer transition-colors",
               {
                 // Selected state
                 "border-none bg-district-green hover:bg-district-green-1 ":

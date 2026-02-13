@@ -87,7 +87,8 @@ export const LoanEstimatesSection: React.FC<LoanEstimatesSectionProps> = ({
       <div className=" grid grid-cols-2 gap-1">
         <Font.Label>TOTAL GRANT</Font.Label>
         <Font.Body className="font-semi-bold text-lg text-piccadilly-blue">
-          £ {totalGrant.toLocaleString()} {totalGrant === 0 && " 😢"}
+          £ {totalGrant.toLocaleString()}{" "}
+          {totalGrant === 0 && totalLoan > 0 && " 😢"}
         </Font.Body>
       </div>
     </div>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { cn } from "../../../../shared/utils/classNames";
+import { cn } from "../../../../shared/utils/ClassNames";
 import { RateInput } from "./RateInput";
 
 interface AssumptionsPanelProps {

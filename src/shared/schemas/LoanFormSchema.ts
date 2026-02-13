@@ -1,19 +1,21 @@
 import { z } from "zod";
 
+const optionalNumber = z.union([z.number(), z.literal("")]).optional();
+
 export const LoanFormSchema = z.object({
-  courseStartYear: z.number().optional(),
-  courseLength: z.number().optional(),
+  courseStartYear: optionalNumber,
+  courseLength: optionalNumber,
   country: z.string(),
   loanPlan: z
-    .enum(["plan1", "plan1NI", "plan2", "plan4", "plan5", "postgrad"])
+    .enum(["plan1", "plan1NI", "plan2", "plan4", "plan5", "postgrad", ""])
     .optional(),
   tutionFeeLoan: z.number(),
   mastersTutionFeeLoan: z.number(),
   maintenanceLoan: z.number(),
   maintenanceGrant: z.number(),
   postgrad: z.string().optional(),
-  mastersStartYear: z.number().optional(),
-  mastersLength: z.number().optional(),
+  mastersStartYear: optionalNumber,
+  mastersLength: optionalNumber,
 });
 
 export type LoanFormInput = z.infer<typeof LoanFormSchema>;
@@ -32,8 +34,8 @@ export const ValidatedLoanFormSchema = z
     maintenanceLoan: z.number(),
     maintenanceGrant: z.number(),
     postgrad: z.string().min(1, "Please select yes or no"),
-    mastersStartYear: z.number().optional(),
-    mastersLength: z.number().optional(),
+    mastersStartYear: optionalNumber,
+    mastersLength: optionalNumber,
   })
   .refine(
     (data) => {

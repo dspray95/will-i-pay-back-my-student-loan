@@ -6,6 +6,9 @@ import { useLoanCalculatorStore } from "../../stores/loanCalculatorStore";
 import { ProportionBar } from "./components/ProportionBar";
 import { RepaymentPlots } from "./components/RepaymentPlots";
 import { SummaryStats } from "./components/SummaryStats";
+import { Font } from "../../shared/components/Text";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTurnUp } from "@fortawesome/free-solid-svg-icons";
 
 export const RepaymentBreakdownSection: React.FC = () => {
   const [showResetModal, setShowResetModal] = useState(false);
@@ -25,8 +28,15 @@ export const RepaymentBreakdownSection: React.FC = () => {
       <SummaryStats />
       <ProportionBar />
       <RepaymentPlots />
-      <Button variant="primary" onClick={() => setShowResetModal(true)}>
-        Start Again
+      <Button
+        className="w-full md:max-w-4/5"
+        variant="primary"
+        onClick={() => setShowResetModal(true)}
+      >
+        <Font.Body className="text-beck-beige text-2xl pt-1 pl-2">
+          START AGAIN
+        </Font.Body>
+        <FontAwesomeIcon className="text-base" icon={faTurnUp} />
       </Button>
       <Modal isOpen={showResetModal} onClose={() => setShowResetModal(false)}>
         <h3 className="text-lg font-semibold mb-4">Start Again?</h3>

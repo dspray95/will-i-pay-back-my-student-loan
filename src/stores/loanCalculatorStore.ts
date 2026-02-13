@@ -21,6 +21,7 @@ interface LoanCalculatorState {
   undergraduateStudyYearBalances: Array<{ year: number; balance: number }>;
   postgraduateStudyYearBalances: Array<{ year: number; balance: number }>;
   incomeByYear: Record<number, number>;
+  futureIncomeMode?: "auto" | "manual";
   undergraduateRepaymentPlan?: RepaymentPlan;
   postgraduateRepaymentPlan?: RepaymentPlan;
   salaryGrowthRate: number;
@@ -28,6 +29,7 @@ interface LoanCalculatorState {
 
   // Actions
   setStage: (stage: Stage) => void;
+  setFutureIncomeMode: (mode: "auto" | "manual") => void;
   setLoanFormValues: (values: LoanFormValues) => void;
   setTotalUndergradLoan: (amount: number) => void;
   setTotalMaintenanceLoan: (amount: number) => void;
@@ -55,6 +57,7 @@ const initialState = {
   undergraduateStudyYearBalances: [],
   postgraduateStudyYearBalances: [],
   incomeByYear: {},
+  futureIncomeMode: undefined,
   undergraduateRepaymentPlan: undefined,
   postgraduateRepaymentPlan: undefined,
   salaryGrowthRate: 3.0,
@@ -78,6 +81,8 @@ export const useLoanCalculatorStore = create<LoanCalculatorState>(
     setIncomeByYear: (income) => {
       set({ incomeByYear: income });
     },
+
+    setFutureIncomeMode: (mode) => set({ futureIncomeMode: mode }),
 
     setSalaryGrowthRate: (rate) => set({ salaryGrowthRate: rate }),
 
@@ -129,6 +134,7 @@ export const useLoanCalculatorStore = create<LoanCalculatorState>(
         postgraduateLoanAtGraduation: mastersLoanAtGraduation,
         undergraduateStudyYearBalances: undergradStudyBalances,
         postgraduateStudyYearBalances: mastersStudyBalances,
+        ...(hasMasters ? {} : { postgraduateRepaymentPlan: undefined }),
       });
     },
 

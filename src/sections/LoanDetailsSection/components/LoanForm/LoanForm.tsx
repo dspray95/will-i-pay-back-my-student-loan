@@ -31,36 +31,13 @@ const LoanFormContent: React.FC = () => {
     handleFieldChange,
   } = useLoanFormLogic();
 
-  const {
-    stage,
-    incomeByYear,
-    setLoanFormValues,
-    calculatePrincipalAtGraduation,
-    calculateRepaymentWithIncome,
-    setTotalUndergradLoan,
-    setTotalMastersLoan,
-    setTotalMaintenanceLoan,
-  } = useLoanCalculatorStore();
+  const { stage, setStage } = useLoanCalculatorStore();
 
-  // Auto-recalculate when form values change and results are already showing
+  // Revert to loan details when form values change after results are showing
   useEffect(() => {
     if (stage < STAGES.repaymentResultsSplash) return;
-
-    const result = LoanFormSchema.safeParse(values);
-    if (!result.success) return;
-    const parsedValues = result.data;
-
-    const timer = setTimeout(() => {
-      setTotalUndergradLoan(parsedValues.tutionFeeLoan || 0);
-      setTotalMaintenanceLoan(parsedValues.maintenanceLoan || 0);
-      setTotalMastersLoan(parsedValues.mastersTutionFeeLoan || 0);
-      setLoanFormValues(parsedValues);
-      calculatePrincipalAtGraduation(parsedValues);
-      calculateRepaymentWithIncome(incomeByYear, parsedValues);
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [values, stage, incomeByYear]);
+    setStage(STAGES.loanDetails);
+  }, [values]);
 
   const totalLoan =
     (values.tutionFeeLoan || 0) +
@@ -149,11 +126,8 @@ const LoanFormContent: React.FC = () => {
 
 export const LoanForm: React.FC = () => {
   const {
-    stage,
-    incomeByYear,
     setLoanFormValues,
     calculatePrincipalAtGraduation,
-    calculateRepaymentWithIncome,
     setStage,
     setTotalUndergradLoan,
     setTotalMastersLoan,
@@ -163,17 +137,17 @@ export const LoanForm: React.FC = () => {
   return (
     <Formik
       initialValues={{
-        courseStartYear: undefined,
-        courseLength: undefined,
+        courseStartYear: "",
+        courseLength: "",
         country: "",
-        loanPlan: undefined,
+        loanPlan: "",
         tutionFeeLoan: 0,
         mastersTutionFeeLoan: 0,
         maintenanceLoan: 0,
         maintenanceGrant: 0,
-        postgrad: undefined,
-        mastersLength: undefined,
-        mastersStartYear: undefined,
+        postgrad: "",
+        mastersLength: "",
+        mastersStartYear: "",
       }}
       validate={(values) => {
         const result = ValidatedLoanFormSchema.safeParse(values);
@@ -212,18 +186,15 @@ export const LoanForm: React.FC = () => {
         const parsedValues = result.data;
 
         // Calculate and update store totals
+        const hasPostgrad = parsedValues.postgrad === "yes";
         setTotalUndergradLoan(parsedValues.tutionFeeLoan || 0);
         setTotalMaintenanceLoan(parsedValues.maintenanceLoan || 0);
-        setTotalMastersLoan(parsedValues.mastersTutionFeeLoan || 0);
+        setTotalMastersLoan(hasPostgrad ? parsedValues.mastersTutionFeeLoan || 0 : 0);
 
         setLoanFormValues(parsedValues);
         calculatePrincipalAtGraduation(parsedValues);
 
-        if (stage >= STAGES.repaymentResultsSplash) {
-          calculateRepaymentWithIncome(incomeByYear, parsedValues);
-        } else {
-          setStage(STAGES.incomeProjection);
-        }
+        setStage(STAGES.incomeProjection);
         setSubmitting(false);
       }}
     >
