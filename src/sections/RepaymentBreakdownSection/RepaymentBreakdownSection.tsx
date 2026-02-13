@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { PageHeader } from "../../layouts/LoanCalculatorFlow/components/PageHeader";
 import { Button } from "../../shared/components/Button";
-import { Modal } from "../../shared/components/Modal";
 import { useLoanCalculatorStore } from "../../stores/loanCalculatorStore";
 import { ProportionBar } from "./components/ProportionBar";
 import { RepaymentPlots } from "./components/RepaymentPlots";
@@ -9,6 +8,7 @@ import { SummaryStats } from "./components/SummaryStats";
 import { Font } from "../../shared/components/Text";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTurnUp } from "@fortawesome/free-solid-svg-icons";
+import { ActionConfirmationModal } from "../../shared/components/modals/ActionConfirmationModal";
 
 export const RepaymentBreakdownSection: React.FC = () => {
   const [showResetModal, setShowResetModal] = useState(false);
@@ -38,7 +38,15 @@ export const RepaymentBreakdownSection: React.FC = () => {
         </Font.Body>
         <FontAwesomeIcon className="text-base" icon={faTurnUp} />
       </Button>
-      <Modal isOpen={showResetModal} onClose={() => setShowResetModal(false)}>
+      <ActionConfirmationModal
+        title="Start Again?"
+        bodyText="This will clear all your inputs and results. Are you sure you want to
+          start over?"
+        showModal={showResetModal}
+        setShowModal={setShowResetModal}
+        onConfirm={handleStartAgain}
+      />
+      {/* <Modal isOpen={showResetModal} onClose={() => setShowResetModal(false)}>
         <h3 className="text-lg font-semibold mb-4">Start Again?</h3>
         <p className="mb-6">
           This will clear all your inputs and results. Are you sure you want to
@@ -58,7 +66,7 @@ export const RepaymentBreakdownSection: React.FC = () => {
             Start Again
           </button>
         </div>
-      </Modal>
+      </Modal> */}
     </div>
   );
 };

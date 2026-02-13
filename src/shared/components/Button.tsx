@@ -1,6 +1,6 @@
 import clsx from "clsx";
 
-type ButtonVariant = "primary" | "secondary" | "no-bg";
+type ButtonVariant = "primary" | "secondary" | "no-bg" | "base";
 
 interface ButtonProps {
   className?: string;
@@ -39,7 +39,7 @@ export const Button: React.FC<ButtonProps> = ({
         // Disabled styles
         disabled && "disabled:opacity-50 disabled:cursor-not-allowed",
         // overrides
-        className
+        className,
       )}
     >
       {children}

@@ -2,27 +2,30 @@
 
 @layer base {
   @font-face {
-    font-family: 'Railway';
-    src: url('./assets/fonts/Railway.woff2') format('woff2'),
-         url('./assets/fonts/Railway.ttf') format('truetype');
+    font-family: "Railway";
+    src:
+      url("./assets/fonts/Railway.woff2") format("woff2"),
+      url("./assets/fonts/Railway.ttf") format("truetype");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
   }
 
   @font-face {
-    font-family: 'Railway';
-    src: url('./assets/fonts/Railway-Semibold.woff2') format('woff2'),
-         url('./assets/fonts/Railway-Semibold.ttf') format('truetype');
+    font-family: "Railway";
+    src:
+      url("./assets/fonts/Railway-Semibold.woff2") format("woff2"),
+      url("./assets/fonts/Railway-Semibold.ttf") format("truetype");
     font-weight: 600;
     font-style: normal;
     font-display: swap;
   }
 
   @font-face {
-    font-family: 'RailwayAlternate';
-    src: url('./assets/fonts/RailwayAlternate.woff2') format('woff2'),
-         url('./assets/fonts/RailwayAlternate.ttf') format('truetype');
+    font-family: "RailwayAlternate";
+    src:
+      url("./assets/fonts/RailwayAlternate.woff2") format("woff2"),
+      url("./assets/fonts/RailwayAlternate.ttf") format("truetype");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -31,20 +34,21 @@
 
 @theme {
   /* Rebrand Colors */
-  --color-piccadilly-blue: #4056A4;
+  --color-piccadilly-blue: #4056a4;
   --color-piccadilly-blue-1: #35478a;
-  --color-central-red: #E32017;
-  --color-district-green: #00782A;
+  --color-central-red: #e32017;
+  --color-central-red-light-1: #e85d56;
+  --color-district-green: #00782a;
   --color-district-green-1: #078433;
-  --color-northern-not-black: #2D2C27;
+  --color-northern-not-black: #2d2c27;
   --color-northern-not-black-1: #595852;
-  --color-beck-beige: #F9E6C6;
-  --color-beck-beige-dark-1: #C3BDA3;
-  --color-not-white: #FAF3E8;
+  --color-beck-beige: #f9e6c6;
+  --color-beck-beige-dark-1: #c3bda3;
+  --color-not-white: #faf3e8;
 
-  /* Legacy Colors */ 
+  /* Legacy Colors */
   --color-primary: var(--color-piccadilly-blue);
-  --color-primary-light:  var(--color-piccadilly-blue);
+  --color-primary-light: var(--color-piccadilly-blue);
   --color-secondary: var(--color-district-green);
   --color-secondary-light: var(--color-district-green);
   --color-background: var(--color-beck-beige);
@@ -69,7 +73,7 @@
   color: var(--color-northern-not-black);
   line-height: 1.5;
   font-weight: 400;
-  
+
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -84,6 +88,6 @@ body {
 
 .rc-slider-handle:focus,
 .rc-slider-handle-click-focused {
-  background-color:  var(--color-piccadilly-blue);
-  border: 2px solid  var(--color-piccadilly-blue);
+  background-color: var(--color-piccadilly-blue);
+  border: 2px solid var(--color-piccadilly-blue);
 }

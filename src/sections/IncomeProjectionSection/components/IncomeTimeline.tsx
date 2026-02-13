@@ -14,9 +14,9 @@ import { useLoanCalculatorStore } from "../../../stores/loanCalculatorStore";
 import { IncomeSliderSet } from "./IncomeSliderSet";
 import { WrittenOffDivider } from "./WrittenOffDivider";
 import { cn } from "../../../shared/utils/ClassNames";
-import { Modal } from "../../../shared/components/Modal";
 import { AutoSetButton } from "./AutoSetButton";
 import { useIsMobile } from "../../../shared/hooks/useIsMobile";
+import { ActionConfirmationModal } from "../../../shared/components/modals/ActionConfirmationModal";
 
 export interface IncomeTimelineRef {
   expandFutureIncome: () => void;
@@ -253,30 +253,14 @@ export const IncomeTimeline = forwardRef<
         </div>
         {/* Warning modal for when the user clicks the 'set by inflation' button when they've
          *  already set some future income values manually */}
-        <Modal
-          isOpen={showWarningModal}
-          onClose={() => setShowWarningModal(false)}
-        >
-          <h3 className="text-lg font-semibold mb-4">Switch to Auto Mode?</h3>
-          <p className="mb-6">
-            This will replace your manually entered future income values with
-            auto-calculated ones based on predicted inflation. Are you sure?
-          </p>
-          <div className="flex gap-3 justify-end">
-            <button
-              onClick={() => setShowWarningModal(false)}
-              className="px-4 py-2 border rounded"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={confirmModeSwitch}
-              className="px-4 py-2 bg-district-green text-beck-beige rounded"
-            >
-              Continue
-            </button>
-          </div>
-        </Modal>
+        <ActionConfirmationModal
+          title="Switch to Auto Mode?"
+          bodyText="This will replace your manually entered future income values with
+        auto-calculated ones based on predicted inflation. Are you sure?"
+          showModal={showWarningModal}
+          setShowModal={setShowWarningModal}
+          onConfirm={confirmModeSwitch}
+        />
       </>
     );
   },
