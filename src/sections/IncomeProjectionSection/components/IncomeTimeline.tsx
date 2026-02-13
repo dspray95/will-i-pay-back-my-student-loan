@@ -1,4 +1,11 @@
-import { useMemo, useState, forwardRef, useImperativeHandle } from "react";
+import {
+  useMemo,
+  useState,
+  useEffect,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import { getForgivenessPlanForYear } from "../../../domain/loan/forgiveness";
 import type { LoanPlan } from "../../../shared/types";
 import { arrays } from "../../../shared/utils/arrays";
@@ -9,6 +16,7 @@ import { WrittenOffDivider } from "./WrittenOffDivider";
 import { cn } from "../../../shared/utils/classNames";
 import { Modal } from "../../../shared/components/Modal";
 import { AutoSetButton } from "./AutoSetButton";
+import { useIsMobile } from "../../../shared/hooks/useIsMobile";
 
 export interface IncomeTimelineRef {
   expandFutureIncome: () => void;
@@ -156,12 +164,42 @@ export const IncomeTimeline = forwardRef<
       },
     }));
 
+    const isMobile = useIsMobile();
+
+    // Track whether the future income section is in the viewport (for mobile fixed button)
+    const futureIncomeSectionRef = useRef<HTMLDivElement>(null);
+    const [isSectionVisible, setIsSectionVisible] = useState(false);
+
+    useEffect(() => {
+      const el = futureIncomeSectionRef.current;
+      if (!el || !isMobile) return;
+
+      const observer = new IntersectionObserver(
+        ([entry]) => setIsSectionVisible(entry.isIntersecting),
+        { threshold: 0 },
+      );
+      observer.observe(el);
+      return () => observer.disconnect();
+    }, [isMobile]);
+
     // Year ranges
     const yearsToNow = arrays.range(repaymentStartYear, currentYear);
     const yearsFromNowToForgiveness = arrays.range(
       currentYear + 1,
       loanForgivenessYear,
     );
+
+    // Desktop: track button offset based on last touched slider row (h-10 = 40px)
+    const SLIDER_ROW_HEIGHT = 40;
+    const lastTouchedYearIndex = lastTouchedYear
+      ? yearsFromNowToForgiveness.indexOf(lastTouchedYear)
+      : -1;
+    const buttonOffset =
+      lastTouchedYearIndex >= 0 ? lastTouchedYearIndex * SLIDER_ROW_HEIGHT : 0;
+
+    const showAutoSetButton = incomeMode === "manual";
+    const autoSetButtonClick = () =>
+      lastTouchedYear && applyInflationFill(lastTouchedYear);
 
     return (
       <>
@@ -175,18 +213,19 @@ export const IncomeTimeline = forwardRef<
             selectedMode={incomeMode}
             handleIncomeModeChange={handleIncomeModeChange}
           />
-          {/** Auto-set button — placed outside overflow-hidden so sticky works */}
-          {incomeMode === "manual" && (
+          {/** Mobile: fixed auto-set button that slides in/out based on section visibility */}
+          {isMobile && showAutoSetButton && (
             <AutoSetButton
               year={lastTouchedYear}
-              onClick={() =>
-                lastTouchedYear && applyInflationFill(lastTouchedYear)
-              }
+              fixed
+              visible={isSectionVisible}
+              onClick={autoSetButtonClick}
             />
           )}
           {/** Income from current year - could be set manually or by inflation estimations.
            * Hidden until the user has chosen how they want to set their future income */}
           <div
+            ref={futureIncomeSectionRef}
             className={cn(
               "relative grid transition-all duration-500 ease-in-out",
               {
@@ -195,6 +234,14 @@ export const IncomeTimeline = forwardRef<
               },
             )}
           >
+            {/** Desktop: absolute auto-set button floating to the right of sliders */}
+            {!isMobile && showAutoSetButton && (
+              <AutoSetButton
+                year={lastTouchedYear}
+                topOffset={buttonOffset}
+                onClick={autoSetButtonClick}
+              />
+            )}
             <div className="overflow-hidden">
               <IncomeSliderSet
                 yearsRange={yearsFromNowToForgiveness}
