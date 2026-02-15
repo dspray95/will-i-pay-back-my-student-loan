@@ -7,8 +7,8 @@ import { MethodologySection } from "../../sections/MethodologySection/Methodolog
 import { useLoanCalculatorStore } from "../../stores/loanCalculatorStore";
 import { STAGES } from "../../shared/constants/stages";
 import { BorderWrappers } from "./components/BorderWrappers";
-import { PageHeader } from "./components/PageHeader";
 import { ScrollOnReveal } from "./components/ScrollOnReveal";
+import { PageHeader } from "../../shared/components/PageHeader";
 
 export const LoanCalculatorFlow = () => {
   const { stage, resetCount, loanFormValues } = useLoanCalculatorStore();

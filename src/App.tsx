@@ -1,5 +1,5 @@
 import { LoanCalculatorFlow } from "./layouts/LoanCalculatorFlow/LoanCalculatorFlow";
-import { GitHubLink } from "./shared/components/socials/GitHub";
+import { GitHubLink } from "./shared/components/socials/Github";
 import { LinkedInLink } from "./shared/components/socials/LinkedIn";
 
 function App() {

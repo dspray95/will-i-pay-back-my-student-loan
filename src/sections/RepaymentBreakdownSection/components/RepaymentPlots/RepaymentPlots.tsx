@@ -1,5 +1,9 @@
 import { RepaymentPlot } from "./RepaymentPlot";
 import { useLoanCalculatorStore } from "../../../../stores/loanCalculatorStore";
+import {
+  useIsMobile,
+  useIsTablet,
+} from "../../../../shared/hooks/useIsMobile";
 
 export const RepaymentPlots: React.FC = () => {
   const {
@@ -10,6 +14,9 @@ export const RepaymentPlots: React.FC = () => {
     loanFormValues,
   } = useLoanCalculatorStore();
 
+  const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
+
   if (!undergraduateRepaymentPlan || !loanFormValues) {
     return null;
   }
@@ -17,6 +24,16 @@ export const RepaymentPlots: React.FC = () => {
   const hasPostgrad =
     postgraduateRepaymentPlan &&
     postgraduateRepaymentPlan.yearByYearBreakdown.length > 0;
+
+  const containerHeight = isMobile
+    ? 300
+    : isTablet
+      ? hasPostgrad
+        ? 300
+        : 400
+      : hasPostgrad
+        ? 400
+        : 500;
 
   const getMaxValue = (
     breakdown: typeof undergraduateRepaymentPlan.yearByYearBreakdown,
@@ -59,6 +76,7 @@ export const RepaymentPlots: React.FC = () => {
           title="Undergraduate Repayments"
           yDomain={hasPostgrad ? sharedYDomain : undefined}
           compact={!!hasPostgrad}
+          containerHeight={containerHeight}
         />
       </div>
       {hasPostgrad && loanFormValues.mastersLength && (
@@ -70,6 +88,7 @@ export const RepaymentPlots: React.FC = () => {
             title="Postgraduate Repayments"
             yDomain={sharedYDomain}
             compact
+            containerHeight={containerHeight}
           />
         </div>
       )}

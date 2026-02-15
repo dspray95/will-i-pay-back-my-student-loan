@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { Font } from "../../../shared/components/Text";
-import { GitHubLink as GithubLink } from "../../../shared/components/socials/GitHub";
-import { LinkedInLink } from "../../../shared/components/socials/LinkedIn";
+import { Font } from "./Text";
+import { GitHubLink as GithubLink } from "./socials/Github";
+import { LinkedInLink } from "./socials/LinkedIn";
 
-export const PageHeader: React.FC<{ showExplainer?: boolean }> = ({
-  showExplainer = true,
-}) => {
+export const PageHeader: React.FC<{
+  showExplainer?: boolean;
+  showSocials?: boolean;
+}> = ({ showExplainer = true, showSocials = true }) => {
   const [punctuation, setPunctuation] = useState("?");
 
   useEffect(() => {
@@ -26,10 +27,12 @@ export const PageHeader: React.FC<{ showExplainer?: boolean }> = ({
       </div>
 
       <Font.H1 className="text-center">WILL I REPAY MY STUDENT LOAN?</Font.H1>
-      <div className="flex items-center gap-6 justify-center md:hidden py-2">
-        <GithubLink />
-        <LinkedInLink />
-      </div>
+      {showSocials && (
+        <div className="flex items-center gap-6 justify-center md:hidden py-2">
+          <GithubLink />
+          <LinkedInLink />
+        </div>
+      )}
       {showExplainer && (
         <div className="flex flex-col gap-2 items-center justify-center">
           <Font.Body className="md:text-center">

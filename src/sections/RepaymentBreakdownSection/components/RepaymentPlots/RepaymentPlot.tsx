@@ -30,6 +30,7 @@ export const RepaymentPlot: React.FC<{
   title?: string;
   yDomain?: [number, number];
   compact?: boolean;
+  containerHeight: number;
 }> = ({
   repaymentBreakdown,
   courseLength,
@@ -37,6 +38,7 @@ export const RepaymentPlot: React.FC<{
   title = "Repayments",
   yDomain,
   compact = false,
+  containerHeight,
 }) => {
   const startYear = repaymentBreakdown[0].year - courseLength;
   const [hidden, setHidden] = useState<Record<string, boolean>>({});
@@ -88,7 +90,7 @@ export const RepaymentPlot: React.FC<{
   return (
     <div className="flex flex-col items-center gap-4">
       {title && <Font.H4>{title}</Font.H4>}
-      <ResponsiveContainer width="100%" height={isMobile ? 300 : 500}>
+      <ResponsiveContainer width="100%" height={containerHeight}>
         <ComposedChart
           data={data}
           margin={
