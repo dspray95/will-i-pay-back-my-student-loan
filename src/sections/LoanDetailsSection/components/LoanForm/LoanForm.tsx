@@ -1,4 +1,10 @@
-import { Formik, Form, Field, useFormikContext, type FormikHelpers } from "formik";
+import {
+  Formik,
+  Form,
+  Field,
+  useFormikContext,
+  type FormikHelpers,
+} from "formik";
 import React, { useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDown } from "@fortawesome/free-solid-svg-icons";
@@ -17,13 +23,12 @@ import { COUNTRY_OPTIONS, FIELD_CLASS, POSTGRAD_OPTIONS } from "./consts";
 import {
   LoanFormSchema,
   ValidatedLoanFormSchema,
-  type LoanFormValues,
   type LoanFormInput,
 } from "../../../../shared/schemas/LoanFormSchema";
 import { Font } from "../../../../shared/components/Text";
 
 const processLoanFormValues = (
-  values: LoanFormValues,
+  values: LoanFormInput,
   {
     setTotalUndergradLoan,
     setTotalMaintenanceLoan,
@@ -45,16 +50,14 @@ const processLoanFormValues = (
   const hasPostgrad = parsedValues.postgrad === "yes";
   setTotalUndergradLoan(parsedValues.tutionFeeLoan || 0);
   setTotalMaintenanceLoan(parsedValues.maintenanceLoan || 0);
-  setTotalMastersLoan(
-    hasPostgrad ? parsedValues.mastersTutionFeeLoan || 0 : 0,
-  );
+  setTotalMastersLoan(hasPostgrad ? parsedValues.mastersTutionFeeLoan || 0 : 0);
 
   setLoanFormValues(parsedValues);
   calculatePrincipalAtGraduation(parsedValues);
 };
 
 const LoanFormContent: React.FC = () => {
-  const { values, isSubmitting } = useFormikContext<LoanFormValues>();
+  const { values, isSubmitting } = useFormikContext<LoanFormInput>();
   const {
     showPostgradSection,
     defaultValues,
@@ -150,7 +153,7 @@ const LoanFormContent: React.FC = () => {
           <FormikRadioButtonGrid
             name="postgrad"
             options={POSTGRAD_OPTIONS}
-            selectedValue={values.postgrad}
+            selectedValue={values.postgrad ?? ""}
           />
         </FormField>
         <MastersSection isVisible={showPostgradSection} />
@@ -184,12 +187,8 @@ export const LoanForm: React.FC = () => {
   } = useLoanCalculatorStore();
 
   const handleSubmit = async (
-    values: LoanFormValues,
-    {
-      setSubmitting,
-      validateForm,
-      setTouched,
-    }: FormikHelpers<LoanFormValues>,
+    values: LoanFormInput,
+    { setSubmitting, validateForm, setTouched }: FormikHelpers<LoanFormInput>,
   ) => {
     // Error handling
     const errors = await validateForm(values);
