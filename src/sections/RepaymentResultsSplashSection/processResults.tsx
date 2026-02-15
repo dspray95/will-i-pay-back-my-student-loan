@@ -1,0 +1,90 @@
+import type { RepaymentPlan } from "../../shared/types";
+import type { CalculationResults } from "./types";
+
+export const processResults = (
+  undergraduateRepaymentPlan: RepaymentPlan,
+  postgraduateRepaymentPlan: RepaymentPlan,
+  undergraduateLoanAtGraduation: number,
+  postgraduateLoanAtGraduation: number,
+): CalculationResults => {
+  // Will they repay their loan?
+  const willRepayUndergraduateLoan =
+    undergraduateRepaymentPlan.finalBalance <= 0;
+  const willRepayPostgraduateLoan = postgraduateRepaymentPlan.finalBalance <= 0;
+
+  // Accrued interest
+  let totalUndergraduateInterestAccrued = 0;
+  undergraduateRepaymentPlan.yearByYearBreakdown.forEach((year) => {
+    totalUndergraduateInterestAccrued += year.interestAccrued;
+  });
+  let totalPostgraduateInterestAccrued = 0;
+  postgraduateRepaymentPlan.yearByYearBreakdown.forEach((year) => {
+    totalPostgraduateInterestAccrued += year.interestAccrued;
+  });
+
+  // Repayments
+  const undergraduateRepayments =
+    undergraduateRepaymentPlan.yearByYearBreakdown.map(
+      (year) => year.repayment,
+    );
+  const postgraduateRepayments =
+    postgraduateRepaymentPlan.yearByYearBreakdown.map((year) => year.repayment);
+
+  // Forgiveness
+  const undergraduateAmountForgiven = undergraduateRepaymentPlan.finalBalance;
+  const postgraduateAmountForgiven = postgraduateRepaymentPlan.finalBalance;
+
+  // Totals
+  let totalUndergraduateLoanAmount = 0;
+  let totalUndergraduateDebtPaid = 0;
+  if (undergraduateLoanAtGraduation !== 0) {
+    totalUndergraduateLoanAmount =
+      undergraduateLoanAtGraduation +
+      undergraduateRepaymentPlan.yearByYearBreakdown
+        .map((year) => year.interestAccrued)
+        .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+
+    totalUndergraduateDebtPaid =
+      undergraduateRepaymentPlan.yearByYearBreakdown.reduce(
+        (accumulator, year) => {
+          return accumulator + year.repayment;
+        },
+        0,
+      );
+  }
+
+  let totalPostgraduateLoanAmount = 0;
+  let totalPostgraduateDebtPaid = 0;
+
+  if (postgraduateLoanAtGraduation !== 0) {
+    totalPostgraduateLoanAmount =
+      postgraduateLoanAtGraduation +
+      postgraduateRepaymentPlan.yearByYearBreakdown
+        .map((year) => year.interestAccrued)
+        .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+
+    totalPostgraduateDebtPaid =
+      postgraduateRepaymentPlan.yearByYearBreakdown.reduce(
+        (accumulator, year) => {
+          return accumulator + year.repayment;
+        },
+        0,
+      );
+  }
+
+  const results: CalculationResults = {
+    willRepayUndergraduateLoan,
+    willRepayPostgraduateLoan,
+    totalUndergraduateInterestAccrued,
+    totalPostgraduateInterestAccrued,
+    totalUndergraduateLoanAmount,
+    totalPostgraduateLoanAmount,
+    undergraduateAmountForgiven,
+    postgraduateAmountForgiven,
+    undergraduateRepayments,
+    postgraduateRepayments,
+    totalUndergraduateDebtPaid,
+    totalPostgraduateDebtPaid,
+  };
+  return results;
+};

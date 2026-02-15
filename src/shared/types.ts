@@ -1,4 +1,6 @@
-import type { LoanPlan } from "../data";
+import type z from "zod";
+import type { STAGES } from "./constants/stages";
+import type { LoanFormSchema } from "./schemas/LoanFormSchema";
 
 export type RepaymentBreakdown = Array<{
   year: number;
@@ -15,16 +17,6 @@ export type RepaymentPlan = {
   yearByYearBreakdown: RepaymentBreakdown;
 };
 
-export type LoanFormValues = {
-  courseStartYear: number;
-  courseLength: number;
-  country: string;
-  loanPlan: LoanPlan;
-  tutionFeeLoan: number;
-  mastersTutionFeeLoan: number;
-  maintenanceLoan: number;
-  maintenanceGrant: number;
-  postgrad: string;
-  mastersStartYear: number;
-  mastersLength: number;
-};
+export type LoanPlan = z.infer<typeof LoanFormSchema>["loanPlan"] & {};
+
+export type Stage = (typeof STAGES)[keyof typeof STAGES];

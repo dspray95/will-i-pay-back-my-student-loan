@@ -1,69 +1,42 @@
-# React + TypeScript + Vite
+# THE GREAT BRITISH WRITE-OFF
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A UK student loan projection tool built with React 19, Vite, and Bun. This project helps users visualize long-term debt based on income projections and loan plans.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Runtime:** [Bun](https://bun.sh/) (Package management & scripts)
+- **Framework:** [React 19](https://react.dev/)
+- **Build Tool:** [Vite 7](https://vitejs.dev/)
+- **State Management:** [Zustand](https://zustand-demo.pmnd.rs/) (Client-side calculation state)
+- **Forms:** [Formik](https://formik.org/)
+- **Styling:** [Tailwind CSS 4](https://tailwindcss.com/)
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+This project uses **Bun**. If you don't have it installed, run `curl -fsSL https://bun.sh/install | bash` (Linux/MacOS) or `powershell -c "irm bun.sh/install.ps1|iex"` (windows).
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Installation
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+bun install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Development
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+bun dev
 ```
+
+### Build
+
+```bash
+bun run build
+```
+
+## 📐 Project Architecture
+
+- `src/sections/`: Single page divided into sections
+- `src/layout`: Full page layout
+- `src/domain/`: Pure business logic (loan plans, interest rate calculations etc.).
+- `src/stores/`: Zustand stores managing the global calculation state.
+- `src/shared/`: Reusable components, functions, types and constants.
