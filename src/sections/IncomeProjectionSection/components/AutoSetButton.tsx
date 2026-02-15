@@ -23,15 +23,17 @@ export const AutoSetButton: React.FC<AutoSetButtonProps> = ({
       "flex items-center justify-center gap-2 transition-all duration-300",
       fixed
         ? "fixed left-0 w-full py-2 z-50 bg-beck-beige backdrop-blur-sm"
-        : "absolute left-full w-fit whitespace-nowrap",
-      fixed && visible && "top-0",
-      fixed && !visible && "-top-12 opacity-0 pointer-events-none",
+        : "absolute left-full w-fit whitespace-nowrap drop-shadow-lg drop-shadow-gray-500",
+      fixed && visible && "bottom-0",
+      fixed && !visible && "-bottom-12 opacity-0 pointer-events-none",
     )}
     style={fixed ? undefined : { top: topOffset }}
     onClick={onClick}
   >
     {fixed ? (
-      <span>AUTO SET FROM {year ?? "..."}</span>
+      <span className="text-xs">
+        AUTO SET TO INFLATION FROM {year ?? "..."}
+      </span>
     ) : (
       <div className="flex flex-col w-fit whitespace-nowrap z-10">
         <span>AUTO SET</span>
