@@ -1,4 +1,5 @@
 import { memo, useEffect, useState } from "react";
+
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import {
@@ -9,6 +10,7 @@ import {
 } from "../../../shared/constants/color";
 import styled from "styled-components";
 import { Font } from "../../../shared/components/Text";
+import { cn } from "../../../shared/utils/ClassNames";
 
 const StyledSlider = styled(Slider)`
   .rc-slider-handle:focus,
@@ -75,87 +77,95 @@ const generateSparseMarks = (steps: number[], fraction: number = 0.1) => {
 
 const marks = generateSparseMarks(incomeSteps, 0.1);
 
+export const FOCUS_RING_TIMEOUT_MS = 2000;
+
 type IncomeSliderProps = {
   year: number;
   value: number;
   onChange: (year: number, value: number) => void;
+  isActive?: boolean;
+  onSliderRelease?: (year: number) => void;
+  onInputFocus?: () => void;
 };
 
-export const IncomeSlider: React.FC<IncomeSliderProps> = memo(({
-  year,
-  value,
-  onChange,
-}) => {
-  const [selectedIndex, setSelectedIndex] = useState<number>(() =>
-    getInterpolatedIndex(value),
-  );
+export const IncomeSlider: React.FC<IncomeSliderProps> = memo(
+  ({ year, value, onChange, isActive, onSliderRelease, onInputFocus }) => {
+    const [selectedIndex, setSelectedIndex] = useState<number>(() =>
+      getInterpolatedIndex(value),
+    );
 
-  useEffect(() => {
-    const newIndex = getInterpolatedIndex(value);
-    if (newIndex !== selectedIndex) {
-      setSelectedIndex(newIndex);
-    }
-  }, [value]); // eslint-disable-line react-hooks/exhaustive-deps
+    useEffect(() => {
+      const newIndex = getInterpolatedIndex(value);
+      if (newIndex !== selectedIndex) {
+        setSelectedIndex(newIndex);
+      }
+    }, [value]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleSliderChange = (val: number | number[]) => {
-    if (typeof val === "number") {
-      setSelectedIndex(val);
-      onChange(year, incomeSteps[val]);
-    }
-  };
+    const handleSliderChange = (val: number | number[]) => {
+      if (typeof val === "number") {
+        setSelectedIndex(val);
+        onChange(year, incomeSteps[val]);
+      }
+    };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawValue = e.target.value.replace(/[^\d]/g, "");
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const rawValue = e.target.value.replace(/[^\d]/g, "");
 
-    if (rawValue === "") {
-      onChange(year, 0);
-      setSelectedIndex(0);
-      return;
-    }
+      if (rawValue === "") {
+        onChange(year, 0);
+        setSelectedIndex(0);
+        return;
+      }
 
-    const numericValue = parseInt(rawValue, 10);
-    onChange(year, numericValue);
-    setSelectedIndex(getInterpolatedIndex(numericValue));
-  };
+      const numericValue = parseInt(rawValue, 10);
+      onChange(year, numericValue);
+      setSelectedIndex(getInterpolatedIndex(numericValue));
+    };
 
-  return (
-    <div className="grid grid-cols-12 items-center max-w-full justify-center h-10 px-4">
-      <span className="col-span-1 text-sm">{year}</span>
-      <div className="col-span-9 px-4">
-        <StyledSlider
-          min={0}
-          max={incomeSteps.length - 1}
-          step={1}
-          marks={marks}
-          value={selectedIndex}
-          onChange={handleSliderChange}
-          styles={{
-            track: { backgroundColor: colorDistrictGreen, height: "7.5px" },
-            rail: { backgroundColor: colorBeckBeigeDark1, height: "7.5px" },
-            handle: {
-              width: "16px",
-              height: "16px",
-              margin: "0px",
-              padding: "0px",
-              bottom: "0px",
-              top: "1.5px",
-              backgroundColor: colorNotWhite,
-              border: `3px solid ${colorNorthernNotBlack}`,
-              opacity: 1,
-            },
-          }}
-        />
+    return (
+      <div className="grid grid-cols-12 items-center max-w-full justify-center h-10 px-4">
+        <span className="col-span-1 text-sm">{year}</span>
+        <div className="col-span-8 sm:col-span-9 px-4">
+          <StyledSlider
+            min={0}
+            max={incomeSteps.length - 1}
+            step={1}
+            marks={marks}
+            value={selectedIndex}
+            onChange={handleSliderChange}
+            onChangeComplete={() => onSliderRelease?.(year)}
+            styles={{
+              track: { backgroundColor: colorDistrictGreen, height: "7.5px" },
+              rail: { backgroundColor: colorBeckBeigeDark1, height: "7.5px" },
+              handle: {
+                width: "16px",
+                height: "16px",
+                margin: "0px",
+                padding: "0px",
+                bottom: "0px",
+                top: "1.5px",
+                backgroundColor: colorNotWhite,
+                border: `3px solid ${colorNorthernNotBlack}`,
+                opacity: 1,
+              },
+            }}
+          />
+        </div>
+        <div className="relative col-span-3 overflow-visible sm:col-span-2 pl-2 text-[0.7rem] sm:text-xs md:text-sm rounded transition-shadow duration-300">
+          <Font.Label className="absolute left-2 top-1/2 -translate-y-1/2">
+            £
+          </Font.Label>
+          <input
+            className={cn(
+              "pl-3 pr-1 w-full max-w-fit overflow-visible rounded-xs focus:outline-none focus:ring-2 focus:ring-piccadilly-blue",
+              isActive && "ring-2 ring-piccadilly-blue",
+            )}
+            value={value.toLocaleString()}
+            onChange={handleChange}
+            onFocus={onInputFocus}
+          />
+        </div>
       </div>
-      <div className="relative col-span-2 pl-2 text-sm">
-        <Font.Label className="absolute left-2 top-1/2 -translate-y-1/2">
-          £
-        </Font.Label>
-        <input
-          className="px-3 w-full"
-          value={value.toLocaleString()}
-          onChange={handleChange}
-        />
-      </div>
-    </div>
-  );
-});
+    );
+  },
+);

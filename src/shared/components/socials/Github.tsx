@@ -1,7 +1,7 @@
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-export const GitHubLink = () => {
+export const GithubLink = () => {
   return (
     <a
       href="https://github.com/dspray95/will-i-pay-back-my-student-loan"

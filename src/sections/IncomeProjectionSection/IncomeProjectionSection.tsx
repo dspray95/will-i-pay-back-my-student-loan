@@ -66,7 +66,7 @@ export const IncomeProjectionSection: React.FC<{
           onProjectedInflationRateChange={setProjectedInflationRate}
         />
       </div>
-      <div className="w-full md:max-w-4/5 mx-3">
+      <div className="w-full md:max-full md:max-w-full mx-3">
         <IncomeTimeline
           undergradStartYear={undergradStartYear}
           undergradEndYear={undergradEndYear}

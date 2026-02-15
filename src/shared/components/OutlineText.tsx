@@ -12,11 +12,11 @@ export const OutlineText: React.FC<{
         y="65%"
         textAnchor="middle"
         dominantBaseline="middle"
-        className="text-8xl font-semibold"
+        className="text-5xl sm:text-7xl lg:text-8xl font-semibold"
         fill="transparent"
         stroke={color}
         strokeWidth="2"
-        style={{ fontSize: "clamp(4rem, 8vw, 6rem)", fontWeight: 600 }}
+        style={{ fontWeight: 600 }}
       >
         {children}
       </text>

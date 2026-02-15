@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Font } from "./Text";
-import { GitHubLink as GithubLink } from "./socials/Github";
+import { GithubLink } from "./socials/Github";
 import { LinkedInLink } from "./socials/LinkedIn";
 
 export const PageHeader: React.FC<{
@@ -19,7 +19,7 @@ export const PageHeader: React.FC<{
 
   return (
     <div className="flex flex-col items-center justify-center gap-4 pb-10">
-      <div className="max-w-full text-piccadilly-blue flex flex-col py-2 items-center w-fit px-30 justify-center border-2 border-piccadilly-blue">
+      <div className="max-w-full text-piccadilly-blue flex flex-col py-2 items-center w-fit sm:px-24 md:px-30 justify-center border-2 border-piccadilly-blue">
         <span className="text-2xl text-nowrap -mb-3 md:mb-0">
           THE GREAT BRITISH
         </span>
