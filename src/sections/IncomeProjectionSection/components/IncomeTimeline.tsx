@@ -1,4 +1,5 @@
 import {
+  useCallback,
   useMemo,
   useState,
   useEffect,
@@ -29,7 +30,7 @@ export const IncomeTimeline = forwardRef<
     undergradEndYear: number;
     repaymentPlan: LoanPlan;
     salaryGrowthRate: number;
-    onFutureIncomeModeChange?: (mode: "auto" | "manual" | undefined) => void;
+    onFutureIncomeModeChange?: (mode: "auto" | "manual") => void;
   }
 >(
   (
@@ -51,7 +52,15 @@ export const IncomeTimeline = forwardRef<
     const [lastTouchedYear, setLastTouchedYear] = useState<number>();
 
     // Shared state
-    const { incomeByYear, setIncomeByYear } = useLoanCalculatorStore();
+    const { setIncomeByYear } = useLoanCalculatorStore();
+
+    // Refs for stable callback access
+    const incomeModeRef = useRef(incomeMode);
+    incomeModeRef.current = incomeMode;
+    const userSetYearsRef = useRef(userSetYears);
+    userSetYearsRef.current = userSetYears;
+    const onFutureIncomeModeChangeRef = useRef(onFutureIncomeModeChange);
+    onFutureIncomeModeChangeRef.current = onFutureIncomeModeChange;
 
     // Slider functions
     const currentYear = new Date().getFullYear();
@@ -64,34 +73,50 @@ export const IncomeTimeline = forwardRef<
 
     const loanForgivenessYear = repaymentStartYear + forgivenessPlan;
 
-    const handleIncomeChange = (year: number, value: number) => {
-      setUserSetYears((prev) => ({ ...prev, [year]: true }));
-      setLastTouchedYear(year);
+    const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-      const updatedIncome = { ...incomeByYear };
-      updatedIncome[year] = value;
+    const handleIncomeChange = useCallback(
+      (year: number, value: number) => {
+        setUserSetYears((prev) => ({ ...prev, [year]: true }));
+        setLastTouchedYear(year);
 
-      // If user manually edits a future year while in auto mode,
-      // switch to manual without cascading to other years
-      if (incomeMode === "auto" && year > currentYear) {
-        setIncomeMode("manual");
-        onFutureIncomeModeChange?.("manual");
-        setIncomeByYear(updatedIncome);
-        return;
-      }
+        const buildUpdatedIncome = () => {
+          const currentIncomeByYear =
+            useLoanCalculatorStore.getState().incomeByYear;
+          const updatedIncome = { ...currentIncomeByYear };
+          updatedIncome[year] = value;
 
-      // Propagate to future untouched years up to forgiveness
-      const propagateUntil =
-        incomeMode === "auto" ? currentYear : loanForgivenessYear;
+          const mode = incomeModeRef.current;
 
-      for (let y = year + 1; y <= propagateUntil; y++) {
-        if (!userSetYears[y]) {
-          updatedIncome[y] = value;
-        }
-      }
+          // If user manually edits a future year while in auto mode,
+          // switch to manual without cascading to other years
+          if (mode === "auto" && year > currentYear) {
+            setIncomeMode("manual");
+            onFutureIncomeModeChangeRef.current?.("manual");
+            return updatedIncome;
+          }
 
-      setIncomeByYear(updatedIncome);
-    };
+          // Propagate to future untouched years up to forgiveness
+          const propagateUntil =
+            mode === "auto" ? currentYear : loanForgivenessYear;
+
+          const currentUserSetYears = userSetYearsRef.current;
+          for (let y = year + 1; y <= propagateUntil; y++) {
+            if (!currentUserSetYears[y]) {
+              updatedIncome[y] = value;
+            }
+          }
+
+          return updatedIncome;
+        };
+
+        clearTimeout(debounceRef.current);
+        debounceRef.current = setTimeout(() => {
+          setIncomeByYear(buildUpdatedIncome());
+        }, 30);
+      },
+      [currentYear, loanForgivenessYear, setIncomeByYear],
+    );
 
     const applyInflationFill = (fromYear: number) => {
       const currentIncomeByYear =

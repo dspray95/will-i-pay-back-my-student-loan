@@ -1,4 +1,4 @@
-import { Formik, Form, Field, useFormikContext } from "formik";
+import { Formik, Form, Field, useFormikContext, type FormikHelpers } from "formik";
 import React, { useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDown } from "@fortawesome/free-solid-svg-icons";
@@ -18,8 +18,40 @@ import {
   LoanFormSchema,
   ValidatedLoanFormSchema,
   type LoanFormValues,
+  type LoanFormInput,
 } from "../../../../shared/schemas/LoanFormSchema";
 import { Font } from "../../../../shared/components/Text";
+
+const processLoanFormValues = (
+  values: LoanFormValues,
+  {
+    setTotalUndergradLoan,
+    setTotalMaintenanceLoan,
+    setTotalMastersLoan,
+    setLoanFormValues,
+    calculatePrincipalAtGraduation,
+  }: {
+    setTotalUndergradLoan: (amount: number) => void;
+    setTotalMaintenanceLoan: (amount: number) => void;
+    setTotalMastersLoan: (amount: number) => void;
+    setLoanFormValues: (values: LoanFormInput) => void;
+    calculatePrincipalAtGraduation: (values: LoanFormInput) => void;
+  },
+) => {
+  const result = LoanFormSchema.safeParse(values);
+  if (!result.success) return;
+  const parsedValues = result.data;
+
+  const hasPostgrad = parsedValues.postgrad === "yes";
+  setTotalUndergradLoan(parsedValues.tutionFeeLoan || 0);
+  setTotalMaintenanceLoan(parsedValues.maintenanceLoan || 0);
+  setTotalMastersLoan(
+    hasPostgrad ? parsedValues.mastersTutionFeeLoan || 0 : 0,
+  );
+
+  setLoanFormValues(parsedValues);
+  calculatePrincipalAtGraduation(parsedValues);
+};
 
 const LoanFormContent: React.FC = () => {
   const { values, isSubmitting } = useFormikContext<LoanFormValues>();
@@ -31,12 +63,29 @@ const LoanFormContent: React.FC = () => {
     handleFieldChange,
   } = useLoanFormLogic();
 
-  const { stage, setStage } = useLoanCalculatorStore();
+  const {
+    stage,
+    setStage,
+    setLoanFormValues,
+    calculatePrincipalAtGraduation,
+    setTotalUndergradLoan,
+    setTotalMastersLoan,
+    setTotalMaintenanceLoan,
+  } = useLoanCalculatorStore();
 
-  // Revert to loan details when form values change after results are showing
+  // When the user comes back and changes values, automatically
+  // reprocess them so they don't need to re-click submit
   useEffect(() => {
-    if (stage < STAGES.repaymentResultsSplash) return;
-    setStage(STAGES.loanDetails);
+    if (stage < STAGES.incomeProjection) return;
+    processLoanFormValues(values, {
+      setTotalUndergradLoan,
+      setTotalMaintenanceLoan,
+      setTotalMastersLoan,
+      setLoanFormValues,
+      calculatePrincipalAtGraduation,
+    });
+    setStage(STAGES.incomeProjection);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values]);
 
   const totalLoan =
@@ -134,6 +183,38 @@ export const LoanForm: React.FC = () => {
     setTotalMaintenanceLoan,
   } = useLoanCalculatorStore();
 
+  const handleSubmit = async (
+    values: LoanFormValues,
+    {
+      setSubmitting,
+      validateForm,
+      setTouched,
+    }: FormikHelpers<LoanFormValues>,
+  ) => {
+    // Error handling
+    const errors = await validateForm(values);
+    if (Object.keys(errors).length > 0) {
+      const touchedFields: Record<string, boolean> = {};
+      Object.keys(errors).forEach((key) => {
+        touchedFields[key] = true;
+      });
+      setTouched(touchedFields);
+      setSubmitting(false);
+      return;
+    }
+
+    processLoanFormValues(values, {
+      setTotalUndergradLoan,
+      setTotalMaintenanceLoan,
+      setTotalMastersLoan,
+      setLoanFormValues,
+      calculatePrincipalAtGraduation,
+    });
+
+    setStage(STAGES.incomeProjection);
+    setSubmitting(false);
+  };
+
   return (
     <Formik
       initialValues={{
@@ -164,39 +245,7 @@ export const LoanForm: React.FC = () => {
 
         return {};
       }}
-      onSubmit={async (values, { setSubmitting, validateForm, setTouched }) => {
-        // Error handling
-        const errors = await validateForm(values);
-        if (Object.keys(errors).length > 0) {
-          const touchedFields: Record<string, boolean> = {};
-          Object.keys(errors).forEach((key) => {
-            touchedFields[key] = true;
-          });
-          setTouched(touchedFields);
-          setSubmitting(false);
-          return;
-        }
-
-        // Parse form values
-        const result = LoanFormSchema.safeParse(values);
-        if (!result.success) {
-          setSubmitting(false);
-          return;
-        }
-        const parsedValues = result.data;
-
-        // Calculate and update store totals
-        const hasPostgrad = parsedValues.postgrad === "yes";
-        setTotalUndergradLoan(parsedValues.tutionFeeLoan || 0);
-        setTotalMaintenanceLoan(parsedValues.maintenanceLoan || 0);
-        setTotalMastersLoan(hasPostgrad ? parsedValues.mastersTutionFeeLoan || 0 : 0);
-
-        setLoanFormValues(parsedValues);
-        calculatePrincipalAtGraduation(parsedValues);
-
-        setStage(STAGES.incomeProjection);
-        setSubmitting(false);
-      }}
+      onSubmit={handleSubmit}
     >
       <LoanFormContent />
     </Formik>

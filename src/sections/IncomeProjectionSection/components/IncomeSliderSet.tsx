@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Fragment } from "react/jsx-runtime";
 import { IncomeSlider } from "./IncomeSlider";
 import { useLoanCalculatorStore } from "../../../stores/loanCalculatorStore";
@@ -8,7 +9,7 @@ interface IncomeSliderSetProps {
   showButton?: boolean;
 }
 
-export const IncomeSliderSet: React.FC<IncomeSliderSetProps> = ({
+export const IncomeSliderSet: React.FC<IncomeSliderSetProps> = memo(({
   yearsRange,
   handleIncomeChange,
 }) => {
@@ -26,4 +27,4 @@ export const IncomeSliderSet: React.FC<IncomeSliderSetProps> = ({
       ))}
     </div>
   );
-};
+});

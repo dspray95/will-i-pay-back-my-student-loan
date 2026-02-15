@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import {
@@ -73,13 +73,15 @@ const generateSparseMarks = (steps: number[], fraction: number = 0.1) => {
   return sparseMarks;
 };
 
+const marks = generateSparseMarks(incomeSteps, 0.1);
+
 type IncomeSliderProps = {
   year: number;
   value: number;
   onChange: (year: number, value: number) => void;
 };
 
-export const IncomeSlider: React.FC<IncomeSliderProps> = ({
+export const IncomeSlider: React.FC<IncomeSliderProps> = memo(({
   year,
   value,
   onChange,
@@ -115,8 +117,6 @@ export const IncomeSlider: React.FC<IncomeSliderProps> = ({
     onChange(year, numericValue);
     setSelectedIndex(getInterpolatedIndex(numericValue));
   };
-
-  const marks = generateSparseMarks(incomeSteps, 0.1);
 
   return (
     <div className="grid grid-cols-12 items-center max-w-full justify-center h-10 px-4">
@@ -158,4 +158,4 @@ export const IncomeSlider: React.FC<IncomeSliderProps> = ({
       </div>
     </div>
   );
-};
+});

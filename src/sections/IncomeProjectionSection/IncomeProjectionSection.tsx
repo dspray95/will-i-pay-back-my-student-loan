@@ -33,6 +33,7 @@ export const IncomeProjectionSection: React.FC<{
   useEffect(() => {
     if (stage < STAGES.repaymentResultsSplash) return;
     setStage(STAGES.incomeProjection);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [incomeByYear]);
 
   const handleResultsClick = () => {
