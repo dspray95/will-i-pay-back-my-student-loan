@@ -1,5 +1,8 @@
 import { Font } from "../../shared/components/Text";
 
+const METHODOLOGY_DOC_LINK =
+  "https://github.com/dspray95/will-i-pay-back-my-student-loan/blob/main/docs/METHODOLOGY.md";
+
 export const MethodologySection: React.FC = () => {
   return (
     <div className="flex gap-8 items-start justify-center py-12 flex-col max-w-4xl mx-auto px-6">
@@ -76,7 +79,7 @@ export const MethodologySection: React.FC = () => {
             For the full technical methodology including interest rate formulas,
             plan-specific rules, and known simplifications, see the{" "}
             <a
-              href="https://github.com/yourusername/will-i-pay-my-student-loan/blob/main/docs/METHODOLOGY.md"
+              href={METHODOLOGY_DOC_LINK}
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 hover:text-blue-800 underline"
