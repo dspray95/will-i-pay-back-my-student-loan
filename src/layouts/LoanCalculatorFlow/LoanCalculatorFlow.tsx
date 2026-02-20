@@ -26,19 +26,23 @@ export const LoanCalculatorFlow = () => {
 
   return (
     <BorderWrappers key={resetCount} showBottomBorder={showBottomBorder}>
-      <div className="w-full md:max-w-2/3 xl:max-w-3/5">
+      <div className="flex flex-col items-center justify-center w-full md:max-w-2/3 xl:max-w-3/5">
         <PageHeader />
 
         {stage >= STAGES.loanDetails && <LoanDetailsSection />}
 
         {stage >= STAGES.incomeProjection && (
-          <ScrollOnReveal>
-            <IncomeProjectionSection
-              undergradStartYear={undergradStartYear}
-              undergradEndYear={undergradEndYear}
-              repaymentPlan={(loanFormValues?.loanPlan as LoanPlan) || "plan1"}
-            />
-          </ScrollOnReveal>
+          <div className="max-w-full 2xl:max-w-3/5 flex items-center justify-center">
+            <ScrollOnReveal>
+              <IncomeProjectionSection
+                undergradStartYear={undergradStartYear}
+                undergradEndYear={undergradEndYear}
+                repaymentPlan={
+                  (loanFormValues?.loanPlan as LoanPlan) || "plan1"
+                }
+              />
+            </ScrollOnReveal>
+          </div>
         )}
 
         {stage >= STAGES.repaymentResultsSplash && (
