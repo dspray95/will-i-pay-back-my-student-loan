@@ -60,7 +60,7 @@ export const calculateRepaymentPlan = (
     const previousYearIncome = incomeByYear[year - 1] || 0;
     const startingBalance = balance;
 
-    const threshold = getRepaymentThreshold(year, plan);
+    const threshold = getRepaymentThreshold(year, plan, longTermRPI);
 
     // Interest rates change each September, mid-tax-year.
     // April–August uses current year's rate; September–March uses the next.
@@ -69,6 +69,7 @@ export const calculateRepaymentPlan = (
       plan,
       previousYearIncome,
       undefined,
+      longTermRPI,
       longTermRPI
     );
     const rateSepToMar = getInterestRateAtRepayment(
@@ -76,6 +77,7 @@ export const calculateRepaymentPlan = (
       plan,
       previousYearIncome,
       threshold,
+      longTermRPI,
       longTermRPI
     );
 

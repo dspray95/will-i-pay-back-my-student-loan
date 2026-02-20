@@ -44,9 +44,11 @@ export const MethodologySection: React.FC = () => {
             </li>
             <li>
               <Font.Body>
-                <strong>Future threshold changes</strong> - repayment thresholds
-                are held at the most recently published values, though in
-                practice some are uprated annually
+                <strong>Exact future threshold changes</strong> - for years
+                beyond published data, thresholds for Plans 1, 2, and 4 are
+                projected forward using your inflation assumption. Plan 5 and
+                Postgraduate thresholds are kept frozen (as per government
+                policy). Actual future thresholds may differ.
               </Font.Body>
             </li>
             <li>

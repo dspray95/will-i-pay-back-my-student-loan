@@ -26,7 +26,7 @@ export const Button: React.FC<ButtonProps> = ({
       onClick={onClick}
       className={clsx(
         // Base styles for all buttons
-        "font-semibold  cursor-pointer transition-colors flex items-center justify-center gap-2",
+        "font-semibold cursor-pointer transition-colors flex items-center justify-center gap-2",
         // Variant-specific styles
         {
           "text-xl text-semibold text-beck-beige rounded-sm px-4 py-2 border-none bg-piccadilly-blue hover:bg-piccadilly-blue-1 active:bg-piccadilly-blue-1":
