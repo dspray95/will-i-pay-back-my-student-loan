@@ -4,7 +4,9 @@ export const OutlineText: React.FC<{
   children: string;
   color?: string;
   height?: number;
-}> = ({ children, color = colorPiccadillyBlue, height = 75 }) => {
+  fontSize?: string;
+  strokeWidth?: number;
+}> = ({ children, color = colorPiccadillyBlue, height = 75, fontSize, strokeWidth = 2 }) => {
   return (
     <svg className="overflow-visible" width="100%" height={height}>
       <text
@@ -12,11 +14,11 @@ export const OutlineText: React.FC<{
         y="65%"
         textAnchor="middle"
         dominantBaseline="middle"
-        className="text-5xl sm:text-7xl lg:text-8xl font-semibold"
+        className={fontSize ? "font-semibold" : "text-5xl sm:text-7xl lg:text-8xl font-semibold"}
         fill="transparent"
         stroke={color}
-        strokeWidth="2"
-        style={{ fontWeight: 600 }}
+        strokeWidth={strokeWidth}
+        style={{ fontWeight: 600, ...(fontSize ? { fontSize } : {}) }}
       >
         {children}
       </text>

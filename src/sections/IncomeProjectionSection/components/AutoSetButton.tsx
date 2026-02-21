@@ -22,8 +22,8 @@ export const AutoSetButton: React.FC<AutoSetButtonProps> = ({
       "text-piccadilly-blue underline hover:cursor-pointer",
       "flex items-center justify-center gap-2 transition-all duration-300",
       fixed
-        ? "fixed left-0 w-full py-2 z-50 bg-beck-beige backdrop-blur-sm"
-        : "absolute left-full w-fit whitespace-nowrap drop-shadow-lg drop-shadow-gray-500",
+        ? "fixed left-0 w-full py-2 z-50 bg-beck-beige"
+        : "absolute left-full w-fit whitespace-nowrap",
       fixed && visible && "bottom-0",
       fixed && !visible && "-bottom-12 opacity-0 pointer-events-none",
     )}

@@ -33,7 +33,7 @@ bun dev
 bun run build
 ```
 
-## 📐 Project Architecture
+## Project Architecture
 
 - `src/sections/`: Single page divided into sections
 - `src/layout`: Full page layout

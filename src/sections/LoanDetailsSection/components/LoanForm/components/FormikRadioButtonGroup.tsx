@@ -52,14 +52,14 @@ export const FormikRadioButtonGrid: React.FC<FormikRadioButtonGridProps> = ({
               value={option.value}
               className="sr-only"
             />
-            <Font.Label
-              className={clsx({
+            <Font.Body
+              className={clsx("font-semibold", {
                 "text-beck-beige": isSelected,
                 "text-northern-not-black": !isSelected,
               })}
             >
               {option.label}
-            </Font.Label>
+            </Font.Body>
           </label>
         );
       })}

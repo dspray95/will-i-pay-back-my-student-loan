@@ -1,5 +1,8 @@
 import { Font } from "../../shared/components/Text";
 
+const METHODOLOGY_DOC_LINK =
+  "https://github.com/dspray95/will-i-pay-back-my-student-loan/blob/main/docs/METHODOLOGY.md";
+
 export const MethodologySection: React.FC = () => {
   return (
     <div className="flex gap-8 items-start justify-center py-12 flex-col max-w-4xl mx-auto px-6">
@@ -41,9 +44,11 @@ export const MethodologySection: React.FC = () => {
             </li>
             <li>
               <Font.Body>
-                <strong>Future threshold changes</strong> - repayment thresholds
-                are held at the most recently published values, though in
-                practice some are uprated annually
+                <strong>Exact future threshold changes</strong> - for years
+                beyond published data, thresholds for Plans 1, 2, and 4 are
+                projected forward using your inflation assumption. Plan 5 and
+                Postgraduate thresholds are kept frozen (as per government
+                policy). Actual future thresholds may differ.
               </Font.Body>
             </li>
             <li>
@@ -76,7 +81,7 @@ export const MethodologySection: React.FC = () => {
             For the full technical methodology including interest rate formulas,
             plan-specific rules, and known simplifications, see the{" "}
             <a
-              href="https://github.com/yourusername/will-i-pay-my-student-loan/blob/main/docs/METHODOLOGY.md"
+              href={METHODOLOGY_DOC_LINK}
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 hover:text-blue-800 underline"

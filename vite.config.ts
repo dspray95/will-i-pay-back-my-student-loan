@@ -16,6 +16,10 @@ export default defineConfig({
             "@fortawesome/free-brands-svg-icons",
             "@fortawesome/react-fontawesome",
           ],
+          firebase: [
+            "firebase/app",
+            "firebase/firestore",
+          ],
         },
       },
     },

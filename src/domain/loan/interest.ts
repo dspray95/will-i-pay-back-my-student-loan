@@ -66,7 +66,8 @@ export function getInterestRateAtRepayment(
   plan: LoanPlan,
   annualIncome: number,
   overrideRepaymentThreshold?: number,
-  longTermRPI?: number
+  longTermRPI?: number,
+  thresholdGrowthRate?: number
 ): number {
   const ratesForYear = POSTGRAD_INTEREST_RATES[year];
   const forecast =
@@ -78,8 +79,8 @@ export function getInterestRateAtRepayment(
   // Plan 2 uses progressive interest rates based on income
   if (plan === "plan2") {
     const lowerThreshold =
-      overrideRepaymentThreshold ?? getRepaymentThreshold(year, plan);
-    const upperThreshold = getUpperInterestThreshold(year, plan);
+      overrideRepaymentThreshold ?? getRepaymentThreshold(year, plan, thresholdGrowthRate);
+    const upperThreshold = getUpperInterestThreshold(year, plan, thresholdGrowthRate);
 
     if (annualIncome <= lowerThreshold) {
       return planRates.min;

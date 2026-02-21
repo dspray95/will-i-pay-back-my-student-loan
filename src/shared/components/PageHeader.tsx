@@ -34,7 +34,7 @@ export const PageHeader: React.FC<{
         </div>
       )}
       {showExplainer && (
-        <div className="flex flex-col gap-2 items-center justify-center">
+        <div className="flex flex-col gap-2 items-center justify-center lg:max-w-full 2xl:max-w-3/5">
           <Font.Body className="md:text-center">
             Estimate how much of your student loan you could end up repaying -
             and how much might get written off. Enter your loan details, map out

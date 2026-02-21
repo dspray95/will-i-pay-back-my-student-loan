@@ -8,6 +8,7 @@ export const RepaymentSummary: React.FC<{
   interestAccrued: number;
   willRepay: boolean;
   alignLeft?: boolean;
+  useFirstPerson?: boolean;
 }> = ({
   title,
   totalPaid,
@@ -15,6 +16,7 @@ export const RepaymentSummary: React.FC<{
   interestAccrued,
   willRepay,
   alignLeft,
+  useFirstPerson,
 }) => (
   <div
     className={`flex gap-2 flex-col text-sm ${alignLeft ? "items-center md:items-start text-center md:text-left" : "items-center text-center"}`}
@@ -25,7 +27,7 @@ export const RepaymentSummary: React.FC<{
       </div>
     )}
     <Font.Body>
-      You'll repay{" "}
+      {useFirstPerson ? "I'll " : "You'll "} repay{" "}
       <Font.CurrencyBody className="text-district-green">
         {formatCurrency(totalPaid)}
       </Font.CurrencyBody>{" "}
@@ -33,7 +35,7 @@ export const RepaymentSummary: React.FC<{
     </Font.Body>
     {!willRepay && (
       <Font.Body>
-        You will have{" "}
+        {useFirstPerson ? "I " : "You "} will have{" "}
         <Font.CurrencyBody className="text-central-red">
           {formatCurrency(amountForgiven)}
         </Font.CurrencyBody>{" "}
@@ -41,7 +43,7 @@ export const RepaymentSummary: React.FC<{
       </Font.Body>
     )}
     <Font.Body>
-      You'll accrue{" "}
+      {useFirstPerson ? "I'll " : "You'll "} accrue{" "}
       <Font.CurrencyBody className="text-central-red">
         {formatCurrency(interestAccrued)}
       </Font.CurrencyBody>{" "}

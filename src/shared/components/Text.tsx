@@ -36,7 +36,7 @@ export const Font = {
   },
   Body: ({ children, className, small }: TextProps) => {
     const textSize = small ? "text-sm" : "text-base";
-    return <p className={cn(styles.body, textSize, className)}>{children}</p>;
+    return <span className={cn(styles.body, textSize, className)}>{children}</span>;
   },
   CurrencyBody: ({ children, className }: TextProps) => {
     return (
