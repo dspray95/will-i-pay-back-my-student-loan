@@ -4,10 +4,7 @@ import { OutlineText } from "../../../shared/components/OutlineText";
 import { RepaymentSummary } from "./RepaymentSummary";
 import { useLoanCalculatorStore } from "../../../stores/loanCalculatorStore";
 import { processResults } from "../processResults";
-import {
-  RESULTS_TEXT_NOT_REPAID,
-  RESULTS_TEXT_REPAID,
-} from "../ResultText";
+import { RESULTS_TEXT_NOT_REPAID, RESULTS_TEXT_REPAID } from "../ResultText";
 import type { RepaymentPlan } from "../../../shared/types";
 
 const defaultEmptyPlan: RepaymentPlan = {
@@ -84,13 +81,16 @@ export const ShareCard = forwardRef<HTMLDivElement>((_, ref) => {
           </div>
 
           {/* Summary */}
-          <div className="w-full flex flex-col gap-6 items-center justify-center">
+          <div className="w-full flex flex-row gap-12 items-start justify-center">
             <RepaymentSummary
               title={hasPostgradLoan ? "Undergraduate" : undefined}
               totalPaid={calculationResults.totalUndergraduateDebtPaid}
               amountForgiven={calculationResults.undergraduateAmountForgiven}
-              interestAccrued={calculationResults.totalUndergraduateInterestAccrued}
+              interestAccrued={
+                calculationResults.totalUndergraduateInterestAccrued
+              }
               willRepay={willRepayUndergraduateLoan}
+              alignLeft={hasPostgradLoan}
               useFirstPerson
             />
             {hasPostgradLoan && (
@@ -98,8 +98,11 @@ export const ShareCard = forwardRef<HTMLDivElement>((_, ref) => {
                 title="Postgraduate"
                 totalPaid={calculationResults.totalPostgraduateDebtPaid}
                 amountForgiven={calculationResults.postgraduateAmountForgiven}
-                interestAccrued={calculationResults.totalPostgraduateInterestAccrued}
+                interestAccrued={
+                  calculationResults.totalPostgraduateInterestAccrued
+                }
                 willRepay={willRepayPostgraduateLoan}
+                alignLeft
                 useFirstPerson
               />
             )}

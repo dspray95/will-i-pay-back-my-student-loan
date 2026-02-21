@@ -5,9 +5,15 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { RESULTS_TEXT_NOT_REPAID, RESULTS_TEXT_REPAID } from "./ResultText";
 import { useEffect, useRef } from "react";
+import confetti from "canvas-confetti";
 import { useLoanCalculatorStore } from "../../stores/loanCalculatorStore";
 import { processResults } from "./processResults";
 import { STAGES } from "../../shared/constants/stages";
+import {
+  colorPiccadillyBlue,
+  colorDistrictGreen,
+  colorCentralRed,
+} from "../../shared/constants/color";
 import { Font } from "../../shared/components/Text";
 import type { RepaymentPlan } from "../../shared/types";
 import { RepaymentSummary } from "./components/RepaymentSummary";
@@ -28,7 +34,50 @@ export const RepaymentResultsSplashSection: React.FC = () => {
 
   const buttonRef = useRef<HTMLDivElement>(null);
   const shareCardRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
   const { shareImage, isSharing } = useShareImage(shareCardRef);
+
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+
+    const fireFromHeader = () => {
+      const rect = el.getBoundingClientRect();
+      const x = (rect.left + rect.width / 2) / window.innerWidth;
+      const y = (rect.top + rect.height / 2) / window.innerHeight;
+
+      const burst = (angle: number) =>
+        confetti({
+          particleCount: 60,
+          angle,
+          spread: 210,
+          origin: { x, y },
+          colors: [
+            colorPiccadillyBlue,
+            colorDistrictGreen,
+            colorCentralRed,
+            "#FFF",
+          ],
+          disableForReducedMotion: true,
+        });
+
+      burst(60);
+      burst(120);
+    };
+
+    // Fire once ScrollOnReveal's smooth scroll finishes
+    let timer: ReturnType<typeof setTimeout>;
+    const onScrollEnd = () => {
+      window.removeEventListener("scrollend", onScrollEnd);
+      timer = setTimeout(fireFromHeader, 100);
+    };
+
+    window.addEventListener("scrollend", onScrollEnd, { once: true });
+    return () => {
+      window.removeEventListener("scrollend", onScrollEnd);
+      clearTimeout(timer);
+    };
+  }, []);
 
   useEffect(() => {
     let stageAdvanced = false;
@@ -94,7 +143,9 @@ export const RepaymentResultsSplashSection: React.FC = () => {
   return (
     <div className="relative flex flex-col gap-8 items-center justify-center py-12 min-h-svh">
       <div className="w-full flex flex-col gap-4 items-center justify-center mb-4 text-center">
-        <Font.OutlineHeader>{copyText.result}</Font.OutlineHeader>
+        <div ref={headerRef}>
+          <Font.OutlineHeader>{copyText.result}</Font.OutlineHeader>
+        </div>
         <Font.Body>{copyText.subheading}</Font.Body>
         <Font.Subtle small>{copyText.snark}</Font.Subtle>
         {hasPostgradLoan &&
@@ -129,7 +180,7 @@ export const RepaymentResultsSplashSection: React.FC = () => {
         )}
       </div>
       <Button
-        className="my-16 border-b-0"
+        className="my-16 border-b-"
         variant="no-bg"
         onClick={shareImage}
         disabled={isSharing}
