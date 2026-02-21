@@ -76,12 +76,20 @@ export const IncomeProjectionSection: React.FC<{
         />
       </div>
       {futureIncomeMode && (
-        <Button className="w-full" type="submit" onClick={handleResultsClick}>
-          <Font.Body className="text-beck-beige text-2xl pt-1 pl-2">
-            RESULTS
-          </Font.Body>
-          <FontAwesomeIcon className="text-base" icon={faArrowDown} />
-        </Button>
+        <>
+          <Font.Subtle className="text-center mx-4 pb-2" small>
+            By clicking results, anonymous aggregate statistics (such as total
+            repaid vs. written off) may be collected to improve this calculator
+            and highlight trends in student loan repayment outcomes. No personal
+            data is stored.
+          </Font.Subtle>
+          <Button className="w-full" type="submit" onClick={handleResultsClick}>
+            <Font.Body className="text-beck-beige text-2xl pt-1 pl-2">
+              RESULTS
+            </Font.Body>
+            <FontAwesomeIcon className="text-base" icon={faArrowDown} />
+          </Button>
+        </>
       )}
     </div>
   );

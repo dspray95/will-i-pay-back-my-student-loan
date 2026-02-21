@@ -1,5 +1,8 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import {
+  faChevronDown,
+  faShareFromSquare,
+} from "@fortawesome/free-solid-svg-icons";
 import { RESULTS_TEXT_NOT_REPAID, RESULTS_TEXT_REPAID } from "./ResultText";
 import { useEffect, useRef } from "react";
 import { useLoanCalculatorStore } from "../../stores/loanCalculatorStore";
@@ -9,6 +12,9 @@ import { Font } from "../../shared/components/Text";
 import type { RepaymentPlan } from "../../shared/types";
 import { RepaymentSummary } from "./components/RepaymentSummary";
 import { ErrorSplash } from "./components/ErrorSplash";
+import { ShareCard } from "./components/ShareCard";
+import { useShareImage } from "./hooks/useShareImage";
+import { Button } from "../../shared/components/Button";
 
 export const RepaymentResultsSplashSection: React.FC = () => {
   const {
@@ -21,6 +27,8 @@ export const RepaymentResultsSplashSection: React.FC = () => {
   } = useLoanCalculatorStore();
 
   const buttonRef = useRef<HTMLDivElement>(null);
+  const shareCardRef = useRef<HTMLDivElement>(null);
+  const { shareImage, isSharing } = useShareImage(shareCardRef);
 
   useEffect(() => {
     let stageAdvanced = false;
@@ -97,6 +105,7 @@ export const RepaymentResultsSplashSection: React.FC = () => {
             </Font.Subtle>
           )}
       </div>
+
       <div className="w-full flex-col md:flex-row flex gap-12 items-start justify-center">
         <RepaymentSummary
           title={hasPostgradLoan ? "Undergraduate" : undefined}
@@ -119,6 +128,16 @@ export const RepaymentResultsSplashSection: React.FC = () => {
           />
         )}
       </div>
+      <Button
+        className="my-16 border-b-0"
+        variant="no-bg"
+        onClick={shareImage}
+        disabled={isSharing}
+      >
+        <FontAwesomeIcon icon={faShareFromSquare} />
+        {isSharing ? "Sharing..." : "Share your results"}
+      </Button>
+      <ShareCard ref={shareCardRef} />
       <div
         ref={buttonRef}
         className="flex flex-col items-center justify-center cursor-pointer gap-1 pt-8 absolute bottom-10"
