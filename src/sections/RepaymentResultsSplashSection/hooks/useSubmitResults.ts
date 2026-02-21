@@ -65,7 +65,7 @@ export const useSubmitResults = () => {
     futureIncomeMode,
   } = useLoanCalculatorStore();
 
-  const isProduction = true;
+  const isProduction = import.meta.env.PROD;
   const hasResults = !!undergraduateRepaymentPlan && !!loanFormValues;
 
   useEffect(() => {
