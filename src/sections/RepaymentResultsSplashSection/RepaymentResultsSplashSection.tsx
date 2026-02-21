@@ -21,6 +21,7 @@ import { ErrorSplash } from "./components/ErrorSplash";
 import { ShareCard } from "./components/ShareCard";
 import { useShareImage } from "./hooks/useShareImage";
 import { Button } from "../../shared/components/Button";
+import { useSubmitResults } from "./hooks/useSubmitResults";
 
 export const RepaymentResultsSplashSection: React.FC = () => {
   const {
@@ -31,6 +32,8 @@ export const RepaymentResultsSplashSection: React.FC = () => {
     loanFormValues,
     setStage,
   } = useLoanCalculatorStore();
+
+  useSubmitResults();
 
   const buttonRef = useRef<HTMLDivElement>(null);
   const shareCardRef = useRef<HTMLDivElement>(null);
