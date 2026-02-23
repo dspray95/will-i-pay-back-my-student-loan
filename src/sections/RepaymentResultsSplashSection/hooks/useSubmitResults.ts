@@ -10,6 +10,7 @@ import {
 import type { CalculationResults } from "../types";
 import type { RepaymentPlan } from "../../../shared/types";
 import type { LoanFormValues } from "../../../shared/schemas/LoanFormSchema";
+import { shouldForceFirestore } from "../../../shared/utils/shouldForceFirestore";
 
 const defaultEmptyPlan: RepaymentPlan = {
   finalBalance: 0,
@@ -67,9 +68,11 @@ export const useSubmitResults = () => {
 
   const isProduction = import.meta.env.PROD;
   const hasResults = !!undergraduateRepaymentPlan && !!loanFormValues;
+  const forceFirestore = shouldForceFirestore();
 
   useEffect(() => {
-    if (!isProduction || submitted.current || !hasResults) return;
+    if ((!isProduction && !forceFirestore) || submitted.current || !hasResults)
+      return;
     submitted.current = true;
 
     const calculationResults = processResults(
@@ -99,16 +102,6 @@ export const useSubmitResults = () => {
     }).catch((err) => {
       console.error("Failed to submit results:", err);
     });
-  }, [
-    isProduction,
-    hasResults,
-    undergraduateRepaymentPlan,
-    postgraduateRepaymentPlan,
-    undergraduateLoanAtGraduation,
-    postgraduateLoanAtGraduation,
-    loanFormValues,
-    salaryGrowthRate,
-    projectedInflationRate,
-    futureIncomeMode,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasResults]);
 };
