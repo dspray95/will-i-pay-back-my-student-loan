@@ -3,18 +3,18 @@ import { getInterestRateDuringStudy } from "./plans";
 
 /**
  * Calculate loan balance at graduation, accounting for termly disbursements.
+ * Accepts per-year loan amounts to support uneven distributions (e.g. placement years).
  */
 export const calculateLoanAtGraduation = (
-  principal: number,
+  yearlyAmounts: number[],
   startYear: number,
-  courseLength: number,
   plan: LoanPlan
 ): number => {
-  const annualLoanAmount = principal / courseLength;
-  const termlyInstallment = annualLoanAmount / 3;
   let balance = 0;
 
-  for (let year = 0; year < courseLength; year++) {
+  for (let year = 0; year < yearlyAmounts.length; year++) {
+    const annualLoanAmount = yearlyAmounts[year];
+    const termlyInstallment = annualLoanAmount / 3;
     const academicYear = startYear + year;
     const annualRate = getInterestRateDuringStudy(academicYear, plan);
 
@@ -42,17 +42,16 @@ export const calculateLoanAtGraduation = (
  * using the same termly disbursement + compound interest logic.
  */
 export const calculateStudyYearBalances = (
-  principal: number,
+  yearlyAmounts: number[],
   startYear: number,
-  courseLength: number,
   plan: LoanPlan
 ): Array<{ year: number; balance: number }> => {
-  const annualLoanAmount = principal / courseLength;
-  const termlyInstallment = annualLoanAmount / 3;
   let balance = 0;
   const result: Array<{ year: number; balance: number }> = [];
 
-  for (let year = 0; year < courseLength; year++) {
+  for (let year = 0; year < yearlyAmounts.length; year++) {
+    const annualLoanAmount = yearlyAmounts[year];
+    const termlyInstallment = annualLoanAmount / 3;
     const academicYear = startYear + year;
     const annualRate = getInterestRateDuringStudy(academicYear, plan);
 

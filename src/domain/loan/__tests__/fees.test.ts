@@ -9,6 +9,7 @@ describe("getFeesForYear", () => {
       maintenanceLoan: 10544,
       maintenanceGrant: 0,
       postGraduateLoan: 12858,
+      placementTuition: 1905,
     });
 
     const fees2016 = getFeesForYear(2016);
@@ -17,6 +18,7 @@ describe("getFeesForYear", () => {
       maintenanceLoan: 8200,
       maintenanceGrant: 0,
       postGraduateLoan: 10000,
+      placementTuition: 1385,
     });
   });
 

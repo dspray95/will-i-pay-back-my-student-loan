@@ -4,7 +4,7 @@ import { calculateLoanAtGraduation, calculateStudyYearBalances } from "../calcul
 describe("calculateLoanAtGraduation", () => {
   describe("Plan 5 accrues RPI interest during study", () => {
     it("Plan 5 (post-2023 England) - accrues RPI interest", () => {
-      const result = calculateLoanAtGraduation(30000, 2023, 3, "plan5");
+      const result = calculateLoanAtGraduation([10000, 10000, 10000], 2023, "plan5");
       // Plan 5 charges RPI during study (no +3% margin)
       // 2023: 4.7%, 2024: 4.3%, 2025: 3.2%
       expect(result).toBeGreaterThan(30000);
@@ -14,14 +14,14 @@ describe("calculateLoanAtGraduation", () => {
 
   describe("Plan 4 (Scotland) - accrues interest during study", () => {
     it("Plan 4 accrues interest over a 3-year course", () => {
-      const result = calculateLoanAtGraduation(27000, 2022, 3, "plan4");
+      const result = calculateLoanAtGraduation([9000, 9000, 9000], 2022, "plan4");
       expect(result).toBeGreaterThan(27000);
     });
   });
   describe("termly disbursement modeling", () => {
     it("termly disbursement accrues interest correctly", () => {
       // With termly disbursements over 1 year at 2022 rates (high inflation year)
-      const withTermly = calculateLoanAtGraduation(9000, 2022, 1, "plan2");
+      const withTermly = calculateLoanAtGraduation([9000], 2022, "plan2");
 
       // 2022 Plan 2 rate: 6.9%
       // Expect £9,200-£9,600 depending on termly disbursement timing
@@ -31,7 +31,7 @@ describe("calculateLoanAtGraduation", () => {
 
     it("multiple installments reduce interest vs single upfront payment", () => {
       // Use 2015 with lower rate (3.9%) for clearer comparison
-      const result = calculateLoanAtGraduation(9000, 2015, 1, "plan2");
+      const result = calculateLoanAtGraduation([9000], 2015, "plan2");
 
       // 2015 had 3.9% rate - with termly disbursements expect ~£9,170-£9,270
       expect(result).toBeGreaterThan(9000);
@@ -41,7 +41,7 @@ describe("calculateLoanAtGraduation", () => {
     it("three-year undergraduate course with Plan 2", () => {
       // £27k total (£9k/year), started 2020, 3 years
       // Plan 2 rates: 2020=5.6%, 2021=4.5%, 2022=6.9%
-      const result = calculateLoanAtGraduation(27000, 2020, 3, "plan2");
+      const result = calculateLoanAtGraduation([9000, 9000, 9000], 2020, "plan2");
 
       // With termly disbursements, expect ~£29,800-£31,500
       // (termly reduces interest vs upfront)
@@ -50,8 +50,8 @@ describe("calculateLoanAtGraduation", () => {
     });
 
     it("four-year course accrues more than three-year", () => {
-      const threeYear = calculateLoanAtGraduation(27000, 2022, 3, "plan2");
-      const fourYear = calculateLoanAtGraduation(36000, 2022, 4, "plan2");
+      const threeYear = calculateLoanAtGraduation([9000, 9000, 9000], 2022, "plan2");
+      const fourYear = calculateLoanAtGraduation([9000, 9000, 9000, 9000], 2022, "plan2");
 
       // Four year should accrue more total interest
       expect(fourYear).toBeGreaterThan(threeYear);
@@ -59,10 +59,10 @@ describe("calculateLoanAtGraduation", () => {
 
     it("high vs low rate years", () => {
       // 2015 had 3.9% (lower rate)
-      const lowRateYear = calculateLoanAtGraduation(9000, 2015, 1, "plan2");
+      const lowRateYear = calculateLoanAtGraduation([9000], 2015, "plan2");
 
       // 2023 had 7.7% (higher rate)
-      const highRateYear = calculateLoanAtGraduation(9000, 2023, 1, "plan2");
+      const highRateYear = calculateLoanAtGraduation([9000], 2023, "plan2");
 
       // 2023 should have significantly more interest
       expect(highRateYear).toBeGreaterThan(lowRateYear);
@@ -76,14 +76,14 @@ describe("calculateLoanAtGraduation", () => {
     it("postgrad loan with interest over 1-year course", () => {
       // £11,570 masters loan, 1 year, starting 2022
       // Postgrad rates are RPI + 3%
-      const result = calculateLoanAtGraduation(11570, 2022, 1, "postgrad");
+      const result = calculateLoanAtGraduation([11570], 2022, "postgrad");
 
       expect(result).toBeGreaterThan(11570);
       expect(result).toBeLessThan(12200); // ~5% max expected
     });
 
     it("postgrad 2-year course (e.g., part-time)", () => {
-      const result = calculateLoanAtGraduation(11570, 2022, 2, "postgrad");
+      const result = calculateLoanAtGraduation([5785, 5785], 2022, "postgrad");
 
       // Should be higher than 1-year due to additional compounding
       expect(result).toBeGreaterThan(12000);
@@ -93,18 +93,18 @@ describe("calculateLoanAtGraduation", () => {
 
   describe("edge cases", () => {
     it("zero principal returns zero", () => {
-      const result = calculateLoanAtGraduation(0, 2022, 3, "plan2");
+      const result = calculateLoanAtGraduation([0, 0, 0], 2022, "plan2");
       expect(result).toBe(0);
     });
 
     it("very small principal (£1) compounds correctly", () => {
-      const result = calculateLoanAtGraduation(1, 2022, 1, "plan2");
+      const result = calculateLoanAtGraduation([1], 2022, "plan2");
       expect(result).toBeGreaterThan(1);
       expect(result).toBeLessThan(1.1);
     });
 
     it("very large principal (£100k) scales appropriately", () => {
-      const result = calculateLoanAtGraduation(100000, 2022, 3, "plan2");
+      const result = calculateLoanAtGraduation([33333.33, 33333.33, 33333.34], 2022, "plan2");
       expect(result).toBeGreaterThan(100000);
       expect(result).toBeLessThan(120000);
     });
@@ -113,43 +113,76 @@ describe("calculateLoanAtGraduation", () => {
   describe("year-to-year rate changes", () => {
     it("rates change each September during course", () => {
       // Starting in 2020 (lower RPI) vs 2022 (higher RPI)
-      const lowRpiYear = calculateLoanAtGraduation(27000, 2020, 3, "plan2");
-      const highRpiYear = calculateLoanAtGraduation(27000, 2022, 3, "plan2");
+      const lowRpiYear = calculateLoanAtGraduation([9000, 9000, 9000], 2020, "plan2");
+      const highRpiYear = calculateLoanAtGraduation([9000, 9000, 9000], 2022, "plan2");
 
       // 2022-2023 had higher inflation, so should accrue more interest
       // This test may need adjustment based on actual historical rates
       expect(highRpiYear).not.toBe(lowRpiYear);
     });
   });
+
+  describe("placement year support", () => {
+    it("placement year with reduced tuition accrues less than equal distribution", () => {
+      // 4-year sandwich course: 3 study years at £9,250 + 1 placement at £1,850
+      // Total tuition: £29,600. Maintenance: £8,430/year = £33,720 total
+      // Total loan: £63,320
+      const placementAmounts = [
+        9250 + 8430, // Year 1: study
+        9250 + 8430, // Year 2: study
+        1850 + 8430, // Year 3: placement (reduced tuition)
+        9250 + 8430, // Year 4: study
+      ];
+      const equalAmounts = Array(4).fill(63320 / 4);
+
+      const withPlacement = calculateLoanAtGraduation(placementAmounts, 2020, "plan2");
+      const withEqual = calculateLoanAtGraduation(equalAmounts, 2020, "plan2");
+
+      // With placement year having less disbursement in year 3,
+      // less money is borrowed earlier, so slightly less total interest
+      expect(withPlacement).not.toBe(withEqual);
+      // Both should be more than the principal
+      expect(withPlacement).toBeGreaterThan(63320);
+      expect(withEqual).toBeGreaterThan(63320);
+    });
+
+    it("uneven yearly amounts are handled correctly", () => {
+      // Year 1: £15,000, Year 2: £5,000, Year 3: £10,000
+      const result = calculateLoanAtGraduation([15000, 5000, 10000], 2020, "plan2");
+      expect(result).toBeGreaterThan(30000);
+      expect(result).toBeLessThan(35000);
+    });
+  });
 });
 
 describe("calculateStudyYearBalances", () => {
   it("returns one entry per study year", () => {
-    const result = calculateStudyYearBalances(27000, 2020, 3, "plan2");
+    const result = calculateStudyYearBalances([9000, 9000, 9000], 2020, "plan2");
     expect(result).toHaveLength(3);
   });
 
   it("returns correct year values", () => {
-    const result = calculateStudyYearBalances(27000, 2020, 3, "plan2");
+    const result = calculateStudyYearBalances([9000, 9000, 9000], 2020, "plan2");
     expect(result[0].year).toBe(2020);
     expect(result[1].year).toBe(2021);
     expect(result[2].year).toBe(2022);
   });
 
   it("final entry balance matches calculateLoanAtGraduation", () => {
-    const balances = calculateStudyYearBalances(27000, 2020, 3, "plan2");
-    const graduation = calculateLoanAtGraduation(27000, 2020, 3, "plan2");
+    const amounts = [9000, 9000, 9000];
+    const balances = calculateStudyYearBalances(amounts, 2020, "plan2");
+    const graduation = calculateLoanAtGraduation(amounts, 2020, "plan2");
     expect(balances[2].balance).toBe(graduation);
   });
 
   it("balances increase year over year with interest", () => {
-    const result = calculateStudyYearBalances(27000, 2020, 3, "plan2");
+    const result = calculateStudyYearBalances([9000, 9000, 9000], 2020, "plan2");
     expect(result[1].balance).toBeGreaterThan(result[0].balance);
     expect(result[2].balance).toBeGreaterThan(result[1].balance);
   });
 
   it("zero principal returns all-zero balances", () => {
-    const result = calculateStudyYearBalances(0, 2022, 3, "plan2");
+    const result = calculateStudyYearBalances([0, 0, 0], 2022, "plan2");
     expect(result).toHaveLength(3);
     for (const entry of result) {
       expect(entry.balance).toBe(0);
@@ -157,24 +190,37 @@ describe("calculateStudyYearBalances", () => {
   });
 
   it("works for Plan 5", () => {
-    const balances = calculateStudyYearBalances(30000, 2023, 3, "plan5");
-    const graduation = calculateLoanAtGraduation(30000, 2023, 3, "plan5");
+    const amounts = [10000, 10000, 10000];
+    const balances = calculateStudyYearBalances(amounts, 2023, "plan5");
+    const graduation = calculateLoanAtGraduation(amounts, 2023, "plan5");
     expect(balances).toHaveLength(3);
     expect(balances[2].balance).toBe(graduation);
   });
 
   it("works for postgrad loans", () => {
-    const balances = calculateStudyYearBalances(11570, 2022, 2, "postgrad");
-    const graduation = calculateLoanAtGraduation(11570, 2022, 2, "postgrad");
+    const amounts = [5785, 5785];
+    const balances = calculateStudyYearBalances(amounts, 2022, "postgrad");
+    const graduation = calculateLoanAtGraduation(amounts, 2022, "postgrad");
     expect(balances).toHaveLength(2);
     expect(balances[1].balance).toBe(graduation);
   });
 
   it("single year course returns one entry matching graduation balance", () => {
-    const balances = calculateStudyYearBalances(9000, 2022, 1, "plan2");
-    const graduation = calculateLoanAtGraduation(9000, 2022, 1, "plan2");
+    const amounts = [9000];
+    const balances = calculateStudyYearBalances(amounts, 2022, "plan2");
+    const graduation = calculateLoanAtGraduation(amounts, 2022, "plan2");
     expect(balances).toHaveLength(1);
     expect(balances[0].year).toBe(2022);
     expect(balances[0].balance).toBe(graduation);
+  });
+
+  it("placement year with uneven amounts tracks correctly", () => {
+    const amounts = [17680, 17680, 10280, 17680]; // placement year 3
+    const balances = calculateStudyYearBalances(amounts, 2020, "plan2");
+    expect(balances).toHaveLength(4);
+    // Balance should still increase each year (interest + new disbursements)
+    expect(balances[1].balance).toBeGreaterThan(balances[0].balance);
+    expect(balances[2].balance).toBeGreaterThan(balances[1].balance);
+    expect(balances[3].balance).toBeGreaterThan(balances[2].balance);
   });
 });

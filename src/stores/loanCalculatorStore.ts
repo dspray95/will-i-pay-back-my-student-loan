@@ -6,6 +6,7 @@ import {
   calculateStudyYearBalances,
 } from "../domain/loan/calculateLoanAtGraduation";
 import { calculateRepaymentPlan } from "../domain/repayment/calculateRepaymentPlan";
+import { getFeesForYear } from "../domain/loan/fees";
 import { STAGES } from "../shared/constants/stages";
 
 interface LoanCalculatorState {
@@ -90,19 +91,45 @@ export const useLoanCalculatorStore = create<LoanCalculatorState>(
 
     calculatePrincipalAtGraduation: (loanFormValues) => {
       const state = get();
-      const totalLoan = state.totalUndergradLoan + state.totalMaintenanceLoan;
+      const totalTuition = state.totalUndergradLoan;
+      const totalMaintenance = state.totalMaintenanceLoan;
+      const totalLoan = totalTuition + totalMaintenance;
+      const courseLength = loanFormValues.courseLength;
+
+      // Compute per-year loan amounts
+      let undergradYearlyAmounts: number[];
+      const hasPlacement =
+        loanFormValues.yearInIndustry === "yes" &&
+        typeof loanFormValues.placementYear === "number" &&
+        courseLength > 1;
+
+      if (hasPlacement) {
+        const placementYearIndex = loanFormValues.placementYear! - 1; // Convert 1-indexed to 0-indexed
+        const placementFees = getFeesForYear(
+          loanFormValues.courseStartYear + placementYearIndex
+        );
+        const placementTuition = placementFees.placementTuition;
+        const studyYearTuition = (totalTuition - placementTuition) / (courseLength - 1);
+        const maintenancePerYear = totalMaintenance / courseLength;
+
+        undergradYearlyAmounts = Array.from({ length: courseLength }, (_, i) =>
+          i === placementYearIndex
+            ? placementTuition + maintenancePerYear
+            : studyYearTuition + maintenancePerYear
+        );
+      } else {
+        undergradYearlyAmounts = Array(courseLength).fill(totalLoan / courseLength);
+      }
 
       const undergradLoanAtGraduation = calculateLoanAtGraduation(
-        totalLoan,
+        undergradYearlyAmounts,
         loanFormValues.courseStartYear,
-        loanFormValues.courseLength,
         loanFormValues.loanPlan,
       );
 
       const undergradStudyBalances = calculateStudyYearBalances(
-        totalLoan,
+        undergradYearlyAmounts,
         loanFormValues.courseStartYear,
-        loanFormValues.courseLength,
         loanFormValues.loanPlan,
       );
 
@@ -111,20 +138,24 @@ export const useLoanCalculatorStore = create<LoanCalculatorState>(
         loanFormValues.mastersStartYear !== undefined &&
         loanFormValues.mastersLength !== undefined;
 
+      const mastersYearlyAmounts = hasMasters
+        ? Array(loanFormValues.mastersLength!).fill(
+            state.totalMastersLoan / loanFormValues.mastersLength!
+          )
+        : [];
+
       const mastersLoanAtGraduation = hasMasters
         ? calculateLoanAtGraduation(
-            state.totalMastersLoan,
+            mastersYearlyAmounts,
             loanFormValues.mastersStartYear!,
-            loanFormValues.mastersLength!,
             "postgrad",
           )
         : 0;
 
       const mastersStudyBalances = hasMasters
         ? calculateStudyYearBalances(
-            state.totalMastersLoan,
+            mastersYearlyAmounts,
             loanFormValues.mastersStartYear!,
-            loanFormValues.mastersLength!,
             "postgrad",
           )
         : [];

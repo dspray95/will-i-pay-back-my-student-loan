@@ -19,7 +19,12 @@ import { LoanEstimatesSection } from "./components/LoanEstimateSection";
 import { Button } from "../../../../shared/components/Button";
 import { useLoanCalculatorStore } from "../../../../stores/loanCalculatorStore";
 import { STAGES } from "../../../../shared/constants/stages";
-import { COUNTRY_OPTIONS, FIELD_CLASS, POSTGRAD_OPTIONS } from "./consts";
+import {
+  COUNTRY_OPTIONS,
+  FIELD_CLASS,
+  POSTGRAD_OPTIONS,
+  YEAR_IN_INDUSTRY_OPTIONS,
+} from "./consts";
 import {
   LoanFormSchema,
   ValidatedLoanFormSchema,
@@ -60,10 +65,15 @@ const LoanFormContent: React.FC = () => {
   const { values, isSubmitting } = useFormikContext<LoanFormInput>();
   const {
     showPostgradSection,
+    showYearInIndustrySection,
     defaultValues,
     resetFieldToDefault,
     isFieldEdited,
     handleFieldChange,
+    getYearlyValues,
+    setYearlyValues,
+    isFieldExpanded,
+    toggleFieldExpanded,
   } = useLoanFormLogic();
 
   const {
@@ -158,6 +168,40 @@ const LoanFormContent: React.FC = () => {
         </FormField>
         <MastersSection isVisible={showPostgradSection} />
       </div>
+      <div className="pt-6">
+        <Font.H2 className="pb-3">YEAR IN INDUSTRY</Font.H2>
+        <FormField
+          label="DID YOU TAKE A YEAR IN INDUSTRY OR PLACEMENT YEAR?"
+          name="yearInIndustry"
+        >
+          <FormikRadioButtonGrid
+            name="yearInIndustry"
+            options={YEAR_IN_INDUSTRY_OPTIONS}
+            selectedValue={values.yearInIndustry ?? ""}
+          />
+        </FormField>
+        <div
+          className={`transition-all duration-500 ease-in-out overflow-hidden origin-top ${
+            showYearInIndustrySection
+              ? "max-h-screen scale-y-100 mt-4"
+              : "max-h-0 scale-y-0"
+          }`}
+        >
+          <FormField
+            label="WHICH YEAR OF YOUR COURSE WAS YOUR PLACEMENT?"
+            name="placementYear"
+          >
+            <Field
+              className={FIELD_CLASS}
+              type="number"
+              name="placementYear"
+              min="1"
+              max={values.courseLength || 4}
+              placeholder="e.g. 3"
+            />
+          </FormField>
+        </div>
+      </div>
       <LoanEstimatesSection
         showPostgradSection={showPostgradSection}
         defaultValues={defaultValues}
@@ -166,6 +210,14 @@ const LoanFormContent: React.FC = () => {
         onReset={resetFieldToDefault}
         onFieldChange={handleFieldChange}
         isFieldEdited={isFieldEdited}
+        courseLength={typeof values.courseLength === "number" ? values.courseLength : 0}
+        courseStartYear={typeof values.courseStartYear === "number" ? values.courseStartYear : 0}
+        mastersLength={typeof values.mastersLength === "number" ? values.mastersLength : undefined}
+        mastersStartYear={typeof values.mastersStartYear === "number" ? values.mastersStartYear : undefined}
+        getYearlyValues={getYearlyValues}
+        setYearlyValues={setYearlyValues}
+        isFieldExpanded={isFieldExpanded}
+        toggleFieldExpanded={toggleFieldExpanded}
       />
 
       <Button type="submit" disabled={isSubmitting}>
@@ -228,6 +280,8 @@ export const LoanForm: React.FC = () => {
         postgrad: "",
         mastersLength: "",
         mastersStartYear: "",
+        yearInIndustry: "",
+        placementYear: "",
       }}
       validate={(values) => {
         const result = ValidatedLoanFormSchema.safeParse(values);

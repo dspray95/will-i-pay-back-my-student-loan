@@ -15,6 +15,7 @@ export interface FeesLoansAndGrants {
   maintenanceLoan: number;
   maintenanceGrant: number;
   postGraduateLoan: number;
+  placementTuition: number;
 }
 
 export type FeesLoansAndGrantsByYear = Record<number, FeesLoansAndGrants>;

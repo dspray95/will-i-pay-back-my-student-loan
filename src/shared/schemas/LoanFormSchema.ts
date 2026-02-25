@@ -16,6 +16,8 @@ export const LoanFormSchema = z.object({
   postgrad: z.string().optional(),
   mastersStartYear: optionalNumber,
   mastersLength: optionalNumber,
+  yearInIndustry: z.string().optional(),
+  placementYear: optionalNumber,
 });
 
 export type LoanFormInput = z.infer<typeof LoanFormSchema>;
@@ -36,6 +38,8 @@ export const ValidatedLoanFormSchema = z
     postgrad: z.string().min(1, "Please select yes or no"),
     mastersStartYear: optionalNumber,
     mastersLength: optionalNumber,
+    yearInIndustry: z.string().optional(),
+    placementYear: optionalNumber,
   })
   .refine(
     (data) => {
@@ -59,6 +63,18 @@ export const ValidatedLoanFormSchema = z
     {
       message: "Masters length is required",
       path: ["mastersLength"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.yearInIndustry === "yes") {
+        return typeof data.placementYear === "number";
+      }
+      return true;
+    },
+    {
+      message: "Please enter which year was your placement",
+      path: ["placementYear"],
     }
   );
 

@@ -12,3 +12,8 @@ export const POSTGRAD_OPTIONS = [
   { value: "yes", label: "YES" },
   { value: "no", label: "NO" },
 ];
+
+export const YEAR_IN_INDUSTRY_OPTIONS = [
+  { value: "yes", label: "YES" },
+  { value: "no", label: "NO" },
+];
