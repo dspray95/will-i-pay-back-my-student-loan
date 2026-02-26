@@ -15,11 +15,9 @@ export type LoanCalculatorState = NavigationSlice &
   IncomeSlice &
   ResultsSlice;
 
-export const useLoanCalculatorStore = create<LoanCalculatorState>()(
-  (...a) => ({
-    ...createNavigationSlice(...a),
-    ...createLoanInputSlice(...a),
-    ...createIncomeSlice(...a),
-    ...createResultsSlice(...a),
-  }),
-);
+export const useLoanCalculatorStore = create<LoanCalculatorState>()((...a) => ({
+  ...createNavigationSlice(...a),
+  ...createLoanInputSlice(...a),
+  ...createIncomeSlice(...a),
+  ...createResultsSlice(...a),
+}));

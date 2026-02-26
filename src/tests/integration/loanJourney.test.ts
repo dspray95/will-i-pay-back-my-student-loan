@@ -5,7 +5,7 @@ import { calculateRepaymentPlan } from "../../domain/repayment/calculateRepaymen
 describe("integration: graduation to repayment", () => {
   it("complete journey: £27k loan -> 3 years study -> 10 years repayment", () => {
     // Calculate balance at graduation
-    const balanceAtGrad = calculateLoanAtGraduation(27000, 2020, 3, "plan2");
+    const balanceAtGrad = calculateLoanAtGraduation([9000, 9000, 9000], 2020, "plan2");
 
     expect(balanceAtGrad).toBeGreaterThan(27000); // Interest accrued
 
@@ -29,11 +29,10 @@ describe("integration: graduation to repayment", () => {
   });
 
   it("combined undergrad + postgrad repayment", () => {
-    const undergradBalance = calculateLoanAtGraduation(27000, 2020, 3, "plan2");
+    const undergradBalance = calculateLoanAtGraduation([9000, 9000, 9000], 2020, "plan2");
     const postgradBalance = calculateLoanAtGraduation(
-      11570,
+      [11570],
       2023,
-      1,
       "postgrad"
     );
 

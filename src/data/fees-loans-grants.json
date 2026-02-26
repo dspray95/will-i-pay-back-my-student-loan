@@ -2,73 +2,157 @@
   "1998": {
     "tuition": 1000,
     "maintenanceLoan": 0,
+    "maintenanceLoanHome": 0,
+    "maintenanceLoanLondon": 0,
     "maintenanceGrant": 0,
-    "postGraduateLoan": 0
+    "postGraduateLoan": 0,
+    "placementTuition": 500,
+    "placementMaintenanceLoan": 0,
+    "placementMaintenanceLoanHome": 0,
+    "placementMaintenanceLoanLondon": 0,
+    "placementMaintenanceGrant": 0
   },
   "2006": {
     "tuition": 3000,
     "maintenanceLoan": 5000,
+    "maintenanceLoanHome": 3978,
+    "maintenanceLoanLondon": 6978,
     "maintenanceGrant": 0,
-    "postGraduateLoan": 0
+    "postGraduateLoan": 0,
+    "placementTuition": 615,
+    "placementMaintenanceLoan": 1515,
+    "placementMaintenanceLoanHome": 1137,
+    "placementMaintenanceLoanLondon": 2127,
+    "placementMaintenanceGrant": 0
   },
   "2009": {
     "tuition": 3000,
     "maintenanceLoan": 3564,
+    "maintenanceLoanHome": 2835,
+    "maintenanceLoanLondon": 4973,
     "maintenanceGrant": 2906,
-    "postGraduateLoan": 0
+    "postGraduateLoan": 0,
+    "placementTuition": 615,
+    "placementMaintenanceLoan": 1080,
+    "placementMaintenanceLoanHome": 810,
+    "placementMaintenanceLoanLondon": 1516,
+    "placementMaintenanceGrant": 0
   },
   "2012": {
     "tuition": 9000,
     "maintenanceLoan": 5500,
+    "maintenanceLoanHome": 4375,
+    "maintenanceLoanLondon": 7675,
     "maintenanceGrant": 3250,
-    "postGraduateLoan": 0
+    "postGraduateLoan": 0,
+    "placementTuition": 1385,
+    "placementMaintenanceLoan": 1666,
+    "placementMaintenanceLoanHome": 1250,
+    "placementMaintenanceLoanLondon": 2339,
+    "placementMaintenanceGrant": 0
   },
   "2013": {
     "tuition": 9000,
     "maintenanceLoan": 5555,
+    "maintenanceLoanHome": 4419,
+    "maintenanceLoanLondon": 7752,
     "maintenanceGrant": 3250,
-    "postGraduateLoan": 0
+    "postGraduateLoan": 0,
+    "placementTuition": 1385,
+    "placementMaintenanceLoan": 1683,
+    "placementMaintenanceLoanHome": 1263,
+    "placementMaintenanceLoanLondon": 2363,
+    "placementMaintenanceGrant": 0
   },
   "2014": {
     "tuition": 9000,
     "maintenanceLoan": 5740,
+    "maintenanceLoanHome": 4566,
+    "maintenanceLoanLondon": 8010,
     "maintenanceGrant": 3250,
-    "postGraduateLoan": 0
+    "postGraduateLoan": 0,
+    "placementTuition": 1385,
+    "placementMaintenanceLoan": 1739,
+    "placementMaintenanceLoanHome": 1305,
+    "placementMaintenanceLoanLondon": 2442,
+    "placementMaintenanceGrant": 0
   },
   "2015": {
     "tuition": 9000,
     "maintenanceLoan": 5740,
+    "maintenanceLoanHome": 4566,
+    "maintenanceLoanLondon": 8010,
     "maintenanceGrant": 3387,
-    "postGraduateLoan": 0
+    "postGraduateLoan": 0,
+    "placementTuition": 1385,
+    "placementMaintenanceLoan": 1739,
+    "placementMaintenanceLoanHome": 1305,
+    "placementMaintenanceLoanLondon": 2442,
+    "placementMaintenanceGrant": 0
   },
   "2016": {
     "tuition": 9000,
     "maintenanceLoan": 8200,
+    "maintenanceLoanHome": 6904,
+    "maintenanceLoanLondon": 10702,
     "maintenanceGrant": 0,
-    "postGraduateLoan": 10000
+    "postGraduateLoan": 10000,
+    "placementTuition": 1385,
+    "placementMaintenanceLoan": 2485,
+    "placementMaintenanceLoanHome": 1864,
+    "placementMaintenanceLoanLondon": 3489,
+    "placementMaintenanceGrant": 0
   },
   "2017": {
     "tuition": 9250,
     "maintenanceLoan": 8430,
+    "maintenanceLoanHome": 7097,
+    "maintenanceLoanLondon": 11002,
     "maintenanceGrant": 0,
-    "postGraduateLoan": 10000
+    "postGraduateLoan": 10000,
+    "placementTuition": 1385,
+    "placementMaintenanceLoan": 2554,
+    "placementMaintenanceLoanHome": 1916,
+    "placementMaintenanceLoanLondon": 3586,
+    "placementMaintenanceGrant": 0
   },
   "2023": {
     "tuition": 9535,
     "maintenanceLoan": 10227,
+    "maintenanceLoanHome": 8610,
+    "maintenanceLoanLondon": 13348,
     "maintenanceGrant": 0,
-    "postGraduateLoan": 12167
+    "postGraduateLoan": 12167,
+    "placementTuition": 1385,
+    "placementMaintenanceLoan": 3098,
+    "placementMaintenanceLoanHome": 2324,
+    "placementMaintenanceLoanLondon": 4350,
+    "placementMaintenanceGrant": 0
   },
   "2024": {
     "tuition": 9535,
     "maintenanceLoan": 10227,
+    "maintenanceLoanHome": 8610,
+    "maintenanceLoanLondon": 13348,
     "maintenanceGrant": 0,
-    "postGraduateLoan": 12471
+    "postGraduateLoan": 12471,
+    "placementTuition": 1850,
+    "placementMaintenanceLoan": 3098,
+    "placementMaintenanceLoanHome": 2324,
+    "placementMaintenanceLoanLondon": 4350,
+    "placementMaintenanceGrant": 0
   },
   "2025": {
     "tuition": 9535,
     "maintenanceLoan": 10544,
+    "maintenanceLoanHome": 8877,
+    "maintenanceLoanLondon": 13762,
     "maintenanceGrant": 0,
-    "postGraduateLoan": 12858
+    "postGraduateLoan": 12858,
+    "placementTuition": 1905,
+    "placementMaintenanceLoan": 3194,
+    "placementMaintenanceLoanHome": 2396,
+    "placementMaintenanceLoanLondon": 4485,
+    "placementMaintenanceGrant": 0
   }
 }

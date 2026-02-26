@@ -12,3 +12,14 @@ export const POSTGRAD_OPTIONS = [
   { value: "yes", label: "YES" },
   { value: "no", label: "NO" },
 ];
+
+export const LIVING_SITUATION_OPTIONS = [
+  { value: "home", label: "AT HOME" },
+  { value: "awayOutsideLondon", label: "AWAY FROM HOME" },
+  { value: "london", label: "LONDON" },
+];
+
+export const YEAR_IN_INDUSTRY_OPTIONS = [
+  { value: "yes", label: "YES" },
+  { value: "no", label: "NO" },
+];

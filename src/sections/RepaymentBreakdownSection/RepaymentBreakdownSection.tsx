@@ -29,7 +29,7 @@ export const RepaymentBreakdownSection: React.FC = () => {
       <ProportionBar />
       <RepaymentPlots />
       <Button
-        className="w-full md:max-w-4/5"
+        className="w-full md:max-w-4/5 xl:max-w-2/5"
         variant="primary"
         onClick={() => setShowResetModal(true)}
       >

@@ -14,6 +14,14 @@ interface LoanEstimatesSectionProps {
   onReset: (fieldName: string) => void;
   onFieldChange: (fieldName: string) => void;
   isFieldEdited: (fieldName: string) => boolean;
+  courseLength: number;
+  courseStartYear: number;
+  mastersLength?: number;
+  mastersStartYear?: number;
+  getYearlyValues: (fieldName: string) => number[];
+  setYearlyValues: (fieldName: string, values: number[]) => void;
+  isFieldExpanded: (fieldName: string) => boolean;
+  toggleFieldExpanded: (fieldName: string) => void;
 }
 
 export const LoanEstimatesSection: React.FC<LoanEstimatesSectionProps> = ({
@@ -24,6 +32,14 @@ export const LoanEstimatesSection: React.FC<LoanEstimatesSectionProps> = ({
   onReset,
   onFieldChange,
   isFieldEdited,
+  courseLength,
+  courseStartYear,
+  mastersLength,
+  mastersStartYear,
+  getYearlyValues,
+  setYearlyValues,
+  isFieldExpanded,
+  toggleFieldExpanded,
 }) => {
   return (
     <div className="flex flex-col gap-3 pt-8">
@@ -46,6 +62,12 @@ export const LoanEstimatesSection: React.FC<LoanEstimatesSectionProps> = ({
         onReset={onReset}
         onChange={onFieldChange}
         isEdited={isFieldEdited("tutionFeeLoan")}
+        yearCount={courseLength}
+        startYear={courseStartYear}
+        yearlyValues={getYearlyValues("tutionFeeLoan")}
+        onYearlyChange={(v) => setYearlyValues("tutionFeeLoan", v)}
+        isExpanded={isFieldExpanded("tutionFeeLoan")}
+        onToggleExpand={() => toggleFieldExpanded("tutionFeeLoan")}
       />
 
       {showPostgradSection && (
@@ -56,6 +78,12 @@ export const LoanEstimatesSection: React.FC<LoanEstimatesSectionProps> = ({
           onReset={onReset}
           onChange={onFieldChange}
           isEdited={isFieldEdited("mastersTutionFeeLoan")}
+          yearCount={mastersLength}
+          startYear={mastersStartYear}
+          yearlyValues={getYearlyValues("mastersTutionFeeLoan")}
+          onYearlyChange={(v) => setYearlyValues("mastersTutionFeeLoan", v)}
+          isExpanded={isFieldExpanded("mastersTutionFeeLoan")}
+          onToggleExpand={() => toggleFieldExpanded("mastersTutionFeeLoan")}
         />
       )}
 
@@ -66,6 +94,12 @@ export const LoanEstimatesSection: React.FC<LoanEstimatesSectionProps> = ({
         onReset={onReset}
         onChange={onFieldChange}
         isEdited={isFieldEdited("maintenanceLoan")}
+        yearCount={courseLength}
+        startYear={courseStartYear}
+        yearlyValues={getYearlyValues("maintenanceLoan")}
+        onYearlyChange={(v) => setYearlyValues("maintenanceLoan", v)}
+        isExpanded={isFieldExpanded("maintenanceLoan")}
+        onToggleExpand={() => toggleFieldExpanded("maintenanceLoan")}
       />
 
       <NumericField
@@ -75,6 +109,12 @@ export const LoanEstimatesSection: React.FC<LoanEstimatesSectionProps> = ({
         onReset={onReset}
         onChange={onFieldChange}
         isEdited={isFieldEdited("maintenanceGrant")}
+        yearCount={courseLength}
+        startYear={courseStartYear}
+        yearlyValues={getYearlyValues("maintenanceGrant")}
+        onYearlyChange={(v) => setYearlyValues("maintenanceGrant", v)}
+        isExpanded={isFieldExpanded("maintenanceGrant")}
+        onToggleExpand={() => toggleFieldExpanded("maintenanceGrant")}
       />
 
       <div className="grid grid-cols-2 gap-1 pt-4 border-t border-northern-not-black/20">
