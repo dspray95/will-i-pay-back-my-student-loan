@@ -27,6 +27,7 @@ import {
   YEAR_IN_INDUSTRY_OPTIONS,
 } from "./consts";
 import {
+  LoanFormSchema,
   ValidatedLoanFormSchema,
   type LoanFormInput,
   type LoanFormValues,
@@ -49,17 +50,25 @@ const processLoanFormValues = (
     calculatePrincipalAtGraduation: (values: LoanFormValues) => void;
   },
 ) => {
-  const result = ValidatedLoanFormSchema.safeParse(values);
+  const result = LoanFormSchema.safeParse(values);
   if (!result.success) return;
   const parsedValues = result.data;
 
-  const hasPostgrad = parsedValues.postgrad === "yes";
-  setTotalUndergradLoan(parsedValues.tutionFeeLoan || 0);
-  setTotalMaintenanceLoan(parsedValues.maintenanceLoan || 0);
-  setTotalMastersLoan(hasPostgrad ? parsedValues.mastersTutionFeeLoan || 0 : 0);
+  if (
+    typeof parsedValues.courseStartYear !== "number" ||
+    typeof parsedValues.courseLength !== "number" ||
+    !parsedValues.loanPlan
+  ) return;
 
-  setLoanFormValues(parsedValues);
-  calculatePrincipalAtGraduation(parsedValues);
+  const validatedValues = parsedValues as LoanFormValues;
+
+  const hasPostgrad = validatedValues.postgrad === "yes";
+  setTotalUndergradLoan(validatedValues.tutionFeeLoan || 0);
+  setTotalMaintenanceLoan(validatedValues.maintenanceLoan || 0);
+  setTotalMastersLoan(hasPostgrad ? validatedValues.mastersTutionFeeLoan || 0 : 0);
+
+  setLoanFormValues(validatedValues);
+  calculatePrincipalAtGraduation(validatedValues);
 };
 
 const LoanFormContent: React.FC = () => {

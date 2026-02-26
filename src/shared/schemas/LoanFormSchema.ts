@@ -28,7 +28,7 @@ export const ValidatedLoanFormSchema = z
     courseStartYear: z.number({ error: "Please enter a valid year" }),
     courseLength: z.number({ error: "Please enter a valid course length" }),
     country: z.string().min(1, "Country is required"),
-    livingSituation: z.string().optional(),
+    livingSituation: z.string().min(1, "Please select a living situation"),
     loanPlan: z.enum(
       ["plan1", "plan1NI", "plan2", "plan4", "plan5", "postgrad"],
       { error: "Please select a loan plan" }
@@ -40,7 +40,7 @@ export const ValidatedLoanFormSchema = z
     postgrad: z.string().min(1, "Please select yes or no"),
     mastersStartYear: optionalNumber,
     mastersLength: optionalNumber,
-    yearInIndustry: z.string().optional(),
+    yearInIndustry: z.string().min(1, "Please select yes or no"),
     placementYear: optionalNumber,
   })
   .refine(

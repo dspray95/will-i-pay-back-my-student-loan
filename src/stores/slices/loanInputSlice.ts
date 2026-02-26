@@ -51,17 +51,20 @@ export const createLoanInputSlice: StateCreator<
     const state = get();
     const totalLoan = state.totalUndergradLoan + state.totalMaintenanceLoan;
 
+    // Split total evenly across course years
+    const courseLength = loanFormValues.courseLength;
+    const perYear = totalLoan / courseLength;
+    const undergradYearlyAmounts = Array.from({ length: courseLength }, () => perYear);
+
     const undergradLoanAtGraduation = calculateLoanAtGraduation(
-      totalLoan,
+      undergradYearlyAmounts,
       loanFormValues.courseStartYear,
-      loanFormValues.courseLength,
       loanFormValues.loanPlan,
     );
 
     const undergradStudyBalances = calculateStudyYearBalances(
-      totalLoan,
+      undergradYearlyAmounts,
       loanFormValues.courseStartYear,
-      loanFormValues.courseLength,
       loanFormValues.loanPlan,
     );
 
@@ -70,20 +73,22 @@ export const createLoanInputSlice: StateCreator<
       loanFormValues.mastersStartYear !== undefined &&
       loanFormValues.mastersLength !== undefined;
 
+    const mastersLength = hasMasters ? loanFormValues.mastersLength! : 0;
+    const mastersPerYear = hasMasters ? state.totalMastersLoan / mastersLength : 0;
+    const mastersYearlyAmounts = Array.from({ length: mastersLength }, () => mastersPerYear);
+
     const mastersLoanAtGraduation = hasMasters
       ? calculateLoanAtGraduation(
-          state.totalMastersLoan,
+          mastersYearlyAmounts,
           loanFormValues.mastersStartYear!,
-          loanFormValues.mastersLength!,
           "postgrad",
         )
       : 0;
 
     const mastersStudyBalances = hasMasters
       ? calculateStudyYearBalances(
-          state.totalMastersLoan,
+          mastersYearlyAmounts,
           loanFormValues.mastersStartYear!,
-          loanFormValues.mastersLength!,
           "postgrad",
         )
       : [];
