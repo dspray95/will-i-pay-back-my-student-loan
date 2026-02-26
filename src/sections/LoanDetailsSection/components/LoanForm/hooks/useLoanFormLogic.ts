@@ -2,7 +2,27 @@ import { useState, useMemo, useCallback, useEffect } from "react";
 import { useFormikContext } from "formik";
 import { getFeesForYear } from "../../../../../domain/loan/fees";
 import { getLoanPlan } from "../../../../../domain/loan/plans";
+import type { FeesLoansAndGrants } from "../../../../../domain/loan/types";
 import type { LoanFormValues } from "../../../../../shared/schemas/LoanFormSchema";
+
+const getMaintenanceLoanForSituation = (
+  fees: FeesLoansAndGrants,
+  livingSituation?: string,
+): number => {
+  if (livingSituation === "home") return fees.maintenanceLoanHome;
+  if (livingSituation === "london") return fees.maintenanceLoanLondon;
+  return fees.maintenanceLoan;
+};
+
+const getPlacementMaintenanceLoanForSituation = (
+  fees: FeesLoansAndGrants,
+  livingSituation?: string,
+): number => {
+  if (livingSituation === "home") return fees.placementMaintenanceLoanHome;
+  if (livingSituation === "london") return fees.placementMaintenanceLoanLondon;
+  return fees.placementMaintenanceLoan;
+};
+
 export const useLoanFormLogic = () => {
   const { values, setFieldValue } = useFormikContext<LoanFormValues>();
   const [manuallyEdited, setManuallyEdited] = useState<Set<string>>(new Set());
@@ -36,14 +56,23 @@ export const useLoanFormLogic = () => {
     }
 
     const hasPlacement = values.yearInIndustry === "yes" && typeof values.placementYear === "number";
+    const studyMaintenanceLoan = getMaintenanceLoanForSituation(fees, values.livingSituation);
+    const placementMaintenanceLoan = getPlacementMaintenanceLoanForSituation(fees, values.livingSituation);
+
     const tutionFeeLoan = hasPlacement
       ? fees.tuition * (values.courseLength - 1) + fees.placementTuition
       : fees.tuition * values.courseLength;
+    const maintenanceLoan = hasPlacement
+      ? studyMaintenanceLoan * (values.courseLength - 1) + placementMaintenanceLoan
+      : studyMaintenanceLoan * values.courseLength;
+    const maintenanceGrant = hasPlacement
+      ? fees.maintenanceGrant * (values.courseLength - 1) + fees.placementMaintenanceGrant
+      : fees.maintenanceGrant * values.courseLength;
 
     return {
       tutionFeeLoan,
-      maintenanceLoan: fees.maintenanceLoan * values.courseLength,
-      maintenanceGrant: fees.maintenanceGrant * values.courseLength,
+      maintenanceLoan,
+      maintenanceGrant,
       mastersTutionFeeLoan,
     };
   }, [
@@ -54,6 +83,7 @@ export const useLoanFormLogic = () => {
     values.mastersLength,
     values.loanPlan,
     values.country,
+    values.livingSituation,
     values.yearInIndustry,
     values.placementYear,
   ]);
@@ -104,9 +134,9 @@ export const useLoanFormLogic = () => {
 
       if (yearCount <= 0) return [];
 
-      // Tuition with placement year logic
+      // Placement year logic for tuition, maintenance loan, and maintenance grant
       if (
-        fieldName === "tutionFeeLoan" &&
+        (fieldName === "tutionFeeLoan" || fieldName === "maintenanceLoan" || fieldName === "maintenanceGrant") &&
         values.yearInIndustry === "yes" &&
         typeof values.placementYear === "number" &&
         typeof values.courseStartYear === "number" &&
@@ -114,12 +144,21 @@ export const useLoanFormLogic = () => {
       ) {
         const placementIndex = values.placementYear - 1;
         const placementFees = getFeesForYear(values.courseStartYear + placementIndex);
-        const placementTuition = placementFees.placementTuition;
-        const studyYearTuition = (total - placementTuition) / (yearCount - 1);
+
+        let placementAmount: number;
+        if (fieldName === "tutionFeeLoan") {
+          placementAmount = placementFees.placementTuition;
+        } else if (fieldName === "maintenanceLoan") {
+          placementAmount = getPlacementMaintenanceLoanForSituation(placementFees, values.livingSituation);
+        } else {
+          placementAmount = placementFees.placementMaintenanceGrant;
+        }
+
+        const studyYearAmount = (total - placementAmount) / (yearCount - 1);
         return Array.from({ length: yearCount }, (_, i) =>
           i === placementIndex
-            ? Math.round(placementTuition)
-            : Math.round(studyYearTuition)
+            ? Math.round(placementAmount)
+            : Math.round(studyYearAmount)
         );
       }
 
@@ -130,7 +169,7 @@ export const useLoanFormLogic = () => {
         i === yearCount - 1 ? perYear + remainder : perYear
       );
     },
-    [values.courseLength, values.mastersLength, values.yearInIndustry, values.placementYear, values.courseStartYear]
+    [values.courseLength, values.mastersLength, values.yearInIndustry, values.placementYear, values.courseStartYear, values.livingSituation]
   );
 
   const getYearlyValues = useCallback(

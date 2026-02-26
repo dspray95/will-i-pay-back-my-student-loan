@@ -22,6 +22,7 @@ import { STAGES } from "../../../../shared/constants/stages";
 import {
   COUNTRY_OPTIONS,
   FIELD_CLASS,
+  LIVING_SITUATION_OPTIONS,
   POSTGRAD_OPTIONS,
   YEAR_IN_INDUSTRY_OPTIONS,
 } from "./consts";
@@ -144,6 +145,18 @@ const LoanFormContent: React.FC = () => {
           options={COUNTRY_OPTIONS}
           selectedValue={values.country}
           columns={2}
+        />
+      </FormField>
+
+      <FormField
+        label="WHERE DID YOU LIVE WHILE STUDYING?"
+        name="livingSituation"
+      >
+        <FormikRadioButtonGrid
+          name="livingSituation"
+          options={LIVING_SITUATION_OPTIONS}
+          selectedValue={values.livingSituation ?? ""}
+          columns={3}
         />
       </FormField>
 
@@ -272,6 +285,7 @@ export const LoanForm: React.FC = () => {
         courseStartYear: "",
         courseLength: "",
         country: "",
+        livingSituation: "",
         loanPlan: "",
         tutionFeeLoan: 0,
         mastersTutionFeeLoan: 0,

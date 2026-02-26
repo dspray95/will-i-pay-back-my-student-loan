@@ -109,13 +109,19 @@ export const useLoanCalculatorStore = create<LoanCalculatorState>(
           loanFormValues.courseStartYear + placementYearIndex
         );
         const placementTuition = placementFees.placementTuition;
+        const placementMaintenance =
+          loanFormValues.livingSituation === "home"
+            ? placementFees.placementMaintenanceLoanHome
+            : loanFormValues.livingSituation === "london"
+              ? placementFees.placementMaintenanceLoanLondon
+              : placementFees.placementMaintenanceLoan;
         const studyYearTuition = (totalTuition - placementTuition) / (courseLength - 1);
-        const maintenancePerYear = totalMaintenance / courseLength;
+        const studyYearMaintenance = (totalMaintenance - placementMaintenance) / (courseLength - 1);
 
         undergradYearlyAmounts = Array.from({ length: courseLength }, (_, i) =>
           i === placementYearIndex
-            ? placementTuition + maintenancePerYear
-            : studyYearTuition + maintenancePerYear
+            ? placementTuition + placementMaintenance
+            : studyYearTuition + studyYearMaintenance
         );
       } else {
         undergradYearlyAmounts = Array(courseLength).fill(totalLoan / courseLength);

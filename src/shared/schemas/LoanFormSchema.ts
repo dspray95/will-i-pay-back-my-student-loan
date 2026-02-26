@@ -6,6 +6,7 @@ export const LoanFormSchema = z.object({
   courseStartYear: optionalNumber,
   courseLength: optionalNumber,
   country: z.string(),
+  livingSituation: z.string().optional(),
   loanPlan: z
     .enum(["plan1", "plan1NI", "plan2", "plan4", "plan5", "postgrad", ""])
     .optional(),
@@ -27,6 +28,7 @@ export const ValidatedLoanFormSchema = z
     courseStartYear: z.number({ error: "Please enter a valid year" }),
     courseLength: z.number({ error: "Please enter a valid course length" }),
     country: z.string().min(1, "Country is required"),
+    livingSituation: z.string().optional(),
     loanPlan: z.enum(
       ["plan1", "plan1NI", "plan2", "plan4", "plan5", "postgrad"],
       { error: "Please select a loan plan" }
