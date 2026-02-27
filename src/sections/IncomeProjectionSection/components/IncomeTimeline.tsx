@@ -207,6 +207,19 @@ export const IncomeTimeline = forwardRef<
       return () => observer.disconnect();
     }, [isMobile]);
 
+    // Scroll down a little when the future income section reveals
+    useEffect(() => {
+      if (!incomeMode) return;
+      const el = futureIncomeSectionRef.current;
+      if (!el) return;
+
+      // Wait for the reveal animation to expand the content before scrolling
+      const timeout = setTimeout(() => {
+        window.scrollBy({ top: window.innerHeight * 0.33, behavior: "smooth" });
+      }, 200);
+      return () => clearTimeout(timeout);
+    }, [incomeMode]);
+
     // Year ranges
     const yearsToNow = arrays.range(repaymentStartYear, currentYear);
     const yearsFromNowToForgiveness = arrays.range(

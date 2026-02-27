@@ -9,6 +9,7 @@ import { STAGES } from "../../shared/constants/stages";
 import { BorderWrappers } from "./components/BorderWrappers";
 import { ScrollOnReveal } from "./components/ScrollOnReveal";
 import { PageHeader } from "../../shared/components/PageHeader";
+import { BuyMeACoffeeLink } from "../../shared/components/socials/BuyMeACoffee";
 
 export const LoanCalculatorFlow = () => {
   const { stage, resetCount, loanFormValues } = useLoanCalculatorStore();

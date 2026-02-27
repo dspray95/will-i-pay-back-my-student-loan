@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTurnUp } from "@fortawesome/free-solid-svg-icons";
 import { ActionConfirmationModal } from "../../shared/components/modals/ActionConfirmationModal";
 import { PageHeader } from "../../shared/components/PageHeader";
+import { BuyMeACoffeeLink } from "../../shared/components/socials/BuyMeACoffee";
 
 export const RepaymentBreakdownSection: React.FC = () => {
   const [showResetModal, setShowResetModal] = useState(false);
@@ -28,6 +29,8 @@ export const RepaymentBreakdownSection: React.FC = () => {
       <SummaryStats />
       <ProportionBar />
       <RepaymentPlots />
+      <BuyMeACoffeeLink />
+
       <Button
         className="w-full md:max-w-4/5 xl:max-w-2/5"
         variant="primary"
@@ -38,6 +41,7 @@ export const RepaymentBreakdownSection: React.FC = () => {
         </Font.Body>
         <FontAwesomeIcon className="text-base" icon={faTurnUp} />
       </Button>
+
       <ActionConfirmationModal
         title="Start Again?"
         bodyText="This will clear all your inputs and results. Are you sure you want to
