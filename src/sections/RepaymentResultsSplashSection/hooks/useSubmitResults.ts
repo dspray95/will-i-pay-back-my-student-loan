@@ -10,6 +10,7 @@ import {
 import type { CalculationResults } from "../types";
 import type { RepaymentPlan } from "../../../shared/types";
 import type { LoanFormValues } from "../../../shared/schemas/LoanFormSchema";
+import { isFirestoreTest } from "../../../shared/utils/isFirestoreTest";
 import { shouldForceFirestore } from "../../../shared/utils/shouldForceFirestore";
 
 const defaultEmptyPlan: RepaymentPlan = {
@@ -96,7 +97,8 @@ export const useSubmitResults = () => {
       hasPostgradLoan,
     );
 
-    addDoc(collection(db, "results"), {
+    const collectionName = isFirestoreTest() ? "results-test" : "results";
+    addDoc(collection(db, collectionName), {
       ...payload,
       timestamp: serverTimestamp(),
     }).catch((err) => {
