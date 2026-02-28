@@ -144,7 +144,7 @@ const LoanFormContent: React.FC = () => {
           type="number"
           name="courseLength"
           min="1"
-          max="4"
+          max="5"
         />
       </FormField>
 
