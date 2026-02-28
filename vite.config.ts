@@ -20,6 +20,7 @@ export default defineConfig({
           firebase: [
             "firebase/app",
             "firebase/firestore",
+            "firebase/analytics",
           ],
         },
       },
