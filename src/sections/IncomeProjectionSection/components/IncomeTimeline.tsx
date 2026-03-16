@@ -7,6 +7,8 @@ import {
   forwardRef,
   useImperativeHandle,
 } from "react";
+import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getForgivenessPlanForYear } from "../../../domain/loan/forgiveness";
 import type { LoanPlan } from "../../../shared/types";
 import { arrays } from "../../../shared/utils/arrays";
@@ -50,6 +52,7 @@ export const IncomeTimeline = forwardRef<
     );
     const [showWarningModal, setShowWarningModal] = useState(false);
     const [lastTouchedYear, setLastTouchedYear] = useState<number>();
+    const [isFutureIncomeOpen, setIsFutureIncomeOpen] = useState(false);
 
     // Shared state
     const { setIncomeByYear } = useLoanCalculatorStore();
@@ -157,6 +160,8 @@ export const IncomeTimeline = forwardRef<
 
       if (mode === "auto") {
         applyInflationFill(currentYear);
+      } else {
+        setIsFutureIncomeOpen(true);
       }
     };
 
@@ -207,9 +212,12 @@ export const IncomeTimeline = forwardRef<
       return () => observer.disconnect();
     }, [isMobile]);
 
-    // Scroll down a little when the future income section reveals
+    // Scroll down a little when the future income dropdown first opens
+    const hasScrolledRef = useRef(false);
     useEffect(() => {
-      if (!incomeMode) return;
+      if (!isFutureIncomeOpen) return;
+      if (hasScrolledRef.current) return;
+      hasScrolledRef.current = true;
       const el = futureIncomeSectionRef.current;
       if (!el) return;
 
@@ -218,7 +226,7 @@ export const IncomeTimeline = forwardRef<
         window.scrollBy({ top: window.innerHeight * 0.33, behavior: "smooth" });
       }, 200);
       return () => clearTimeout(timeout);
-    }, [incomeMode]);
+    }, [isFutureIncomeOpen]);
 
     // Year ranges
     const yearsToNow = arrays.range(repaymentStartYear, currentYear);
@@ -229,15 +237,21 @@ export const IncomeTimeline = forwardRef<
 
     // Desktop: track button offset based on last touched slider row (h-10 = 40px)
     const SLIDER_ROW_HEIGHT = 40;
-    const lastTouchedYearIndex = lastTouchedYear
-      ? yearsFromNowToForgiveness.indexOf(lastTouchedYear)
-      : -1;
+    const DROPDOWN_HEADER_HEIGHT = 42;
+    const autoSetYear =
+      lastTouchedYear && lastTouchedYear > currentYear
+        ? lastTouchedYear
+        : yearsFromNowToForgiveness[0];
+    const autoSetYearIndex = autoSetYear
+      ? yearsFromNowToForgiveness.indexOf(autoSetYear)
+      : 0;
     const buttonOffset =
-      lastTouchedYearIndex >= 0 ? lastTouchedYearIndex * SLIDER_ROW_HEIGHT : 0;
+      DROPDOWN_HEADER_HEIGHT +
+      (autoSetYearIndex >= 0 ? autoSetYearIndex * SLIDER_ROW_HEIGHT : 0);
 
     const showAutoSetButton = incomeMode === "manual";
     const autoSetButtonClick = () =>
-      lastTouchedYear && applyInflationFill(lastTouchedYear);
+      autoSetYear && applyInflationFill(autoSetYear);
 
     return (
       <>
@@ -254,7 +268,7 @@ export const IncomeTimeline = forwardRef<
           {/** Mobile: fixed auto-set button that slides in/out based on section visibility */}
           {isMobile && showAutoSetButton && (
             <AutoSetButton
-              year={lastTouchedYear}
+              year={autoSetYear}
               fixed
               visible={isSectionVisible}
               onClick={autoSetButtonClick}
@@ -275,16 +289,40 @@ export const IncomeTimeline = forwardRef<
             {/** Desktop: absolute auto-set button floating to the right of sliders */}
             {!isMobile && showAutoSetButton && (
               <AutoSetButton
-                year={lastTouchedYear}
+                year={autoSetYear}
                 topOffset={buttonOffset}
                 onClick={autoSetButtonClick}
               />
             )}
             <div className="overflow-hidden">
-              <IncomeSliderSet
-                yearsRange={yearsFromNowToForgiveness}
-                handleIncomeChange={handleIncomeChange}
-              />
+              <div>
+                <button
+                  type="button"
+                  onClick={() => setIsFutureIncomeOpen(!isFutureIncomeOpen)}
+                  className="w-full flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-piccadilly-blue/5 transition-colors"
+                >
+                  <span className="text-sm font-semibold text-piccadilly-blue uppercase tracking-wide">
+                    Projected income breakdown
+                  </span>
+                  <FontAwesomeIcon
+                    icon={isFutureIncomeOpen ? faChevronUp : faChevronDown}
+                    className="text-piccadilly-blue text-xs"
+                  />
+                </button>
+                <div
+                  className={cn(
+                    "grid transition-all duration-300 ease-in-out",
+                    isFutureIncomeOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
+                  )}
+                >
+                  <div className="overflow-hidden">
+                    <IncomeSliderSet
+                      yearsRange={yearsFromNowToForgiveness}
+                      handleIncomeChange={handleIncomeChange}
+                    />
+                  </div>
+                </div>
+              </div>
               <WrittenOffDivider />
             </div>
           </div>
