@@ -58,14 +58,17 @@ const processLoanFormValues = (
     typeof parsedValues.courseStartYear !== "number" ||
     typeof parsedValues.courseLength !== "number" ||
     !parsedValues.loanPlan
-  ) return;
+  )
+    return;
 
   const validatedValues = parsedValues as LoanFormValues;
 
   const hasPostgrad = validatedValues.postgrad === "yes";
   setTotalUndergradLoan(validatedValues.tutionFeeLoan || 0);
   setTotalMaintenanceLoan(validatedValues.maintenanceLoan || 0);
-  setTotalMastersLoan(hasPostgrad ? validatedValues.mastersTutionFeeLoan || 0 : 0);
+  setTotalMastersLoan(
+    hasPostgrad ? validatedValues.mastersTutionFeeLoan || 0 : 0,
+  );
 
   setLoanFormValues(validatedValues);
   calculatePrincipalAtGraduation(validatedValues);
@@ -144,7 +147,7 @@ const LoanFormContent: React.FC = () => {
           type="number"
           name="courseLength"
           min="1"
-          max="5"
+          max="6"
         />
       </FormField>
 
@@ -232,10 +235,24 @@ const LoanFormContent: React.FC = () => {
         onReset={resetFieldToDefault}
         onFieldChange={handleFieldChange}
         isFieldEdited={isFieldEdited}
-        courseLength={typeof values.courseLength === "number" ? values.courseLength : 0}
-        courseStartYear={typeof values.courseStartYear === "number" ? values.courseStartYear : 0}
-        mastersLength={typeof values.mastersLength === "number" ? values.mastersLength : undefined}
-        mastersStartYear={typeof values.mastersStartYear === "number" ? values.mastersStartYear : undefined}
+        courseLength={
+          typeof values.courseLength === "number" ? values.courseLength : 0
+        }
+        courseStartYear={
+          typeof values.courseStartYear === "number"
+            ? values.courseStartYear
+            : 0
+        }
+        mastersLength={
+          typeof values.mastersLength === "number"
+            ? values.mastersLength
+            : undefined
+        }
+        mastersStartYear={
+          typeof values.mastersStartYear === "number"
+            ? values.mastersStartYear
+            : undefined
+        }
         getYearlyValues={getYearlyValues}
         setYearlyValues={setYearlyValues}
         isFieldExpanded={isFieldExpanded}

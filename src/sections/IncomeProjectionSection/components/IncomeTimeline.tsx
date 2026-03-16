@@ -320,10 +320,10 @@ export const IncomeTimeline = forwardRef<
                       yearsRange={yearsFromNowToForgiveness}
                       handleIncomeChange={handleIncomeChange}
                     />
+                    <WrittenOffDivider />
                   </div>
                 </div>
               </div>
-              <WrittenOffDivider />
             </div>
           </div>
         </div>

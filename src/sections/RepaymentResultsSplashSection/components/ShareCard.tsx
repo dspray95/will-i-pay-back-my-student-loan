@@ -6,6 +6,7 @@ import { useLoanCalculatorStore } from "../../../stores/loanCalculatorStore";
 import { processResults } from "../processResults";
 import { RESULTS_TEXT_NOT_REPAID, RESULTS_TEXT_REPAID } from "../ResultText";
 import type { RepaymentPlan } from "../../../shared/types";
+import { cn } from "../../../shared/utils/ClassNames";
 
 const defaultEmptyPlan: RepaymentPlan = {
   finalBalance: 0,
@@ -42,46 +43,35 @@ export const ShareCard = forwardRef<HTMLDivElement>((_, ref) => {
     ? RESULTS_TEXT_REPAID
     : RESULTS_TEXT_NOT_REPAID;
 
-  const subheading = copyText.subheading
-    .replace("YOU", "I")
-    .replace("YOUR", "MY");
-  const snark = copyText.snark.replace("YOU", "I");
-
+  // We need to build a lot of this from scratch, rather than using components, because the html-to-img library
+  // we're using won't play nicely with some of our components.
   return (
     <div
       ref={ref}
       style={{ fontFamily: "var(--font-railway)" }}
-      className="absolute left-0 top-0 w-110 bg-beck-beige p-2.5 -z-1 pointer-events-none opacity-0"
+      className={cn(
+        "absolute left-0 top-0 bg-beck-beige p-2.5 -z-1 pointer-events-none opacity-0",
+        { "w-200": hasPostgradLoan, "w-110": !hasPostgradLoan },
+      )}
     >
       <div className="border-20 border-piccadilly-blue p-1">
         <div className="border-[5px] border-piccadilly-blue px-6 py-10 flex flex-col items-center">
-          {/* Header */}
-          <div className="flex flex-col items-center justify-center gap-2 pb-6">
-            <div className="text-piccadilly-blue flex flex-col py-1 items-center w-fit px-6 justify-center border-[1.5px] border-piccadilly-blue max-w-2/3">
-              <span className="text-sm -mb-3">THE GREAT BRITISH</span>
-              <OutlineText fontSize="28px" height={36} strokeWidth={1.5}>
-                WRITE-OFF
-              </OutlineText>
-            </div>
-            <Font.Body
-              small
-              className="text-center text-piccadilly-blue font-semibold"
-            >
-              WILL I REPAY MY STUDENT LOAN?
-            </Font.Body>
-          </div>
-
           {/* Result */}
           <div className="w-full flex flex-col gap-4 items-center justify-center mb-8 text-center">
             <OutlineText fontSize="72px" height={90}>
               {copyText.result}
             </OutlineText>
-            <Font.Body>{subheading}</Font.Body>
-            <Font.Subtle small>{snark}</Font.Subtle>
+            <Font.Body>{copyText.subheading}</Font.Body>
+            <Font.Subtle small>{copyText.snark}</Font.Subtle>
           </div>
 
           {/* Summary */}
-          <div className="w-full flex flex-row gap-12 items-start justify-center">
+          <div
+            className={cn(
+              "w-full flex flex-row gap-12 items-start justify-center",
+              { "mx-20": hasPostgradLoan },
+            )}
+          >
             <RepaymentSummary
               title={hasPostgradLoan ? "Undergraduate" : undefined}
               totalPaid={calculationResults.totalUndergraduateDebtPaid}
@@ -90,8 +80,6 @@ export const ShareCard = forwardRef<HTMLDivElement>((_, ref) => {
                 calculationResults.totalUndergraduateInterestAccrued
               }
               willRepay={willRepayUndergraduateLoan}
-              alignLeft={hasPostgradLoan}
-              useFirstPerson
             />
             {hasPostgradLoan && (
               <RepaymentSummary
@@ -102,8 +90,6 @@ export const ShareCard = forwardRef<HTMLDivElement>((_, ref) => {
                   calculationResults.totalPostgraduateInterestAccrued
                 }
                 willRepay={willRepayPostgraduateLoan}
-                alignLeft
-                useFirstPerson
               />
             )}
           </div>
