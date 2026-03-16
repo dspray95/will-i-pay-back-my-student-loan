@@ -60,15 +60,26 @@ Interest rates are set by the SLC each September, based on the March RPI figure.
 
 The interest rate for Plan 2 is determined using the previous tax year's income, matching SLC's actual assessment process.
 
+## Living Situation / London Weighting
+
+The calculator accounts for where you lived while studying, which affects your maintenance loan amount. Three options are available:
+
+- **At home:** Students living with parents receive a lower maintenance loan.
+- **Away from home (outside London):** The standard maintenance loan rate (used as the default).
+- **London:** Students studying in London receive a higher maintenance loan to reflect the higher cost of living.
+
+These rates are sourced from SLC publications and vary by academic year. During placement years, reduced maintenance loan rates also vary by living situation.
+
 ## Sandwich Courses / Year in Industry
 
 The calculator supports sandwich courses where one year of the degree is spent on an industrial placement. During a placement year:
 
 - **Tuition fees are reduced** to the SLC placement rate (£1,905 for 2025/26, £1,850 for 2024/25, £1,385 for 2012-2023).
-- **Maintenance loan** is received at the full rate.
+- **Maintenance loan is reduced** to the SLC placement rate, which also varies by living situation (at home, away from home, or London).
+- **Maintenance grant is reduced** to the placement rate where applicable.
 - **Interest continues to accrue** daily on the existing balance at the same rate as other study years.
 
-When a year in industry is selected, the per-year loan disbursement is adjusted: study years receive the full tuition amount while the placement year receives the reduced amount. This produces a more accurate graduation balance than dividing the total loan evenly across all years, because less money is borrowed in the placement year, meaning less interest compounds during that period.
+When a year in industry is selected, the per-year loan disbursement is adjusted: study years receive the full tuition, maintenance loan, and maintenance grant amounts while the placement year receives the reduced amounts. This produces a more accurate graduation balance than dividing the total loan evenly across all years, because less money is borrowed in the placement year, meaning less interest compounds during that period.
 
 ## Simultaneous Undergraduate and Postgraduate Loans
 
