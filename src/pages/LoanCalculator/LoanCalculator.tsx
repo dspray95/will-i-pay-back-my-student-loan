@@ -6,12 +6,11 @@ import { RepaymentBreakdownSection } from "../../sections/RepaymentBreakdownSect
 import { MethodologySection } from "../../sections/MethodologySection/MethodologySection";
 import { useLoanCalculatorStore } from "../../stores/loanCalculatorStore";
 import { STAGES } from "../../shared/constants/stages";
-import { BorderWrappers } from "./components/BorderWrappers";
-import { ScrollOnReveal } from "./components/ScrollOnReveal";
+import { BorderWrappers } from "../../shared/components/BorderWrappers";
 import { PageHeader } from "../../shared/components/PageHeader";
-import { BuyMeACoffeeLink } from "../../shared/components/socials/BuyMeACoffee";
+import { ScrollOnReveal } from "./components/ScrollOnReveal";
 
-export const LoanCalculatorFlow = () => {
+export function LoanCalculator() {
   const { stage, resetCount, loanFormValues } = useLoanCalculatorStore();
 
   let undergradStartYear = 2015;
@@ -64,4 +63,4 @@ export const LoanCalculatorFlow = () => {
       )}
     </BorderWrappers>
   );
-};
+}

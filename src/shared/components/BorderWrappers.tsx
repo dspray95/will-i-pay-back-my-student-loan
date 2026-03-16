@@ -1,4 +1,4 @@
-import { cn } from "../../../shared/utils/ClassNames";
+import { cn } from "../utils/ClassNames";
 
 export const BorderWrappers: React.FC<{
   showBottomBorder: boolean;

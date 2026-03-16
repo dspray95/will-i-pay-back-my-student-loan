@@ -1,4 +1,4 @@
-import { LoanCalculatorFlow } from "./layouts/LoanCalculatorFlow/LoanCalculatorFlow";
+import { LoanCalculator } from "./pages/LoanCalculator/LoanCalculator";
 import { GithubLink } from "./shared/components/socials/Github";
 import { LinkedInLink } from "./shared/components/socials/LinkedIn";
 
@@ -9,7 +9,7 @@ function App() {
         <GithubLink />
         <LinkedInLink />
       </div>
-      <LoanCalculatorFlow />
+      <LoanCalculator />
     </div>
   );
 }

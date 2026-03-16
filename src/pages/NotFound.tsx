@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "../shared/components/Button";
 import { Font } from "../shared/components/Text";
 import { faArrowRotateBack } from "@fortawesome/free-solid-svg-icons";
-import { BorderWrappers } from "../layouts/LoanCalculatorFlow/components/BorderWrappers";
+import { BorderWrappers } from "../shared/components/BorderWrappers";
 
 export function NotFound() {
   return (
