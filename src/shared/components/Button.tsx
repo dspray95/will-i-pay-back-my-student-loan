@@ -1,6 +1,6 @@
 import clsx from "clsx";
 
-type ButtonVariant = "primary" | "secondary" | "no-bg" | "base";
+type ButtonVariant = "primary" | "secondary" | "no-bg" | "link" | "base";
 
 interface ButtonProps {
   className?: string;
@@ -35,6 +35,8 @@ export const Button: React.FC<ButtonProps> = ({
             variant === "secondary",
           "text-xs border-b border-northern-not-black px-2 bg-transparent hover:bg-transparent hover:opacity-80 active:text-not-white":
             variant === "no-bg",
+          "text-piccadilly-blue bg-transparent hover:opacity-70 transition-opacity":
+            variant === "link",
         },
         // Disabled styles
         disabled && "disabled:opacity-50 disabled:cursor-not-allowed",

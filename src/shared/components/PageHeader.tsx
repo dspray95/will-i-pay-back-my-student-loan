@@ -37,8 +37,7 @@ export const PageHeader: React.FC<{
         <div className="flex flex-col gap-2 items-center justify-center lg:max-w-full 2xl:max-w-3/5">
           <Font.Body className="md:text-center">
             Estimate how much of your student loan you could end up repaying -
-            and how much might get written off. Enter your loan details, map out
-            your expected income year by year, and we'll do the maths.
+            and how much might get written off.
           </Font.Body>
           <Font.Body className="md:text-center text-sm opacity-70">
             This tool does not constitute financial advice. Results are

@@ -183,13 +183,15 @@ export const RepaymentResultsSplashSection: React.FC = () => {
         )}
       </div>
       <Button
-        className="my-16 border-b-"
-        variant="no-bg"
+        className="my-16"
+        variant="link"
         onClick={shareImage}
         disabled={isSharing}
       >
-        <FontAwesomeIcon icon={faShareFromSquare} />
-        {isSharing ? "Sharing..." : "Share your results"}
+        <FontAwesomeIcon icon={faShareFromSquare} size="lg" />
+        <Font.Body small className="text-piccadilly-blue pt-1">
+          {isSharing ? "Sharing..." : "Share your results"}
+        </Font.Body>
       </Button>
       <ShareCard ref={shareCardRef} />
       <div

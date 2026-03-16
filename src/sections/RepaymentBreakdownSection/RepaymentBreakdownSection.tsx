@@ -10,6 +10,8 @@ import { faTurnUp } from "@fortawesome/free-solid-svg-icons";
 import { ActionConfirmationModal } from "../../shared/components/modals/ActionConfirmationModal";
 import { PageHeader } from "../../shared/components/PageHeader";
 import { BuyMeACoffeeLink } from "../../shared/components/socials/BuyMeACoffee";
+import { LinkedInLink } from "../../shared/components/socials/LinkedIn";
+import { GithubLink } from "../../shared/components/socials/Github";
 
 export const RepaymentBreakdownSection: React.FC = () => {
   const [showResetModal, setShowResetModal] = useState(false);
@@ -29,8 +31,11 @@ export const RepaymentBreakdownSection: React.FC = () => {
       <SummaryStats />
       <ProportionBar />
       <RepaymentPlots />
-      <BuyMeACoffeeLink />
-
+      <div className="flex items-end justify-center gap-2">
+        <LinkedInLink />
+        <GithubLink />
+        <BuyMeACoffeeLink />
+      </div>
       <Button
         className="w-full md:max-w-4/5 xl:max-w-2/5"
         variant="primary"
