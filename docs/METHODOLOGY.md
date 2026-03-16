@@ -115,7 +115,7 @@ The gap between these two rates matters: if salary growth exceeds inflation, rep
 
 For years beyond available SLC data:
 
-- **Repayment thresholds:** The most recent published threshold is carried forward (frozen).
+- **Repayment thresholds:** Plans 1, 1 NI, 2, and 4 are projected forward using the user-configured inflation rate (approximating annual RPI uprating). Plan 5 and Postgraduate thresholds are kept frozen at their most recent published values, matching current government policy.
 - **Interest rates:** Fall back to the user-configured projected inflation (RPI) rate.
 
 ## Data Sources
@@ -130,7 +130,7 @@ Data is stored in JSON configuration files and updated when new rates are announ
 
 ## Known Simplifications
 
-1. **Threshold freezing** - Future repayment thresholds are held constant at the most recent value. In reality, some thresholds are uprated annually (e.g., Plan 5 is fixed at 25,000 by policy, while Plan 2 rises with average earnings).
+1. **Threshold projection** - Plans 1, 2, and 4 thresholds are projected using a single inflation rate, which approximates RPI uprating. In practice, Plan 2 is being frozen at £29,385 from April 2027 for three years, and Plan 5 (currently frozen at £25,000) is intended to start uprating with RPI from April 2027. These plan-specific policy changes are not yet reflected.
 2. **Long-term RPI** - A single user-configurable forecast is used for all future interest rates. Actual rates will vary year to year.
 3. **Plan 5 PMR cap** - Plan 5 interest is subject to a Prevailing Market Rate cap that can reduce the rate below RPI. This cap is not currently modelled (it is not active as of 2025/26).
 4. **Income basis** - The calculator uses gross annual income. In practice, employed borrowers repay through PAYE based on each pay period's earnings, and self-employed borrowers repay via self-assessment. The annual result is equivalent.

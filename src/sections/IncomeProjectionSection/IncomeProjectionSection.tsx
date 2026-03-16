@@ -48,9 +48,7 @@ export const IncomeProjectionSection: React.FC<{
         <Font.H1>INCOME</Font.H1>
         <Font.Body className="text-left md:text-center my-2">
           Set your income from graduation to now using the sliders below, then
-          choose how to estimate your future income. You can set it manually
-          year-by-year, or let us calculate it automatically based on predicted
-          salary growth.
+          choose how to estimate your future income.
         </Font.Body>
         <Font.Subtle className="text-left md:text-center" small>
           Consider if you have any plans to take a career break or parental
