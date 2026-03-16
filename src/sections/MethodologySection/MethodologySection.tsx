@@ -1,7 +1,7 @@
 import { Font } from "../../shared/components/Text";
 
 const METHODOLOGY_DOC_LINK =
-  "https://github.com/dspray95/will-i-pay-back-my-student-loan/blob/main/docs/METHODOLOGY.md";
+  "https://github.com/dspray95/great-british-write-off/blob/main/docs/METHODOLOGY.md";
 
 export const MethodologySection: React.FC = () => {
   return (
