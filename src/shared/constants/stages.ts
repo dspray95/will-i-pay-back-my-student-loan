@@ -1,6 +1,7 @@
 export const STAGES = {
   loanDetails: 0,
   incomeProjection: 1,
-  repaymentResultsSplash: 2,
-  repaymentBreakdown: 3,
+  voluntaryRepatments: 2,
+  repaymentResultsSplash: 3,
+  repaymentBreakdown: 4,
 } as const;

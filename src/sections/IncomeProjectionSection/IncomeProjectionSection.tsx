@@ -1,20 +1,24 @@
-import { faArrowDown } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
-import { Button } from "../../shared/components/Button";
 import { IncomeTimeline } from "./components/IncomeTimeline";
 import { AssumptionsPanel } from "./components/AssumptionsPanel";
 import type { LoanPlan } from "../../shared/types";
 import { useLoanCalculatorStore } from "../../stores/loanCalculatorStore";
 import { STAGES } from "../../shared/constants/stages";
 import { Font } from "../../shared/components/Text";
-import { useEffect } from "react";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import { RadioButtonSet } from "../../shared/components/RadioButtonSet";
+import { ResultsButton } from "../../shared/components/ResultsButton";
 
 export const IncomeProjectionSection: React.FC<{
   undergradStartYear: number;
   undergradEndYear: number;
   repaymentPlan: LoanPlan;
-}> = ({ undergradStartYear, undergradEndYear, repaymentPlan }) => {
+  setShowVoluntaryRepayments: Dispatch<SetStateAction<boolean>>;
+}> = ({
+  undergradStartYear,
+  undergradEndYear,
+  repaymentPlan,
+  setShowVoluntaryRepayments,
+}) => {
   const {
     stage,
     incomeByYear,
@@ -28,7 +32,8 @@ export const IncomeProjectionSection: React.FC<{
     setSalaryGrowthRate,
     setProjectedInflationRate,
   } = useLoanCalculatorStore();
-
+  const [showVoluntaryRepaymentsValue, setShowVoluntaryRepaymentsValue] =
+    useState<string | undefined>(undefined);
   // Revert to income projection when income changes after results are showing
   useEffect(() => {
     if (stage < STAGES.repaymentResultsSplash) return;
@@ -74,21 +79,35 @@ export const IncomeProjectionSection: React.FC<{
         />
       </div>
       {futureIncomeMode && (
-        <>
-          <Font.Subtle className="text-center mx-4 pb-2" small>
-            By clicking results, anonymous aggregate statistics (such as total
-            repaid vs. written off) may be collected to improve this calculator
-            and highlight trends in student loan repayment outcomes. No personal
-            data is stored.
-          </Font.Subtle>
-          <Button className="w-full" type="submit" onClick={handleResultsClick}>
-            <Font.Body className="text-beck-beige text-2xl pt-1 pl-2">
-              RESULTS
-            </Font.Body>
-            <FontAwesomeIcon className="text-base" icon={faArrowDown} />
-          </Button>
-        </>
+        <div className="flex flex-col gap-6 pb-12">
+          <Font.H2>
+            ARE YOU PLANNING ON MAKING ANY VOLUNTARY REPAYMENTS?
+          </Font.H2>
+          <div className="w-full md:w-3/5 lg:w-2/5">
+            <RadioButtonSet
+              options={[
+                { value: "yes", label: "YES" },
+                { value: "no", label: "NO" },
+              ]}
+              value={showVoluntaryRepaymentsValue}
+              onChange={(value) => {
+                if (value === "yes") {
+                  setShowVoluntaryRepayments(true);
+                  setStage(STAGES.voluntaryRepatments);
+                } else {
+                  setShowVoluntaryRepayments(false);
+                }
+                setShowVoluntaryRepaymentsValue(value);
+              }}
+              className="gap-12"
+            />
+          </div>
+        </div>
       )}
+      {showVoluntaryRepaymentsValue &&
+        showVoluntaryRepaymentsValue !== "yes" && (
+          <ResultsButton onClick={handleResultsClick} />
+        )}
     </div>
   );
 };
