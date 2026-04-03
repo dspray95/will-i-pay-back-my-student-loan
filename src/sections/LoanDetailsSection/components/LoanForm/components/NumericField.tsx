@@ -10,29 +10,7 @@ import { FIELD_CLASS } from "../consts";
 import type { LoanFormValues } from "../../../../../shared/schemas/LoanFormSchema";
 import { Font } from "../../../../../shared/components/Text";
 import { cn } from "../../../../../shared/utils/ClassNames";
-
-const handleNumberKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-  if (
-    [
-      "Backspace",
-      "Delete",
-      "Tab",
-      "Escape",
-      "Enter",
-      "ArrowLeft",
-      "ArrowRight",
-      "Home",
-      "End",
-    ].includes(e.key) ||
-    ((e.ctrlKey || e.metaKey) &&
-      ["a", "c", "v", "x"].includes(e.key.toLowerCase()))
-  ) {
-    return;
-  }
-  if (!/^\d$/.test(e.key)) {
-    e.preventDefault();
-  }
-};
+import { handleNumberKeyDown } from "../../../../../shared/utils/handleNumberKeyDown";
 
 const formatYearLabel = (yearIndex: number, startYear: number): string => {
   const year = startYear + yearIndex;

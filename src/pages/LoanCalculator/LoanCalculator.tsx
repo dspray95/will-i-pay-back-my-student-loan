@@ -10,12 +10,10 @@ import { BorderWrappers } from "../../shared/components/BorderWrappers";
 import { PageHeader } from "../../shared/components/PageHeader";
 import { ScrollOnReveal } from "./components/ScrollOnReveal";
 import { VoluntaryRepaymentsSection } from "../../sections/VoluntaryRepaymentsSection/VoluntaryRepaymentsSection";
-import { useState } from "react";
 
 export function LoanCalculator() {
-  const { stage, resetCount, loanFormValues } = useLoanCalculatorStore();
-  const [showVoluntaryRepayments, setShowVoluntaryRepayments] =
-    useState<boolean>(false);
+  const { stage, resetCount, loanFormValues, futureIncomeMode } =
+    useLoanCalculatorStore();
   let undergradStartYear = 2015;
   let undergradEndYear = 2018;
 
@@ -43,12 +41,11 @@ export function LoanCalculator() {
                 repaymentPlan={
                   (loanFormValues?.loanPlan as LoanPlan) || "plan1"
                 }
-                setShowVoluntaryRepayments={setShowVoluntaryRepayments}
               />
             </ScrollOnReveal>
           </div>
         )}
-        {stage >= STAGES.voluntaryRepatments && showVoluntaryRepayments && (
+        {futureIncomeMode && (
           <ScrollOnReveal>
             <VoluntaryRepaymentsSection />
           </ScrollOnReveal>

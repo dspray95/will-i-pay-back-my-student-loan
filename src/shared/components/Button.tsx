@@ -1,6 +1,6 @@
-import clsx from "clsx";
+import { cn } from "../utils/ClassNames";
 
-type ButtonVariant = "primary" | "secondary" | "no-bg" | "link" | "base";
+export type ButtonVariant = "primary" | "secondary" | "no-bg" | "link" | "base";
 
 interface ButtonProps {
   className?: string;
@@ -24,7 +24,7 @@ export const Button: React.FC<ButtonProps> = ({
       type={type}
       disabled={disabled}
       onClick={onClick}
-      className={clsx(
+      className={cn(
         // Base styles for all buttons
         "font-semibold cursor-pointer transition-colors flex items-center justify-center gap-2",
         // Variant-specific styles
