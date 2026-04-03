@@ -5,6 +5,7 @@ import type { LoanCalculatorState } from "../loanCalculatorStore";
 export interface VoluntaryRepayment {
   date: string; // ISO date string (YYYY-MM-DD)
   amount: number;
+  type?: "postgradudate" | "undergraduate";
 }
 
 export interface VoluntaryRepaymentsSlice {
@@ -47,7 +48,9 @@ export const createVoluntaryRepaymentsSlice: StateCreator<
     })),
   removeVoluntaryRepayment: (index) =>
     set((state) => ({
-      voluntaryRepayments: state.voluntaryRepayments.filter((_, i) => i !== index),
+      voluntaryRepayments: state.voluntaryRepayments.filter(
+        (_, i) => i !== index,
+      ),
     })),
   clearAllVoluntaryRepayments: () => {
     set({ voluntaryRepayments: [] });

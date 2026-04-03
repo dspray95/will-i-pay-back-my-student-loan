@@ -14,6 +14,7 @@ import { EarlyRepaymentInput } from "./components/EarlyRepaymentInput";
 export const VoluntaryRepaymentsSection: React.FC = () => {
   const {
     incomeByYear,
+    stage,
     setStage,
     loanFormValues,
     calculateRepaymentWithIncome,
@@ -46,6 +47,13 @@ export const VoluntaryRepaymentsSection: React.FC = () => {
 
     return { minDate: min, maxDate: max };
   }, [loanFormValues]);
+
+  // Revert to income projection when income changes after results are showing
+  useEffect(() => {
+    if (stage < STAGES.repaymentResultsSplash) return;
+    setStage(STAGES.voluntaryRepatments);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [voluntaryRepayments, voluntaryRepaymentsChoice]);
 
   useEffect(() => {
     if (!voluntaryRepaymentsChoice) return;

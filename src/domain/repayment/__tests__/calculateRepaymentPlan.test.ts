@@ -244,6 +244,231 @@ describe("calculateLoanAtRepayment", () => {
     });
   });
 
+  describe("voluntary repayments", () => {
+    const baseIncome = { 2024: 35000, 2025: 35000, 2026: 35000 };
+
+    it("reduces the final balance", () => {
+      const withoutVoluntary = calculateRepaymentPlan(
+        30000,
+        2023,
+        2026,
+        "plan2",
+        baseIncome,
+      );
+
+      const withVoluntary = calculateRepaymentPlan(
+        30000,
+        2023,
+        2026,
+        "plan2",
+        baseIncome,
+        undefined,
+        [{ date: "2024-06-15", amount: 5000 }],
+      );
+
+      expect(withVoluntary.finalBalance).toBeLessThan(withoutVoluntary.finalBalance);
+    });
+
+    it("voluntary repayment is included in totalRepaid", () => {
+      const withoutVoluntary = calculateRepaymentPlan(
+        30000,
+        2023,
+        2026,
+        "plan2",
+        baseIncome,
+      );
+
+      const withVoluntary = calculateRepaymentPlan(
+        30000,
+        2023,
+        2026,
+        "plan2",
+        baseIncome,
+        undefined,
+        [{ date: "2024-06-15", amount: 5000 }],
+      );
+
+      expect(withVoluntary.totalRepaid).toBeGreaterThan(withoutVoluntary.totalRepaid);
+    });
+
+    it("reduces interest accrued in subsequent months", () => {
+      const withoutVoluntary = calculateRepaymentPlan(
+        30000,
+        2023,
+        2025,
+        "plan2",
+        baseIncome,
+      );
+
+      // Voluntary repayment early in the first repayment year
+      const withVoluntary = calculateRepaymentPlan(
+        30000,
+        2023,
+        2025,
+        "plan2",
+        baseIncome,
+        undefined,
+        [{ date: "2024-04-10", amount: 10000 }],
+      );
+
+      // Second repayment year (index 2) should accrue less interest
+      expect(withVoluntary.yearByYearBreakdown[2].interestAccrued).toBeLessThan(
+        withoutVoluntary.yearByYearBreakdown[2].interestAccrued,
+      );
+    });
+
+    it("cannot overpay beyond the balance", () => {
+      const result = calculateRepaymentPlan(
+        5000,
+        2023,
+        2024,
+        "plan2",
+        { 2024: 35000 },
+        undefined,
+        [{ date: "2024-04-05", amount: 999999 }],
+      );
+
+      expect(result.finalBalance).toBe(0);
+      // Total repaid should be roughly balance + small interest, not 999999
+      expect(result.totalRepaid).toBeLessThan(6000);
+    });
+
+    it("can fully repay the loan early", () => {
+      const result = calculateRepaymentPlan(
+        10000,
+        2023,
+        2030,
+        "plan2",
+        baseIncome,
+        undefined,
+        [{ date: "2024-05-01", amount: 15000 }],
+      );
+
+      expect(result.finalBalance).toBe(0);
+      // Should stop after the first repayment year
+      expect(result.yearByYearBreakdown.length).toBe(2); // gap year + 2024
+    });
+
+    it("later repayment day accrues more interest before deduction", () => {
+      const earlyInMonth = calculateRepaymentPlan(
+        30000,
+        2023,
+        2024,
+        "plan2",
+        { 2024: 35000 },
+        undefined,
+        [{ date: "2024-06-01", amount: 5000 }],
+      );
+
+      const lateInMonth = calculateRepaymentPlan(
+        30000,
+        2023,
+        2024,
+        "plan2",
+        { 2024: 35000 },
+        undefined,
+        [{ date: "2024-06-28", amount: 5000 }],
+      );
+
+      // Paying later means more interest accrued on the higher balance
+      const earlyYear = earlyInMonth.yearByYearBreakdown[1];
+      const lateYear = lateInMonth.yearByYearBreakdown[1];
+      expect(lateYear.interestAccrued).toBeGreaterThan(earlyYear.interestAccrued);
+    });
+
+    it("handles multiple voluntary repayments in the same month", () => {
+      const result = calculateRepaymentPlan(
+        30000,
+        2023,
+        2025,
+        "plan2",
+        baseIncome,
+        undefined,
+        [
+          { date: "2024-06-10", amount: 2000 },
+          { date: "2024-06-20", amount: 3000 },
+        ],
+      );
+
+      const withoutVoluntary = calculateRepaymentPlan(
+        30000,
+        2023,
+        2025,
+        "plan2",
+        baseIncome,
+      );
+
+      expect(result.finalBalance).toBeLessThan(withoutVoluntary.finalBalance);
+      expect(result.totalRepaid).toBeGreaterThan(withoutVoluntary.totalRepaid);
+    });
+
+    it("handles voluntary repayments across different years", () => {
+      const result = calculateRepaymentPlan(
+        30000,
+        2023,
+        2026,
+        "plan2",
+        baseIncome,
+        undefined,
+        [
+          { date: "2024-07-15", amount: 3000 },
+          { date: "2025-07-15", amount: 3000 },
+        ],
+      );
+
+      const withoutVoluntary = calculateRepaymentPlan(
+        30000,
+        2023,
+        2026,
+        "plan2",
+        baseIncome,
+      );
+
+      expect(result.finalBalance).toBeLessThan(withoutVoluntary.finalBalance);
+    });
+
+    it("no effect when voluntary repayments array is empty", () => {
+      const withEmpty = calculateRepaymentPlan(
+        30000,
+        2023,
+        2025,
+        "plan2",
+        baseIncome,
+        undefined,
+        [],
+      );
+
+      const withDefault = calculateRepaymentPlan(
+        30000,
+        2023,
+        2025,
+        "plan2",
+        baseIncome,
+      );
+
+      expect(withEmpty.finalBalance).toBe(withDefault.finalBalance);
+      expect(withEmpty.totalRepaid).toBe(withDefault.totalRepaid);
+    });
+
+    it("breakdown values still sum correctly with voluntary repayments", () => {
+      const result = calculateRepaymentPlan(
+        30000,
+        2023,
+        2025,
+        "plan2",
+        baseIncome,
+        undefined,
+        [{ date: "2024-06-15", amount: 5000 }],
+      );
+
+      for (let i = 0; i < result.yearByYearBreakdown.length - 1; i++) {
+        const current = result.yearByYearBreakdown[i];
+        const next = result.yearByYearBreakdown[i + 1];
+        expect(next.startingBalance).toBeCloseTo(current.endingBalance, 2);
+      }
+    });
+  });
+
   describe("plan-specific differences", () => {
     it("Plan 5 has higher threshold than Plan 2", () => {
       const incomeByYear = { 2024: 27000 };
