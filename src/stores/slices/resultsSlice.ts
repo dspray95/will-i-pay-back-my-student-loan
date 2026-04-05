@@ -1,6 +1,7 @@
 import type { StateCreator } from "zustand";
 import type { RepaymentPlan } from "../../shared/types";
 import type { LoanFormValues } from "../../shared/schemas/LoanFormSchema";
+import { calculateLoanAtGraduation } from "../../domain/loan/calculateLoanAtGraduation";
 import { getForgivenessPlanForYear } from "../../domain/loan/forgiveness";
 import { calculateRepaymentPlan } from "../../domain/repayment/calculateRepaymentPlan";
 import type { LoanCalculatorState } from "../loanCalculatorStore";
@@ -80,9 +81,24 @@ export const createResultsSlice: StateCreator<
       state.projectedInflationRate,
     );
 
+    // Recalculate graduation balance accounting for study-period voluntary repayments
+    const totalUndergradLoan =
+      state.totalUndergradLoan + state.totalMaintenanceLoan;
+    const undergradPerYear = totalUndergradLoan / loanFormValues.courseLength;
+    const undergradYearlyAmounts = Array.from(
+      { length: loanFormValues.courseLength },
+      () => undergradPerYear,
+    );
+    const undergradLoanWithRepayments = calculateLoanAtGraduation(
+      undergradYearlyAmounts,
+      loanFormValues.courseStartYear,
+      loanFormValues.loanPlan,
+      undergradVoluntaryRepayments,
+    );
+
     const undergraduateRepaymentPlanWithVoluntaryRepayments =
       calculateRepaymentPlan(
-        state.undergraduateLoanAtGraduation,
+        undergradLoanWithRepayments,
         graduationYear,
         repaymentEndYear,
         loanFormValues.loanPlan,
@@ -115,18 +131,30 @@ export const createResultsSlice: StateCreator<
           )
         : EMPTY_PLAN;
 
-    const postgraduateRepaymentPlanWithVoluntaryRepayments =
-      state.totalMastersLoan > 0
-        ? calculateRepaymentPlan(
-            state.postgraduateLoanAtGraduation,
-            postgradGraduationYear,
-            postgradWriteoffYear,
-            "postgrad",
-            incomeByYear,
-            state.projectedInflationRate,
-            postgradVoluntaryRepayments,
-          )
-        : EMPTY_PLAN;
+    let postgraduateRepaymentPlanWithVoluntaryRepayments = EMPTY_PLAN;
+    if (state.totalMastersLoan > 0) {
+      const postgradPerYear = state.totalMastersLoan / mastersLength;
+      const postgradYearlyAmounts = Array.from(
+        { length: mastersLength },
+        () => postgradPerYear,
+      );
+      const postgradLoanWithRepayments = calculateLoanAtGraduation(
+        postgradYearlyAmounts,
+        mastersStartYear,
+        "postgrad",
+        postgradVoluntaryRepayments,
+      );
+
+      postgraduateRepaymentPlanWithVoluntaryRepayments = calculateRepaymentPlan(
+        postgradLoanWithRepayments,
+        postgradGraduationYear,
+        postgradWriteoffYear,
+        "postgrad",
+        incomeByYear,
+        state.projectedInflationRate,
+        postgradVoluntaryRepayments,
+      );
+    }
 
     set({
       undergraduateRepaymentPlan,

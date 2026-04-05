@@ -469,6 +469,97 @@ describe("calculateLoanAtRepayment", () => {
     });
   });
 
+  describe("voluntary repayments during gap period", () => {
+    const baseIncome = { 2024: 35000, 2025: 35000 };
+
+    it("reduces balance when paid in October of graduation year", () => {
+      const withoutVoluntary = calculateRepaymentPlan(
+        30000,
+        2023,
+        2025,
+        "plan2",
+        baseIncome,
+      );
+
+      const withVoluntary = calculateRepaymentPlan(
+        30000,
+        2023,
+        2025,
+        "plan2",
+        baseIncome,
+        undefined,
+        [{ date: "2023-10-15", amount: 5000 }],
+      );
+
+      // Gap year (index 0) should show the repayment
+      expect(withVoluntary.yearByYearBreakdown[0].repayment).toBeGreaterThan(0);
+      expect(withVoluntary.finalBalance).toBeLessThan(withoutVoluntary.finalBalance);
+    });
+
+    it("reduces balance when paid in January after graduation", () => {
+      const withoutVoluntary = calculateRepaymentPlan(
+        30000,
+        2023,
+        2025,
+        "plan2",
+        baseIncome,
+      );
+
+      const withVoluntary = calculateRepaymentPlan(
+        30000,
+        2023,
+        2025,
+        "plan2",
+        baseIncome,
+        undefined,
+        [{ date: "2024-02-15", amount: 5000 }],
+      );
+
+      expect(withVoluntary.yearByYearBreakdown[0].repayment).toBeGreaterThan(0);
+      expect(withVoluntary.finalBalance).toBeLessThan(withoutVoluntary.finalBalance);
+    });
+
+    it("gap period repayment reduces interest in subsequent years", () => {
+      const withoutVoluntary = calculateRepaymentPlan(
+        30000,
+        2023,
+        2025,
+        "plan2",
+        baseIncome,
+      );
+
+      const withVoluntary = calculateRepaymentPlan(
+        30000,
+        2023,
+        2025,
+        "plan2",
+        baseIncome,
+        undefined,
+        [{ date: "2023-09-15", amount: 10000 }],
+      );
+
+      // First repayment year (index 1) should accrue less interest
+      expect(withVoluntary.yearByYearBreakdown[1].interestAccrued).toBeLessThan(
+        withoutVoluntary.yearByYearBreakdown[1].interestAccrued,
+      );
+    });
+
+    it("can fully repay during gap period", () => {
+      const result = calculateRepaymentPlan(
+        5000,
+        2023,
+        2030,
+        "plan2",
+        baseIncome,
+        undefined,
+        [{ date: "2023-09-05", amount: 10000 }],
+      );
+
+      expect(result.finalBalance).toBe(0);
+      expect(result.yearByYearBreakdown[0].repayment).toBeGreaterThan(0);
+    });
+  });
+
   describe("plan-specific differences", () => {
     it("Plan 5 has higher threshold than Plan 2", () => {
       const incomeByYear = { 2024: 27000 };

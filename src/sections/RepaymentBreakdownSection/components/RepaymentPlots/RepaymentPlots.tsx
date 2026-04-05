@@ -4,6 +4,24 @@ import {
   useIsMobile,
   useIsTablet,
 } from "../../../../shared/hooks/useIsMobile";
+import type { VoluntaryRepayment } from "../../../../stores/slices/voluntaryRepaymentsSlice";
+
+/**
+ * Sum voluntary repayment amounts by academic year (Sep–Aug).
+ */
+const sumRepaymentsByAcademicYear = (
+  repayments: VoluntaryRepayment[],
+): Map<number, number> => {
+  const byYear = new Map<number, number>();
+  for (const vr of repayments) {
+    const d = new Date(vr.date);
+    const month = d.getMonth();
+    // Academic year starts in September
+    const academicYear = month >= 8 ? d.getFullYear() : d.getFullYear() - 1;
+    byYear.set(academicYear, (byYear.get(academicYear) ?? 0) + vr.amount);
+  }
+  return byYear;
+};
 
 export const RepaymentPlots: React.FC = () => {
   const {
@@ -13,6 +31,7 @@ export const RepaymentPlots: React.FC = () => {
     postgraduateRepaymentPlanWithVoluntaryRepayments,
     undergraduateStudyYearBalances,
     postgraduateStudyYearBalances,
+    voluntaryRepayments,
     loanFormValues,
   } = useLoanCalculatorStore();
 
@@ -68,6 +87,15 @@ export const RepaymentPlots: React.FC = () => {
       )
     : 0;
 
+  const undergradVoluntaryByYear = sumRepaymentsByAcademicYear(
+    voluntaryRepayments.filter(
+      (vr) => vr.type === "undergraduate" || vr.type === undefined,
+    ),
+  );
+  const postgradVoluntaryByYear = sumRepaymentsByAcademicYear(
+    voluntaryRepayments.filter((vr) => vr.type === "postgraduate"),
+  );
+
   const sharedYDomain: [number, number] = [
     0,
     Math.ceil(Math.max(undergradMax, postgradMax) / 10_000) * 10_000,
@@ -80,6 +108,7 @@ export const RepaymentPlots: React.FC = () => {
           repaymentBreakdown={undergraduateRepaymentPlan.yearByYearBreakdown}
           courseLength={loanFormValues.courseLength}
           studyYearBalances={undergraduateStudyYearBalances}
+          studyYearRepayments={undergradVoluntaryByYear}
           title="Undergraduate Repayments"
           yDomain={hasPostgrad ? sharedYDomain : undefined}
           compact={!!hasPostgrad}
@@ -92,6 +121,7 @@ export const RepaymentPlots: React.FC = () => {
             repaymentBreakdown={postgraduateRepaymentPlan.yearByYearBreakdown}
             courseLength={loanFormValues.mastersLength}
             studyYearBalances={postgraduateStudyYearBalances}
+            studyYearRepayments={postgradVoluntaryByYear}
             title="Postgraduate Repayments"
             yDomain={sharedYDomain}
             compact

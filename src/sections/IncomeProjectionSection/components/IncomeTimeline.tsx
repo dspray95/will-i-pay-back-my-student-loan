@@ -295,18 +295,18 @@ export const IncomeTimeline = forwardRef<
               />
             )}
             <div className="overflow-hidden">
-              <div>
+              <div className="flex flex-col justify-center items-center">
                 <button
                   type="button"
                   onClick={() => setIsFutureIncomeOpen(!isFutureIncomeOpen)}
-                  className="w-full flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-piccadilly-blue/5 transition-colors"
+                  className="w-fit flex items-center gap-4 justify-center px-4 py-3 cursor-pointer hover:bg-piccadilly-blue/5 transition-colors"
                 >
-                  <span className="text-sm font-semibold text-piccadilly-blue uppercase tracking-wide">
-                    Projected income breakdown
+                  <span className="text-sm font-semibold text-piccadilly-blue tracking-wide">
+                    PROJECTED INCOME BREAKDOWN
                   </span>
                   <FontAwesomeIcon
                     icon={isFutureIncomeOpen ? faChevronUp : faChevronDown}
-                    className="text-piccadilly-blue text-xs"
+                    className="text-piccadilly-blue text-xs pb-1"
                   />
                 </button>
                 <div

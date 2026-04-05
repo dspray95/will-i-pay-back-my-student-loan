@@ -27,6 +27,7 @@ export const RepaymentPlot: React.FC<{
   repaymentBreakdown: RepaymentBreakdown;
   courseLength: number;
   studyYearBalances?: Array<{ year: number; balance: number }>;
+  studyYearRepayments?: Map<number, number>;
   title?: string;
   yDomain?: [number, number];
   compact?: boolean;
@@ -35,6 +36,7 @@ export const RepaymentPlot: React.FC<{
   repaymentBreakdown,
   courseLength,
   studyYearBalances,
+  studyYearRepayments,
   title = "Repayments",
   yDomain,
   compact = false,
@@ -55,18 +57,21 @@ export const RepaymentPlot: React.FC<{
   const balanceByYear = new Map(
     studyYearBalances?.map((s) => [s.year, s.balance]),
   );
+  let runningStudyRepayments = 0;
   for (let year = startYear; year < repaymentBreakdown[0].year; year++) {
+    const yearRepayment = studyYearRepayments?.get(year) ?? 0;
+    runningStudyRepayments += yearRepayment;
     data.push({
       year,
-      repayment: 0,
+      repayment: yearRepayment,
       loanBalance:
         balanceByYear.get(year) ?? repaymentBreakdown[0].startingBalance,
-      totalRepayments: 0,
+      totalRepayments: runningStudyRepayments,
     });
   }
 
   // Repayment years
-  let runningTotal = 0;
+  let runningTotal = runningStudyRepayments;
   for (const entry of repaymentBreakdown) {
     runningTotal += entry.repayment;
     data.push({

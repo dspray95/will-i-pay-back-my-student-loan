@@ -93,7 +93,7 @@ export const VoluntaryRepaymentsSection: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col gap-6 items-center justify-center py-12 w-full mx-5">
+    <div className="flex flex-col gap-6 items-center justify-center pb-12 w-full mx-5">
       <div className="flex flex-col items-center justify-center gap-6 pb-12 w-full ">
         <Font.H2>ARE YOU PLANNING ON MAKING ANY VOLUNTARY REPAYMENTS?</Font.H2>
         <div className="w-full">

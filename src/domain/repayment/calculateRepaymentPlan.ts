@@ -26,25 +26,76 @@ export const calculateRepaymentPlan = (
   const gapRate = getInterestRateDuringStudy(graduationYear - 1, plan);
   let gapInterest = 0;
 
+  let gapTotalRepaid = 0;
+
   if (gapRate > 0) {
     const dailyRate = gapRate / 100 / 365;
 
-    // September to December of graduation year
-    for (let month = 8; month <= 11; month++) {
-      const daysInMonth = getDaysInMonth(new Date(graduationYear, month));
-      const monthInterest =
-        balance * (Math.pow(1 + dailyRate, daysInMonth) - 1);
-      balance += monthInterest;
-      gapInterest += monthInterest;
-    }
+    // Gap months: Sep-Dec of graduation year, then Jan-Mar of graduation+1
+    const gapMonths = [
+      { month: 8, year: graduationYear },
+      { month: 9, year: graduationYear },
+      { month: 10, year: graduationYear },
+      { month: 11, year: graduationYear },
+      { month: 0, year: graduationYear + 1 },
+      { month: 1, year: graduationYear + 1 },
+      { month: 2, year: graduationYear + 1 },
+    ];
 
-    // January to March of graduation year + 1
-    for (let month = 0; month <= 2; month++) {
-      const daysInMonth = getDaysInMonth(new Date(graduationYear + 1, month));
-      const monthInterest =
-        balance * (Math.pow(1 + dailyRate, daysInMonth) - 1);
-      balance += monthInterest;
-      gapInterest += monthInterest;
+    for (const { month, year: calendarYear } of gapMonths) {
+      const daysInMonth = getDaysInMonth(new Date(calendarYear, month));
+
+      const voluntaryRepaymentsForMonth = voluntaryRepayments
+        .filter((vr) => {
+          const d = new Date(vr.date);
+          return d.getMonth() === month && d.getFullYear() === calendarYear;
+        })
+        .sort(
+          (a, b) => new Date(a.date).getDate() - new Date(b.date).getDate(),
+        );
+
+      if (voluntaryRepaymentsForMonth.length === 0) {
+        const monthInterest =
+          balance * (Math.pow(1 + dailyRate, daysInMonth) - 1);
+        balance += monthInterest;
+        gapInterest += monthInterest;
+      } else {
+        let daysSoFar = 0;
+
+        for (const voluntaryRepayment of voluntaryRepaymentsForMonth) {
+          const repaymentDay = new Date(voluntaryRepayment.date).getDate();
+          const daysInSegment = repaymentDay - daysSoFar;
+
+          const segmentInterest =
+            balance * (Math.pow(1 + dailyRate, daysInSegment) - 1);
+          balance += segmentInterest;
+          gapInterest += segmentInterest;
+
+          const actualRepayment = Math.min(voluntaryRepayment.amount, balance);
+          balance -= actualRepayment;
+          gapTotalRepaid += actualRepayment;
+          totalRepaid += actualRepayment;
+
+          daysSoFar = repaymentDay;
+
+          if (balance <= 0) {
+            balance = 0;
+            break;
+          }
+        }
+
+        if (balance > 0 && daysSoFar < daysInMonth) {
+          const remainingInterest =
+            balance * (Math.pow(1 + dailyRate, daysInMonth - daysSoFar) - 1);
+          balance += remainingInterest;
+          gapInterest += remainingInterest;
+        }
+      }
+
+      if (balance <= 0) {
+        balance = 0;
+        break;
+      }
     }
   }
 
@@ -52,7 +103,7 @@ export const calculateRepaymentPlan = (
     year: graduationYear,
     startingBalance: gapStartingBalance,
     interestAccrued: parseFloat(gapInterest.toFixed(2)),
-    repayment: 0,
+    repayment: parseFloat(gapTotalRepaid.toFixed(2)),
     endingBalance: parseFloat(balance.toFixed(2)),
     income: 0,
   });

@@ -224,3 +224,74 @@ describe("calculateStudyYearBalances", () => {
     expect(balances[3].balance).toBeGreaterThan(balances[2].balance);
   });
 });
+
+describe("voluntary repayments during study", () => {
+  it("reduces graduation balance when repayment made in year 2", () => {
+    const amounts = [9000, 9000, 9000];
+    const withoutRepayment = calculateLoanAtGraduation(amounts, 2020, "plan2");
+    const withRepayment = calculateLoanAtGraduation(amounts, 2020, "plan2", [
+      { date: "2021-12-01", amount: 5000 },
+    ]);
+
+    expect(withRepayment).toBeLessThan(withoutRepayment);
+  });
+
+  it("no effect when repayment is outside study period", () => {
+    const amounts = [9000, 9000, 9000];
+    const withoutRepayment = calculateLoanAtGraduation(amounts, 2020, "plan2");
+    const withRepayment = calculateLoanAtGraduation(amounts, 2020, "plan2", [
+      { date: "2025-06-01", amount: 5000 },
+    ]);
+
+    expect(withRepayment).toBe(withoutRepayment);
+  });
+
+  it("earlier repayment saves more interest than later repayment", () => {
+    const amounts = [9000, 9000, 9000];
+    // Use a small enough amount that it won't be capped by the balance
+    // in either case (by year 2, balance is well above 2000)
+    const earlyRepayment = calculateLoanAtGraduation(amounts, 2020, "plan2", [
+      { date: "2021-12-01", amount: 2000 },
+    ]);
+    const lateRepayment = calculateLoanAtGraduation(amounts, 2020, "plan2", [
+      { date: "2022-06-01", amount: 2000 },
+    ]);
+
+    expect(earlyRepayment).toBeLessThan(lateRepayment);
+  });
+
+  it("overpayment is capped at current balance but remaining installments still disburse", () => {
+    const amounts = [1000];
+    const withoutRepayment = calculateLoanAtGraduation(amounts, 2022, "plan2");
+    const withOverpayment = calculateLoanAtGraduation(amounts, 2022, "plan2", [
+      { date: "2023-03-01", amount: 999999 },
+    ]);
+
+    // The overpayment zeroes the balance at that point, but remaining
+    // term installments are still disbursed by SLC, so the final balance
+    // is > 0 (the last term's disbursement + interest)
+    expect(withOverpayment).toBeGreaterThan(0);
+    expect(withOverpayment).toBeLessThan(withoutRepayment);
+  });
+
+  it("calculateStudyYearBalances reflects voluntary repayments", () => {
+    const amounts = [9000, 9000, 9000];
+    const withoutRepayment = calculateStudyYearBalances(amounts, 2020, "plan2");
+    const withRepayment = calculateStudyYearBalances(amounts, 2020, "plan2", [
+      { date: "2021-12-01", amount: 5000 },
+    ]);
+
+    // Year 2 (2021) onwards should show lower balances
+    expect(withRepayment[1].balance).toBeLessThan(withoutRepayment[1].balance);
+    expect(withRepayment[2].balance).toBeLessThan(withoutRepayment[2].balance);
+  });
+
+  it("final study year balance matches calculateLoanAtGraduation with repayments", () => {
+    const amounts = [9000, 9000, 9000];
+    const repayments = [{ date: "2021-12-01", amount: 5000 }];
+    const balances = calculateStudyYearBalances(amounts, 2020, "plan2", repayments);
+    const graduation = calculateLoanAtGraduation(amounts, 2020, "plan2", repayments);
+
+    expect(balances[2].balance).toBe(graduation);
+  });
+});

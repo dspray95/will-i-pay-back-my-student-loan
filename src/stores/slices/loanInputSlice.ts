@@ -51,6 +51,13 @@ export const createLoanInputSlice: StateCreator<
     const state = get();
     const totalLoan = state.totalUndergradLoan + state.totalMaintenanceLoan;
 
+    const undergradVoluntaryRepayments = state.voluntaryRepayments.filter(
+      (vr) => vr.type === "undergraduate" || vr.type === undefined,
+    );
+    const postgradVoluntaryRepayments = state.voluntaryRepayments.filter(
+      (vr) => vr.type === "postgraduate",
+    );
+
     // Split total evenly across course years
     const courseLength = loanFormValues.courseLength;
     const perYear = totalLoan / courseLength;
@@ -66,6 +73,7 @@ export const createLoanInputSlice: StateCreator<
       undergradYearlyAmounts,
       loanFormValues.courseStartYear,
       loanFormValues.loanPlan,
+      undergradVoluntaryRepayments,
     );
 
     const hasMasters =
@@ -90,6 +98,7 @@ export const createLoanInputSlice: StateCreator<
           mastersYearlyAmounts,
           loanFormValues.mastersStartYear!,
           "postgrad",
+          postgradVoluntaryRepayments,
         )
       : [];
 
