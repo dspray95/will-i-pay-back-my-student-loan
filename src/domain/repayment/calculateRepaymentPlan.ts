@@ -6,6 +6,53 @@ import type { LoanPlan, RepaymentPlan } from "../../shared/types";
 import type { RepaymentYear } from "./types";
 import type { VoluntaryRepayment } from "../../stores/slices/voluntaryRepaymentsSlice";
 
+const accrueMonthInterest = (
+  balance: number,
+  dailyRate: number,
+  daysInMonth: number,
+  voluntaryRepaymentsForMonth: VoluntaryRepayment[],
+): { balance: number; interest: number; voluntaryRepaid: number } => {
+  let interest = 0;
+  let voluntaryRepaid = 0;
+
+  if (voluntaryRepaymentsForMonth.length === 0) {
+    interest = balance * (Math.pow(1 + dailyRate, daysInMonth) - 1);
+    balance += interest;
+  } else {
+    let daysSoFar = 0;
+
+    for (const voluntaryRepayment of voluntaryRepaymentsForMonth) {
+      const repaymentDay = new Date(voluntaryRepayment.date).getDate();
+      const daysInSegment = repaymentDay - daysSoFar;
+
+      const segmentInterest =
+        balance * (Math.pow(1 + dailyRate, daysInSegment) - 1);
+      balance += segmentInterest;
+      interest += segmentInterest;
+
+      const actualRepayment = Math.min(voluntaryRepayment.amount, balance);
+      balance -= actualRepayment;
+      voluntaryRepaid += actualRepayment;
+
+      daysSoFar = repaymentDay;
+
+      if (balance <= 0) {
+        balance = 0;
+        break;
+      }
+    }
+
+    if (balance > 0 && daysSoFar < daysInMonth) {
+      const remainingInterest =
+        balance * (Math.pow(1 + dailyRate, daysInMonth - daysSoFar) - 1);
+      balance += remainingInterest;
+      interest += remainingInterest;
+    }
+  }
+
+  return { balance, interest, voluntaryRepaid };
+};
+
 export const calculateRepaymentPlan = (
   loanBalanceAtGraduation: number,
   graduationYear: number,
@@ -46,51 +93,27 @@ export const calculateRepaymentPlan = (
       const daysInMonth = getDaysInMonth(new Date(calendarYear, month));
 
       const voluntaryRepaymentsForMonth = voluntaryRepayments
-        .filter((vr) => {
-          const d = new Date(vr.date);
-          return d.getMonth() === month && d.getFullYear() === calendarYear;
+        .filter((voluntaryRepayment) => {
+          const repaymentDate = new Date(voluntaryRepayment.date);
+          return (
+            repaymentDate.getMonth() === month &&
+            repaymentDate.getFullYear() === calendarYear
+          );
         })
         .sort(
           (a, b) => new Date(a.date).getDate() - new Date(b.date).getDate(),
         );
 
-      if (voluntaryRepaymentsForMonth.length === 0) {
-        const monthInterest =
-          balance * (Math.pow(1 + dailyRate, daysInMonth) - 1);
-        balance += monthInterest;
-        gapInterest += monthInterest;
-      } else {
-        let daysSoFar = 0;
-
-        for (const voluntaryRepayment of voluntaryRepaymentsForMonth) {
-          const repaymentDay = new Date(voluntaryRepayment.date).getDate();
-          const daysInSegment = repaymentDay - daysSoFar;
-
-          const segmentInterest =
-            balance * (Math.pow(1 + dailyRate, daysInSegment) - 1);
-          balance += segmentInterest;
-          gapInterest += segmentInterest;
-
-          const actualRepayment = Math.min(voluntaryRepayment.amount, balance);
-          balance -= actualRepayment;
-          gapTotalRepaid += actualRepayment;
-          totalRepaid += actualRepayment;
-
-          daysSoFar = repaymentDay;
-
-          if (balance <= 0) {
-            balance = 0;
-            break;
-          }
-        }
-
-        if (balance > 0 && daysSoFar < daysInMonth) {
-          const remainingInterest =
-            balance * (Math.pow(1 + dailyRate, daysInMonth - daysSoFar) - 1);
-          balance += remainingInterest;
-          gapInterest += remainingInterest;
-        }
-      }
+      const result = accrueMonthInterest(
+        balance,
+        dailyRate,
+        daysInMonth,
+        voluntaryRepaymentsForMonth,
+      );
+      balance = result.balance;
+      gapInterest += result.interest;
+      gapTotalRepaid += result.voluntaryRepaid;
+      totalRepaid += result.voluntaryRepaid;
 
       if (balance <= 0) {
         balance = 0;
@@ -155,9 +178,12 @@ export const calculateRepaymentPlan = (
 
       // Voluntary repayments for the month, sorted by day
       const voluntaryRepaymentsForMonth = voluntaryRepayments
-        .filter((vr) => {
-          const d = new Date(vr.date);
-          return d.getMonth() === month && d.getFullYear() === calendarYear;
+        .filter((voluntaryRepayment) => {
+          const repaymentDate = new Date(voluntaryRepayment.date);
+          return (
+            repaymentDate.getMonth() === month &&
+            repaymentDate.getFullYear() === calendarYear
+          );
         })
         .sort(
           (a, b) => new Date(a.date).getDate() - new Date(b.date).getDate(),
@@ -168,49 +194,16 @@ export const calculateRepaymentPlan = (
         monthOffset < 5 ? rateAprilToAug : rateSepToMar;
       const dailyRate = annualInterestRate / 100 / 365;
 
-      let monthInterest = 0;
-
-      if (voluntaryRepaymentsForMonth.length === 0) {
-        monthInterest = balance * (Math.pow(1 + dailyRate, daysInMonth) - 1);
-      } else {
-        // Walk through the month in segments, applying interest between
-        // each voluntary repayment and deducting from the balance.
-        let daysSoFar = 0;
-
-        for (const voluntaryRepayment of voluntaryRepaymentsForMonth) {
-          const repaymentDay = new Date(voluntaryRepayment.date).getDate();
-          const daysInSegment = repaymentDay - daysSoFar;
-
-          // Accrue interest up to the repayment day
-          const segmentInterest =
-            balance * (Math.pow(1 + dailyRate, daysInSegment) - 1);
-          balance += segmentInterest;
-          monthInterest += segmentInterest;
-
-          // Apply the voluntary repayment
-          const actualRepayment = Math.min(voluntaryRepayment.amount, balance);
-          balance -= actualRepayment;
-          yearTotalRepaid += actualRepayment;
-          totalRepaid += actualRepayment;
-
-          daysSoFar = repaymentDay;
-
-          if (balance <= 0) {
-            balance = 0;
-            break;
-          }
-        }
-
-        // Accrue interest for remaining days after the last repayment
-        if (balance > 0 && daysSoFar < daysInMonth) {
-          const remainingInterest =
-            balance * (Math.pow(1 + dailyRate, daysInMonth - daysSoFar) - 1);
-          balance += remainingInterest;
-          monthInterest += remainingInterest;
-        }
-      }
-
-      yearInterestAccrued += monthInterest;
+      const result = accrueMonthInterest(
+        balance,
+        dailyRate,
+        daysInMonth,
+        voluntaryRepaymentsForMonth,
+      );
+      balance = result.balance;
+      yearInterestAccrued += result.interest;
+      yearTotalRepaid += result.voluntaryRepaid;
+      totalRepaid += result.voluntaryRepaid;
 
       if (balance <= 0) {
         balance = 0;

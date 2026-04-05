@@ -22,6 +22,7 @@ import {
 import { Font } from "../../../../shared/components/Text";
 import { formatCurrency } from "../../../../shared/utils/formatCurrency";
 import { useIsMobile } from "../../../../shared/hooks/useIsMobile";
+import { hexToRGBA } from "../../../../shared/utils/hexToRGBA";
 
 export const RepaymentPlot: React.FC<{
   repaymentBreakdown: RepaymentBreakdown;
@@ -32,6 +33,7 @@ export const RepaymentPlot: React.FC<{
   yDomain?: [number, number];
   compact?: boolean;
   containerHeight: number;
+  alternateBreakdown?: RepaymentBreakdown;
 }> = ({
   repaymentBreakdown,
   courseLength,
@@ -41,6 +43,7 @@ export const RepaymentPlot: React.FC<{
   yDomain,
   compact = false,
   containerHeight,
+  alternateBreakdown,
 }) => {
   const startYear = repaymentBreakdown[0].year - courseLength;
   const [hidden, setHidden] = useState<Record<string, boolean>>({});
@@ -51,12 +54,20 @@ export const RepaymentPlot: React.FC<{
     repayment: number;
     loanBalance: number;
     totalRepayments: number;
+    alternateLoanBalance?: number | undefined;
   }> = [];
 
   // Course years — use study year balances if available
   const balanceByYear = new Map(
     studyYearBalances?.map((s) => [s.year, s.balance]),
   );
+
+  // If we have an alternate repayment plan, we want to show that as well
+  // as a comparison (used for comparing with voluntary repayments vs without)
+  const alternateBalanceByYear = new Map(
+    alternateBreakdown?.map((entry) => [entry.year, entry.endingBalance]),
+  );
+
   let runningStudyRepayments = 0;
   for (let year = startYear; year < repaymentBreakdown[0].year; year++) {
     const yearRepayment = studyYearRepayments?.get(year) ?? 0;
@@ -67,6 +78,7 @@ export const RepaymentPlot: React.FC<{
       loanBalance:
         balanceByYear.get(year) ?? repaymentBreakdown[0].startingBalance,
       totalRepayments: runningStudyRepayments,
+      alternateLoanBalance: alternateBalanceByYear?.get(year),
     });
   }
 
@@ -79,6 +91,7 @@ export const RepaymentPlot: React.FC<{
       repayment: entry.repayment,
       loanBalance: entry.endingBalance,
       totalRepayments: runningTotal,
+      alternateLoanBalance: alternateBalanceByYear?.get(entry.year),
     });
   }
 
@@ -189,6 +202,19 @@ export const RepaymentPlot: React.FC<{
             fill={colorPiccadillyBlue}
             opacity={0.8}
             hide={hidden.repayment}
+          />
+          <Line
+            type="monotone"
+            dataKey="alternateLoanBalance"
+            name={
+              compact
+                ? "Balance (No Voluntary Repayments)"
+                : "Remaining Balance (No Voluntary Repayments)"
+            }
+            stroke={hexToRGBA(colorCentralRed, 0.35)}
+            strokeWidth={strokeWidth * 0.75}
+            dot={{ r: dotSize * 0.5 }}
+            hide={hidden.alternateLoanBalance}
           />
           <Line
             type="monotone"

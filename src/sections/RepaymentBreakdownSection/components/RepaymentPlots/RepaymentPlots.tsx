@@ -113,6 +113,11 @@ export const RepaymentPlots: React.FC = () => {
           yDomain={hasPostgrad ? sharedYDomain : undefined}
           compact={!!hasPostgrad}
           containerHeight={containerHeight}
+          alternateBreakdown={
+            undergraduateRepaymentPlanWithVoluntaryRepayments
+              ? baseUndergraduatePlan?.yearByYearBreakdown
+              : undefined
+          }
         />
       </div>
       {hasPostgrad && loanFormValues.mastersLength && (
@@ -126,6 +131,11 @@ export const RepaymentPlots: React.FC = () => {
             yDomain={sharedYDomain}
             compact
             containerHeight={containerHeight}
+            alternateBreakdown={
+              postgraduateRepaymentPlanWithVoluntaryRepayments
+                ? basePostgraduatePlan?.yearByYearBreakdown
+                : undefined
+            }
           />
         </div>
       )}
