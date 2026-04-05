@@ -7,12 +7,19 @@ import {
 
 export const RepaymentPlots: React.FC = () => {
   const {
-    undergraduateRepaymentPlan,
-    postgraduateRepaymentPlan,
+    undergraduateRepaymentPlan: baseUndergraduatePlan,
+    postgraduateRepaymentPlan: basePostgraduatePlan,
+    undergraduateRepaymentPlanWithVoluntaryRepayments,
+    postgraduateRepaymentPlanWithVoluntaryRepayments,
     undergraduateStudyYearBalances,
     postgraduateStudyYearBalances,
     loanFormValues,
   } = useLoanCalculatorStore();
+
+  const undergraduateRepaymentPlan =
+    undergraduateRepaymentPlanWithVoluntaryRepayments ?? baseUndergraduatePlan;
+  const postgraduateRepaymentPlan =
+    postgraduateRepaymentPlanWithVoluntaryRepayments ?? basePostgraduatePlan;
 
   const isMobile = useIsMobile();
   const isTablet = useIsTablet();

@@ -3,8 +3,11 @@ import { Font } from "../../../shared/components/Text";
 import { OutlineText } from "../../../shared/components/OutlineText";
 import { RepaymentSummary } from "./RepaymentSummary";
 import { useLoanCalculatorStore } from "../../../stores/loanCalculatorStore";
-import { processResults } from "../processResults";
-import { RESULTS_TEXT_NOT_REPAID, RESULTS_TEXT_REPAID } from "../ResultText";
+import { processResults } from "../util/processResults";
+import {
+  RESULTS_TEXT_NOT_REPAID,
+  RESULTS_TEXT_REPAID,
+} from "../components/ResultText";
 import type { RepaymentPlan } from "../../../shared/types";
 import { cn } from "../../../shared/utils/ClassNames";
 

@@ -5,7 +5,7 @@ import type { LoanCalculatorState } from "../loanCalculatorStore";
 export interface VoluntaryRepayment {
   date: string; // ISO date string (YYYY-MM-DD)
   amount: number;
-  type?: "postgradudate" | "undergraduate";
+  type?: "postgraduate" | "undergraduate";
 }
 
 export interface VoluntaryRepaymentsSlice {

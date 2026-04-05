@@ -9,9 +9,16 @@ export const SummaryStats: React.FC = () => {
     totalMastersLoan,
     undergraduateLoanAtGraduation,
     postgraduateLoanAtGraduation,
-    undergraduateRepaymentPlan,
-    postgraduateRepaymentPlan,
+    undergraduateRepaymentPlan: baseUndergraduatePlan,
+    postgraduateRepaymentPlan: basePostgraduatePlan,
+    undergraduateRepaymentPlanWithVoluntaryRepayments,
+    postgraduateRepaymentPlanWithVoluntaryRepayments,
   } = useLoanCalculatorStore();
+
+  const undergraduateRepaymentPlan =
+    undergraduateRepaymentPlanWithVoluntaryRepayments ?? baseUndergraduatePlan;
+  const postgraduateRepaymentPlan =
+    postgraduateRepaymentPlanWithVoluntaryRepayments ?? basePostgraduatePlan;
 
   if (!undergraduateRepaymentPlan) return null;
 

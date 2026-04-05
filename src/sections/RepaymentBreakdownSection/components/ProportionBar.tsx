@@ -3,8 +3,17 @@ import { Font } from "../../../shared/components/Text";
 import { formatCurrency } from "../../../shared/utils/formatCurrency";
 
 export const ProportionBar: React.FC = () => {
-  const { undergraduateRepaymentPlan, postgraduateRepaymentPlan } =
-    useLoanCalculatorStore();
+  const {
+    undergraduateRepaymentPlan: baseUndergraduatePlan,
+    postgraduateRepaymentPlan: basePostgraduatePlan,
+    undergraduateRepaymentPlanWithVoluntaryRepayments,
+    postgraduateRepaymentPlanWithVoluntaryRepayments,
+  } = useLoanCalculatorStore();
+
+  const undergraduateRepaymentPlan =
+    undergraduateRepaymentPlanWithVoluntaryRepayments ?? baseUndergraduatePlan;
+  const postgraduateRepaymentPlan =
+    postgraduateRepaymentPlanWithVoluntaryRepayments ?? basePostgraduatePlan;
   if (!undergraduateRepaymentPlan) return null;
 
   const totalWrittenOff =

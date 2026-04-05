@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../../../shared/firebase";
 import { useLoanCalculatorStore } from "../../../stores/loanCalculatorStore";
-import { processResults } from "../processResults";
+import { processResults } from "../util/processResults";
 import {
   ResultsSubmissionSchema,
   type ResultsSubmission,

@@ -22,7 +22,10 @@ export const VoluntaryRepaymentsSection: React.FC = () => {
     addVoluntaryRepayment,
     updateVoluntaryRepayment,
     removeVoluntaryRepayment,
+    postgraduateLoanAtGraduation,
   } = useLoanCalculatorStore();
+
+  const hasPostgradLoans = postgraduateLoanAtGraduation > 0;
 
   const [voluntaryRepaymentsChoice, setVoluntaryRepaymentsChoice] = useState<
     string | undefined
@@ -81,7 +84,11 @@ export const VoluntaryRepaymentsSection: React.FC = () => {
 
   const handleResultsClick = () => {
     if (!loanFormValues) return;
-    calculateRepaymentWithIncome(incomeByYear, loanFormValues);
+    calculateRepaymentWithIncome(
+      incomeByYear,
+      loanFormValues,
+      voluntaryRepayments,
+    );
     setStage(STAGES.repaymentResultsSplash);
   };
 
@@ -111,8 +118,15 @@ export const VoluntaryRepaymentsSection: React.FC = () => {
           <Font.H4>REPAYMENTS</Font.H4>
           <div className="flex flex-col gap-2">
             <div className="grid grid-cols-12 gap-4">
-              <Font.Body className="col-span-4">Date</Font.Body>
-              <Font.Body className="col-span-5">Amount</Font.Body>
+              <Font.Body className="col-span-2">Date</Font.Body>
+              {hasPostgradLoans && (
+                <Font.Body className="col-span-2">Loan</Font.Body>
+              )}
+              <Font.Body
+                className={hasPostgradLoans ? "col-span-7" : "col-span-9"}
+              >
+                Amount
+              </Font.Body>
             </div>
             {voluntaryRepayments.map((repayment, index) => (
               <EarlyRepaymentInput
@@ -123,6 +137,7 @@ export const VoluntaryRepaymentsSection: React.FC = () => {
                 maxDate={maxDate}
                 onUpdate={updateVoluntaryRepayment}
                 onRemove={removeVoluntaryRepayment}
+                hasPostgradLoans={hasPostgradLoans}
               />
             ))}
           </div>

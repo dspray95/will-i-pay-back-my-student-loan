@@ -4,19 +4,35 @@ import type { LoanFormValues } from "../../shared/schemas/LoanFormSchema";
 import { getForgivenessPlanForYear } from "../../domain/loan/forgiveness";
 import { calculateRepaymentPlan } from "../../domain/repayment/calculateRepaymentPlan";
 import type { LoanCalculatorState } from "../loanCalculatorStore";
+import type { VoluntaryRepayment } from "./voluntaryRepaymentsSlice";
+
+const EMPTY_PLAN: RepaymentPlan = {
+  finalBalance: 0,
+  totalRepaid: 0,
+  yearByYearBreakdown: [],
+};
 
 export interface ResultsSlice {
   undergraduateRepaymentPlan?: RepaymentPlan;
   postgraduateRepaymentPlan?: RepaymentPlan;
+  undergraduateRepaymentPlanWithVoluntaryRepayments?: RepaymentPlan;
+  postgraduateRepaymentPlanWithVoluntaryRepayments?: RepaymentPlan;
   calculateRepaymentWithIncome: (
     incomeByYear: Record<number, number>,
     loanFormValues: LoanFormValues,
+    voluntaryRepayments?: VoluntaryRepayment[],
   ) => void;
 }
 
 export const resultsInitialState = {
   undergraduateRepaymentPlan: undefined as RepaymentPlan | undefined,
   postgraduateRepaymentPlan: undefined as RepaymentPlan | undefined,
+  undergraduateRepaymentPlanWithVoluntaryRepayments: undefined as
+    | RepaymentPlan
+    | undefined,
+  postgraduateRepaymentPlanWithVoluntaryRepayments: undefined as
+    | RepaymentPlan
+    | undefined,
 };
 
 export const createResultsSlice: StateCreator<
@@ -27,10 +43,25 @@ export const createResultsSlice: StateCreator<
 > = (set, get) => ({
   ...resultsInitialState,
 
-  calculateRepaymentWithIncome: (incomeByYear, loanFormValues) => {
+  calculateRepaymentWithIncome: (
+    incomeByYear,
+    loanFormValues,
+    voluntaryRepayments = [],
+  ) => {
     if (!loanFormValues) return;
 
     const state = get();
+
+    const undergradVoluntaryRepayments = voluntaryRepayments.filter(
+      (voluntaryRepayment) =>
+        voluntaryRepayment.type === "undergraduate" ||
+        voluntaryRepayment.type === undefined,
+    );
+
+    const postgradVoluntaryRepayments = voluntaryRepayments.filter(
+      (voluntaryRepayment) => voluntaryRepayment.type === "postgraduate",
+    );
+
     const repaymentEnd = getForgivenessPlanForYear(
       loanFormValues.courseStartYear,
       loanFormValues.loanPlan,
@@ -40,7 +71,7 @@ export const createResultsSlice: StateCreator<
       loanFormValues.courseStartYear + loanFormValues.courseLength;
     const repaymentEndYear = graduationYear + repaymentEnd;
 
-    const undergraduateRepayment = calculateRepaymentPlan(
+    const undergraduateRepaymentPlan = calculateRepaymentPlan(
       state.undergraduateLoanAtGraduation,
       graduationYear,
       repaymentEndYear,
@@ -48,6 +79,17 @@ export const createResultsSlice: StateCreator<
       incomeByYear,
       state.projectedInflationRate,
     );
+
+    const undergraduateRepaymentPlanWithVoluntaryRepayments =
+      calculateRepaymentPlan(
+        state.undergraduateLoanAtGraduation,
+        graduationYear,
+        repaymentEndYear,
+        loanFormValues.loanPlan,
+        incomeByYear,
+        state.projectedInflationRate,
+        undergradVoluntaryRepayments,
+      );
 
     const mastersStartYear =
       typeof loanFormValues.mastersStartYear === "number"
@@ -58,25 +100,39 @@ export const createResultsSlice: StateCreator<
         ? loanFormValues.mastersLength
         : 0;
 
-    const postgraduateRepayment =
+    const postgradGraduationYear = mastersStartYear + mastersLength;
+    const postgradWriteoffYear = postgradGraduationYear + 30;
+
+    const postgraduateRepaymentPlan =
       state.totalMastersLoan > 0
         ? calculateRepaymentPlan(
             state.postgraduateLoanAtGraduation,
-            mastersStartYear + mastersLength,
-            mastersStartYear + mastersLength + 30,
+            postgradGraduationYear,
+            postgradWriteoffYear,
             "postgrad",
             incomeByYear,
             state.projectedInflationRate,
           )
-        : {
-            finalBalance: 0,
-            totalRepaid: 0,
-            yearByYearBreakdown: [],
-          };
+        : EMPTY_PLAN;
+
+    const postgraduateRepaymentPlanWithVoluntaryRepayments =
+      state.totalMastersLoan > 0
+        ? calculateRepaymentPlan(
+            state.postgraduateLoanAtGraduation,
+            postgradGraduationYear,
+            postgradWriteoffYear,
+            "postgrad",
+            incomeByYear,
+            state.projectedInflationRate,
+            postgradVoluntaryRepayments,
+          )
+        : EMPTY_PLAN;
 
     set({
-      undergraduateRepaymentPlan: undergraduateRepayment,
-      postgraduateRepaymentPlan: postgraduateRepayment,
+      undergraduateRepaymentPlan,
+      postgraduateRepaymentPlan,
+      undergraduateRepaymentPlanWithVoluntaryRepayments,
+      postgraduateRepaymentPlanWithVoluntaryRepayments,
     });
   },
 });

@@ -15,6 +15,7 @@ interface EarlyRepaymentInputProps {
   maxDate?: string;
   onUpdate: (index: number, updates: Partial<VoluntaryRepayment>) => void;
   onRemove: (index: number) => void;
+  hasPostgradLoans?: boolean;
 }
 
 export const EarlyRepaymentInput: React.FC<EarlyRepaymentInputProps> = ({
@@ -24,6 +25,7 @@ export const EarlyRepaymentInput: React.FC<EarlyRepaymentInputProps> = ({
   maxDate,
   onUpdate,
   onRemove,
+  hasPostgradLoans = false,
 }) => {
   const handleAmountChange = (raw: string) => {
     const parsed = parseInt(raw, 10);
@@ -32,7 +34,7 @@ export const EarlyRepaymentInput: React.FC<EarlyRepaymentInputProps> = ({
 
   return (
     <div className="grid grid-cols-12 w-full gap-4">
-      <div className="flex flex-col gap-1 col-span-4">
+      <div className="flex flex-col gap-1 col-span-2">
         <input
           type="date"
           className={cn(FIELD_CLASS, "cursor-pointer")}
@@ -42,7 +44,23 @@ export const EarlyRepaymentInput: React.FC<EarlyRepaymentInputProps> = ({
           onChange={(e) => onUpdate(index, { date: e.target.value })}
         />
       </div>
-      <div className="flex flex-col gap-1 col-span-7">
+      {hasPostgradLoans && (
+        <div className="col-span-2">
+          <select
+            className={cn(FIELD_CLASS, "cursor-pointer")}
+            value={repayment.type ?? "undergraduate"}
+            onChange={(e) =>
+              onUpdate(index, {
+                type: e.target.value as "postgraduate" | "undergraduate",
+              })
+            }
+          >
+            <option value="undergraduate">Undergrad</option>
+            <option value="postgraduate">Postgrad</option>
+          </select>
+        </div>
+      )}
+      <div className={cn("flex flex-col gap-1", hasPostgradLoans ? "col-span-7" : "col-span-9")}>
         <div className="relative">
           <Font.Body className="absolute left-2 top-1/2 transform -translate-y-1/2">
             £

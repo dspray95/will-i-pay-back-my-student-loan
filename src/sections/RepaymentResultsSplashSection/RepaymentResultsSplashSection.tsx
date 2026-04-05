@@ -3,11 +3,14 @@ import {
   faChevronDown,
   faShareFromSquare,
 } from "@fortawesome/free-solid-svg-icons";
-import { RESULTS_TEXT_NOT_REPAID, RESULTS_TEXT_REPAID } from "./ResultText";
+import {
+  RESULTS_TEXT_NOT_REPAID,
+  RESULTS_TEXT_REPAID,
+} from "./components/ResultText";
 import { useEffect, useRef } from "react";
 import confetti from "canvas-confetti";
 import { useLoanCalculatorStore } from "../../stores/loanCalculatorStore";
-import { processResults } from "./processResults";
+import { processResults } from "./util/processResults";
 import { STAGES } from "../../shared/constants/stages";
 import {
   colorPiccadillyBlue,
@@ -25,13 +28,20 @@ import { useSubmitResults } from "./hooks/useSubmitResults";
 
 export const RepaymentResultsSplashSection: React.FC = () => {
   const {
-    undergraduateRepaymentPlan,
-    postgraduateRepaymentPlan,
+    undergraduateRepaymentPlan: baseUndergraduatePlan,
+    postgraduateRepaymentPlan: basePostgraduatePlan,
+    undergraduateRepaymentPlanWithVoluntaryRepayments,
+    postgraduateRepaymentPlanWithVoluntaryRepayments,
     undergraduateLoanAtGraduation,
     postgraduateLoanAtGraduation,
     loanFormValues,
     setStage,
   } = useLoanCalculatorStore();
+
+  const undergraduateRepaymentPlan =
+    undergraduateRepaymentPlanWithVoluntaryRepayments ?? baseUndergraduatePlan;
+  const postgraduateRepaymentPlan =
+    postgraduateRepaymentPlanWithVoluntaryRepayments ?? basePostgraduatePlan;
 
   useSubmitResults();
 
