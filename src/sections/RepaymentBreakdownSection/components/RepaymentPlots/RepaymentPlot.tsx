@@ -34,6 +34,7 @@ export const RepaymentPlot: React.FC<{
   compact?: boolean;
   containerHeight: number;
   alternateBreakdown?: RepaymentBreakdown;
+  alternateStudyYearBalances?: Array<{ year: number; balance: number }>;
 }> = ({
   repaymentBreakdown,
   courseLength,
@@ -44,6 +45,7 @@ export const RepaymentPlot: React.FC<{
   compact = false,
   containerHeight,
   alternateBreakdown,
+  alternateStudyYearBalances,
 }) => {
   const startYear = repaymentBreakdown[0].year - courseLength;
   const [hidden, setHidden] = useState<Record<string, boolean>>({});
@@ -51,11 +53,19 @@ export const RepaymentPlot: React.FC<{
 
   const data: Array<{
     year: number;
-    repayment: number;
+    automaticRepayment: number;
+    voluntaryRepayment: number;
     loanBalance: number;
     totalRepayments: number;
     alternateLoanBalance?: number | undefined;
   }> = [];
+
+  // Build a lookup of the base (no voluntary repayments) repayment per year
+  const alternateRepaymentByYear = new Map<number, number>(
+    alternateBreakdown?.map(
+      (entry) => [entry.year, entry.repayment] as const,
+    ) ?? [],
+  );
 
   // Course years — use study year balances if available
   const balanceByYear = new Map(
@@ -64,9 +74,13 @@ export const RepaymentPlot: React.FC<{
 
   // If we have an alternate repayment plan, we want to show that as well
   // as a comparison (used for comparing with voluntary repayments vs without)
-  const alternateBalanceByYear = new Map(
-    alternateBreakdown?.map((entry) => [entry.year, entry.endingBalance]),
-  );
+  const alternateBalanceByYear = new Map<number, number>([
+    ...(alternateStudyYearBalances?.map((s) => [s.year, s.balance] as const) ??
+      []),
+    ...(alternateBreakdown?.map(
+      (entry) => [entry.year, entry.endingBalance] as const,
+    ) ?? []),
+  ]);
 
   let runningStudyRepayments = 0;
   for (let year = startYear; year < repaymentBreakdown[0].year; year++) {
@@ -74,7 +88,8 @@ export const RepaymentPlot: React.FC<{
     runningStudyRepayments += yearRepayment;
     data.push({
       year,
-      repayment: yearRepayment,
+      automaticRepayment: 0,
+      voluntaryRepayment: yearRepayment,
       loanBalance:
         balanceByYear.get(year) ?? repaymentBreakdown[0].startingBalance,
       totalRepayments: runningStudyRepayments,
@@ -84,16 +99,58 @@ export const RepaymentPlot: React.FC<{
 
   // Repayment years
   let runningTotal = runningStudyRepayments;
+  const lastPrimaryYear =
+    repaymentBreakdown[repaymentBreakdown.length - 1].year;
+  const lastAlternateYear = alternateBreakdown
+    ? alternateBreakdown[alternateBreakdown.length - 1].year
+    : lastPrimaryYear;
+  const lastYear = Math.max(lastPrimaryYear, lastAlternateYear);
+
   for (const entry of repaymentBreakdown) {
     runningTotal += entry.repayment;
+    const automatic =
+      alternateRepaymentByYear.get(entry.year) ?? entry.repayment;
+    const voluntary = Math.max(0, entry.repayment - automatic);
     data.push({
       year: entry.year,
-      repayment: entry.repayment,
+      automaticRepayment: automatic,
+      voluntaryRepayment: voluntary,
       loanBalance: entry.endingBalance,
       totalRepayments: runningTotal,
       alternateLoanBalance: alternateBalanceByYear?.get(entry.year),
     });
   }
+
+  // Extend data if alternate breakdown goes beyond primary
+  for (let year = lastPrimaryYear + 1; year <= lastYear; year++) {
+    data.push({
+      year,
+      automaticRepayment: 0,
+      voluntaryRepayment: 0,
+      loanBalance: 0,
+      totalRepayments: runningTotal,
+      alternateLoanBalance: alternateBalanceByYear?.get(year),
+    });
+  }
+
+  // Show a "Loan Repaid" reference line if voluntary repayments pay off the
+  // loan earlier than the alternate scenario
+  const loanRepaidEarly =
+    alternateBreakdown && lastPrimaryYear < lastAlternateYear;
+
+  // Show a "Loan Written Off" reference line at the end of the repayment
+  // period if the loan isn't fully repaid
+  const lastPrimaryEntry = repaymentBreakdown[repaymentBreakdown.length - 1];
+  const lastAlternateEntry =
+    alternateBreakdown?.[alternateBreakdown.length - 1];
+  const primaryWrittenOff = lastPrimaryEntry.endingBalance > 0;
+  const alternateWrittenOff =
+    lastAlternateEntry && lastAlternateEntry.endingBalance > 0;
+  const writtenOffYear = primaryWrittenOff
+    ? lastPrimaryYear
+    : alternateWrittenOff
+      ? lastAlternateYear
+      : undefined;
 
   const handleLegendClick = (dataKey: string) => {
     setHidden((prev) => ({ ...prev, [dataKey]: !prev[dataKey] }));
@@ -187,21 +244,57 @@ export const RepaymentPlot: React.FC<{
           />
           <ReferenceLine
             x={repaymentBreakdown[0].year}
-            stroke={colorNorthernNotBlackLight1}
+            stroke={hexToRGBA(colorNorthernNotBlack, 0.5)}
             strokeDasharray="6 4"
             label={{
-              value: small ? "Start" : "Repayments start",
+              value: "Repayments Start",
               position: "top",
-              fill: colorNorthernNotBlack,
+              fill: hexToRGBA(colorNorthernNotBlack, 0.5),
               fontSize: small ? 10 : 12,
             }}
           />
+          {loanRepaidEarly && (
+            <ReferenceLine
+              x={lastPrimaryYear}
+              stroke={hexToRGBA(colorDistrictGreen, 0.5)}
+              strokeDasharray="6 4"
+              label={{
+                value: small
+                  ? "Loan Repaid"
+                  : "Loan Repaid (with Voluntary Repayments)",
+                position: "top",
+                fill: hexToRGBA(colorDistrictGreen, 0.5),
+                fontSize: small ? 10 : 12,
+              }}
+            />
+          )}
+          {writtenOffYear && (
+            <ReferenceLine
+              x={writtenOffYear}
+              stroke={hexToRGBA(colorNorthernNotBlack, 0.5)}
+              strokeDasharray="6 4"
+              label={{
+                value: "Loan Written Off",
+                position: "insideTopRight",
+                fill: hexToRGBA(colorNorthernNotBlack, 0.5),
+                fontSize: small ? 10 : 12,
+              }}
+            />
+          )}
           <Bar
-            dataKey="repayment"
-            name={compact ? "Repayment" : "Yearly Repayment"}
+            dataKey="automaticRepayment"
+            name={compact ? "Repayment" : "Automatic Repayment"}
             fill={colorPiccadillyBlue}
             opacity={0.8}
-            hide={hidden.repayment}
+            stackId="repayment"
+            hide={hidden.automaticRepayment}
+          />
+          <Bar
+            dataKey="voluntaryRepayment"
+            name="Voluntary Repayment"
+            fill={hexToRGBA(colorPiccadillyBlue, 0.5)}
+            stackId="repayment"
+            hide={hidden.voluntaryRepayment}
           />
           <Line
             type="monotone"

@@ -31,6 +31,8 @@ export const RepaymentPlots: React.FC = () => {
     postgraduateRepaymentPlanWithVoluntaryRepayments,
     undergraduateStudyYearBalances,
     postgraduateStudyYearBalances,
+    baseUndergraduateStudyYearBalances,
+    basePostgraduateStudyYearBalances,
     voluntaryRepayments,
     loanFormValues,
   } = useLoanCalculatorStore();
@@ -76,14 +78,18 @@ export const RepaymentPlots: React.FC = () => {
     return Math.max(breakdownMax, studyMax);
   };
 
-  const undergradMax = getMaxValue(
-    undergraduateRepaymentPlan.yearByYearBreakdown,
-    undergraduateStudyYearBalances,
+  const undergradMax = Math.max(
+    getMaxValue(undergraduateRepaymentPlan.yearByYearBreakdown, undergraduateStudyYearBalances),
+    baseUndergraduatePlan
+      ? getMaxValue(baseUndergraduatePlan.yearByYearBreakdown, baseUndergraduateStudyYearBalances)
+      : 0,
   );
   const postgradMax = hasPostgrad
-    ? getMaxValue(
-        postgraduateRepaymentPlan.yearByYearBreakdown,
-        postgraduateStudyYearBalances,
+    ? Math.max(
+        getMaxValue(postgraduateRepaymentPlan.yearByYearBreakdown, postgraduateStudyYearBalances),
+        basePostgraduatePlan
+          ? getMaxValue(basePostgraduatePlan.yearByYearBreakdown, basePostgraduateStudyYearBalances)
+          : 0,
       )
     : 0;
 
@@ -118,6 +124,11 @@ export const RepaymentPlots: React.FC = () => {
               ? baseUndergraduatePlan?.yearByYearBreakdown
               : undefined
           }
+          alternateStudyYearBalances={
+            undergraduateRepaymentPlanWithVoluntaryRepayments
+              ? baseUndergraduateStudyYearBalances
+              : undefined
+          }
         />
       </div>
       {hasPostgrad && loanFormValues.mastersLength && (
@@ -134,6 +145,11 @@ export const RepaymentPlots: React.FC = () => {
             alternateBreakdown={
               postgraduateRepaymentPlanWithVoluntaryRepayments
                 ? basePostgraduatePlan?.yearByYearBreakdown
+                : undefined
+            }
+            alternateStudyYearBalances={
+              postgraduateRepaymentPlanWithVoluntaryRepayments
+                ? basePostgraduateStudyYearBalances
                 : undefined
             }
           />

@@ -16,6 +16,8 @@ export interface LoanInputSlice {
   postgraduateLoanAtGraduation: number;
   undergraduateStudyYearBalances: Array<{ year: number; balance: number }>;
   postgraduateStudyYearBalances: Array<{ year: number; balance: number }>;
+  baseUndergraduateStudyYearBalances: Array<{ year: number; balance: number }>;
+  basePostgraduateStudyYearBalances: Array<{ year: number; balance: number }>;
   setLoanFormValues: (values: LoanFormValues) => void;
   setTotalUndergradLoan: (amount: number) => void;
   setTotalMaintenanceLoan: (amount: number) => void;
@@ -32,6 +34,8 @@ export const loanInputInitialState = {
   postgraduateLoanAtGraduation: 0,
   undergraduateStudyYearBalances: [] as Array<{ year: number; balance: number }>,
   postgraduateStudyYearBalances: [] as Array<{ year: number; balance: number }>,
+  baseUndergraduateStudyYearBalances: [] as Array<{ year: number; balance: number }>,
+  basePostgraduateStudyYearBalances: [] as Array<{ year: number; balance: number }>,
 };
 
 export const createLoanInputSlice: StateCreator<
@@ -76,6 +80,12 @@ export const createLoanInputSlice: StateCreator<
       undergradVoluntaryRepayments,
     );
 
+    const baseUndergradStudyBalances = calculateStudyYearBalances(
+      undergradYearlyAmounts,
+      loanFormValues.courseStartYear,
+      loanFormValues.loanPlan,
+    );
+
     const hasMasters =
       state.totalMastersLoan > 0 &&
       loanFormValues.mastersStartYear !== undefined &&
@@ -102,11 +112,21 @@ export const createLoanInputSlice: StateCreator<
         )
       : [];
 
+    const baseMastersStudyBalances = hasMasters
+      ? calculateStudyYearBalances(
+          mastersYearlyAmounts,
+          loanFormValues.mastersStartYear!,
+          "postgrad",
+        )
+      : [];
+
     set({
       undergraduateLoanAtGraduation: undergradLoanAtGraduation,
       postgraduateLoanAtGraduation: mastersLoanAtGraduation,
       undergraduateStudyYearBalances: undergradStudyBalances,
       postgraduateStudyYearBalances: mastersStudyBalances,
+      baseUndergraduateStudyYearBalances: baseUndergradStudyBalances,
+      basePostgraduateStudyYearBalances: baseMastersStudyBalances,
       ...(hasMasters
         ? {}
         : { postgraduateRepaymentPlan: undefined as RepaymentPlan | undefined }),

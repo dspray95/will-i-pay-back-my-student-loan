@@ -6,7 +6,7 @@ export const RateInput: React.FC<{
   onChange: (value: number) => void;
   helpText: string;
 }> = ({ label, value, onChange, helpText }) => {
-  const rateStep = 0.5;
+  const rateStep = 0.1;
   const maxRate = 10;
   const minRate = 0;
   const precision = 10;
